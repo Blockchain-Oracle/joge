@@ -25,6 +25,11 @@
   box-shadow: 0 0 0 0 color-mix(in srgb, var(--up) 60%, transparent);
   animation: lp-live 2s ease-out infinite;
 }
+/* On vermilion: the same breath in white. */
+.lp-live-white {
+  background: #fff;
+  box-shadow: 0 0 0 0 rgb(255 255 255 / 0.6);
+}
 @keyframes lp-live {
   70% {
     box-shadow: 0 0 0 7px transparent;

@@ -14,6 +14,7 @@ import { useLane } from "../terminal/use-lane.ts";
 import { MAINNET_LIVE } from "../theme/theme.ts";
 import { BUILT_ON, FINAL, HERO, WALLETS } from "./copy.ts";
 import { HeroRound } from "./hero-round.tsx";
+import { MainnetBadge, MainnetBand } from "./mainnet-band.tsx";
 import { Sections } from "./sections.tsx";
 
 const SECOND_MS = 1_000;
@@ -73,11 +74,15 @@ function Hero() {
         上下
       </span>
       <div className="lp-rise flex flex-col items-start gap-6">
-        <span className="flex items-center gap-2.5 rounded-full bg-[var(--surface-1)] py-1.5 pr-4 pl-2 shadow-[inset_0_0_0_1px_var(--hairline)]">
-          <AssetMark asset="BCH" size={22} />
-          <span className="lp-live" aria-hidden />
-          <span className="font-semibold text-[13px]">{HERO.live[MAINNET_LIVE ? "mainnet" : "chipnet"]}</span>
-        </span>
+        {MAINNET_LIVE ? (
+          <MainnetBadge />
+        ) : (
+          <span className="flex items-center gap-2.5 rounded-full bg-[var(--surface-1)] py-1.5 pr-4 pl-2 shadow-[inset_0_0_0_1px_var(--hairline)]">
+            <AssetMark asset="BCH" size={22} />
+            <span className="lp-live" aria-hidden />
+            <span className="font-semibold text-[13px]">{HERO.live.chipnet}</span>
+          </span>
+        )}
         <h1 className="nx-display text-[clamp(48px,7.4vw,96px)] leading-[0.98] tracking-[-0.045em]">
           <span className="lp-title block">{HERO.title}</span>
           <span className="lp-title-accent block">{HERO.accent}</span>
@@ -187,6 +192,7 @@ export function Landing() {
       <div className="mx-auto max-w-[1240px] px-4 md:px-8">
         <Nav />
         <Hero />
+        {MAINNET_LIVE ? <MainnetBand /> : null}
         <Sections />
         <FinalCall />
         <Footer />

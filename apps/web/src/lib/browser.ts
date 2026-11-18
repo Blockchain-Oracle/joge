@@ -1,5 +1,5 @@
 /**
- * Browser helpers that also work on a plain-HTTP address (the temporary sslip.io host before the domain exists).
+ * Browser helpers that also work on a plain-HTTP address.
  * Outside a secure context browsers remove `navigator.clipboard` and `crypto.randomUUID`, but keep
  * `crypto.getRandomValues` and the old copy command, so each helper falls back to those.
  */

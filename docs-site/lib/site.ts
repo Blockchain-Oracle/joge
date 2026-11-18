@@ -4,8 +4,8 @@
  * Where the app and the docs are served, read at build time (the Docker build's arguments, the same names the app
  * uses), so a deploy on a new address links to itself.
  */
-const APP_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://joge.84.46.247.92.sslip.io"
-const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.joge.84.46.247.92.sslip.io"
+const APP_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://getjoge.xyz"
+const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.getjoge.xyz"
 
 export const SITE = {
   name: "Jōge",

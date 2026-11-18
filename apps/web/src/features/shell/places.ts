@@ -45,7 +45,7 @@ export interface Page {
 }
 
 /** The docs site (its own deploy): linked from the header, More, ⌘K, the landing's bar and its footer. */
-export const DOCS_URL = (process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.joge.84.46.247.92.sslip.io") as Route;
+export const DOCS_URL = (process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.getjoge.xyz") as Route;
 
 /** Everything else reachable from More and ⌘K. */
 export const PAGES: Page[] = [

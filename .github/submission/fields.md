@@ -9,8 +9,8 @@ Ready to paste. Character limits on the DoraHacks form were not visible without 
 **Track:** Mainnet Track
 
 **Links**
-- Live app: https://joge.84.46.247.92.sslip.io
-- Docs: https://docs.joge.84.46.247.92.sslip.io
+- Live app: https://getjoge.xyz
+- Docs: https://docs.getjoge.xyz
 - Source: https://github.com/Blockchain-Oracle/joge
 - Widget Factory deck: https://docs.google.com/presentation/d/1Qp5ucxWRxmVQPF2h8TTw9VVcokC_6BMCUVuwDr3cw-Y/edit?usp=sharing
 - CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9

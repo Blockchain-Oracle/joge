@@ -3,6 +3,7 @@
 import { Check, Copy, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Button, DottedQr, Sheet, usePhone, Wait } from "@/kit";
+import { copyText } from "@/lib/browser";
 import { useWorld } from "../shell/world.tsx";
 import { useWallet } from "./wallet-context.tsx";
 import { WalletPlate } from "./wallet-plate.tsx";
@@ -19,7 +20,7 @@ export function ConnectSheet() {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     if (!wallet.uri) return;
-    await navigator.clipboard.writeText(wallet.uri);
+    await copyText(wallet.uri);
     setCopied(true);
     setTimeout(() => setCopied(false), COPIED_MS);
   };

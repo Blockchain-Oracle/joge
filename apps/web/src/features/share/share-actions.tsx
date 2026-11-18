@@ -3,6 +3,7 @@
 import { Check, Link2, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cx, toast } from "@/kit";
+import { copyText } from "@/lib/browser";
 
 const COPIED_MS = 1_600;
 const X_INTENT = "https://x.com/intent/post";
@@ -22,7 +23,7 @@ export function ShareActions({ path, text, className }: { path: string; text: st
   useEffect(() => setCanShare("share" in navigator), []);
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(url());
+      if (!(await copyText(url()))) throw new Error("copy refused");
       setCopied(true);
       setTimeout(() => setCopied(false), COPIED_MS);
     } catch {

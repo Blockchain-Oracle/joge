@@ -5,6 +5,7 @@ import { Check, Copy, ExternalLink, Trophy, UserX } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { cue, cx, EmptyState, Marble, Skeleton } from "@/kit";
+import { copyText } from "@/lib/browser";
 import { agentsQuery } from "../agents/api.ts";
 import { faceOf } from "../agents/names.ts";
 import { Portrait } from "../agents/portrait.tsx";
@@ -103,7 +104,7 @@ export function Profile({ address }: { address: string }) {
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard.writeText(full);
+                  void copyText(full);
                   cue("tap");
                   setCopied(true);
                   setTimeout(() => setCopied(false), COPIED_MS);

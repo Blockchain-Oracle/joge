@@ -3,6 +3,7 @@
 import { Copy, LogOut } from "lucide-react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cx, RollingNumber, Skeleton, toast } from "@/kit";
+import { copyText } from "@/lib/browser";
 import { useWorld } from "../shell/world.tsx";
 import { useWalletCoins } from "./coins.ts";
 import { useWallet } from "./wallet-context.tsx";
@@ -80,7 +81,7 @@ export function WalletPlate({ className }: { className?: string }) {
       <button
         type="button"
         onClick={() => {
-          void navigator.clipboard.writeText(wallet.payout?.address ?? "");
+          void copyText(wallet.payout?.address ?? "");
           toast({ tone: "info", title: "Address copied" });
         }}
         className="flex items-center gap-2 rounded-full bg-[var(--surface-2)] px-3 py-2 text-left"

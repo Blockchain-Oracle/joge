@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useSyncExternalStore } from "react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cue, toast } from "@/kit";
+import { copyText } from "@/lib/browser";
 import { limitProblem, useLimits } from "../limits/limits.ts";
 import { sats, usd } from "../rounds/format.ts";
 import { OPEN_MORE_EVENT } from "../shell/places.ts";
@@ -114,7 +115,7 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
     blocker = {
       label: "Fund your wallet",
       onClick: () => {
-        void navigator.clipboard.writeText(wallet.payout?.address ?? "");
+        void copyText(wallet.payout?.address ?? "");
         toast({ tone: "info", title: "Address copied", body: `Send at least ${sats(Number(stake + ENTRY_OVERHEAD))}` });
       },
     };

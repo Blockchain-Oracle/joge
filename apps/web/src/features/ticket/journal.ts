@@ -2,6 +2,7 @@
 
 import type { Network } from "@joge/db";
 import { useSyncExternalStore } from "react";
+import { randomId } from "@/lib/browser";
 
 /**
  * The entry journal (Owarine's pattern): an entry is recorded before the wallet is asked to sign, its txid is kept the
@@ -53,7 +54,7 @@ function save(next: JournalEntry[]) {
 }
 
 export function recordEntry(entry: Omit<JournalEntry, "id" | "state" | "at">): JournalEntry {
-  const created: JournalEntry = { ...entry, id: crypto.randomUUID(), state: "recorded", at: Date.now() };
+  const created: JournalEntry = { ...entry, id: randomId(), state: "recorded", at: Date.now() };
   save([created, ...load()]);
   return created;
 }

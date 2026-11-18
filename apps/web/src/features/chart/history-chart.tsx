@@ -17,6 +17,7 @@ const REFRESH_MS = 60_000;
 interface CandlesResponse {
   candles: CandlePoint[];
   bucketSeconds: number;
+  rangeSeconds: number;
 }
 
 /** The terminal's 1H / 1D view: the market's recent history as candles or a line, its last candle live. */
@@ -50,7 +51,7 @@ export function HistoryChart({
   }, []);
   useEffect(() => {
     const data = history.data;
-    if (data) chart.current?.setCandles(data.candles, data.bucketSeconds * SECOND_MS);
+    if (data) chart.current?.setCandles(data.candles, data.bucketSeconds * SECOND_MS, data.rangeSeconds * SECOND_MS);
   }, [history.data]);
   useEffect(() => chart.current?.setStyle(style), [style]);
 

@@ -29,3 +29,28 @@ export async function candleSeries(db: Db, asset: AssetId, from: number, bucketS
     order by 1`);
   return rows.map((row) => ({ t: Number(row.t), o: row.o, h: row.h, l: row.l, c: row.c }));
 }
+
+/**
+ * Candles from the oracle's signed prices (one a minute, kept for good): the day view's history even where the live
+ * ticks have not been kept that long. `scaling` turns a signed price into dollars.
+ */
+export async function oracleCandles(
+  db: Db,
+  feed: string,
+  from: number,
+  bucketSeconds: number,
+  scaling: number,
+): Promise<Candle[]> {
+  const rows = await db.execute<{ t: string; o: number; h: number; l: number; c: number }>(sql`
+    select
+      (extract(epoch from date_bin(make_interval(secs => ${bucketSeconds}), to_timestamp(timestamp), timestamptz 'epoch')) * 1000)::bigint as t,
+      (array_agg(price order by timestamp asc))[1]::float8 / ${scaling} as o,
+      max(price)::float8 / ${scaling} as h,
+      min(price)::float8 / ${scaling} as l,
+      (array_agg(price order by timestamp desc))[1]::float8 / ${scaling} as c
+    from oracle_messages
+    where feed = ${feed} and timestamp >= ${from}
+    group by 1
+    order by 1`);
+  return rows.map((row) => ({ t: Number(row.t), o: row.o, h: row.h, l: row.l, c: row.c }));
+}

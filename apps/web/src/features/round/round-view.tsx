@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cx, EmptyState, Marble, Ring, Skeleton, toast } from "@/kit";
 import { ASSET_TONE, AssetCube } from "@/marks/asset";
+import { HistoryChart } from "../chart/history-chart.tsx";
 import { LiveChart } from "../chart/live-chart.tsx";
 import { profileHref } from "../players/api.ts";
 import { type Holding, positionOf } from "../position/position.ts";
@@ -20,7 +21,9 @@ import { useClockTime, useNow } from "../rounds/use-now.ts";
 import { ShareActions } from "../share/share-actions.tsx";
 import { ShareSheet } from "../share/share-sheet.tsx";
 import { setWorld, useWorld } from "../shell/world.tsx";
+import { ChartControls, useChartView } from "../terminal/chart-controls.tsx";
 import { SidePlates } from "../terminal/side-plates.tsx";
+import { Stack } from "../terminal/stack.tsx";
 import { pickLane } from "../terminal/use-lane.ts";
 import { useOneTap } from "../terminal/use-one-tap.ts";
 import { useJournal } from "../ticket/journal.ts";
@@ -62,6 +65,7 @@ export function RoundView({
   const view = useQuery(roundQuery(network, roundId));
   const [finishing, setFinishing] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const chart = useChartView();
   const round = view.data?.round;
   const priceNow = useSpot(round?.asset ?? "BTC") ?? undefined;
   const journal = useJournal();
@@ -264,13 +268,33 @@ export function RoundView({
         {decided ? (
           <RoundFilmPlayer roundId={round.roundId} focus={mine} autoplay={autoplay} />
         ) : (
-          <LiveChart
-            asset={round.asset}
-            window={window}
-            levels={levels}
-            engine="round"
-            className="h-[260px] md:h-[360px]"
-          />
+          // The round's own screen carries the terminal's controls (his report: no stake, no sound, no chart views
+          // once you open a round): the views above the chart, the stake and sound in the glass stack on its edge.
+          <div className="flex flex-col gap-2">
+            <ChartControls className="self-end" />
+            <div className="relative">
+              {chart.view === "live" ? (
+                <LiveChart
+                  asset={round.asset}
+                  window={window}
+                  levels={levels}
+                  engine="round"
+                  className="h-[260px] md:h-[360px]"
+                />
+              ) : (
+                <HistoryChart
+                  key={round.asset}
+                  asset={round.asset}
+                  range={chart.view}
+                  style={chart.style}
+                  className="h-[260px] md:h-[360px]"
+                />
+              )}
+              <div className="absolute top-1/2 left-0 -translate-y-1/2">
+                <Stack tap={tap} />
+              </div>
+            </div>
+          </div>
         )}
         <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
           {facts.map((fact) => (

@@ -63,6 +63,10 @@ export class CandleChart {
   private palette: Palette;
   private candles: CandlePoint[] = [];
   private bucketMs = 0;
+  /** How much time the axis always spans (the hour or the day), so a short history never stretches. */
+  private rangeMs = 0;
+  /** The candles inside the window this frame. */
+  private shown: CandlePoint[] = [];
   private style: CandleStyle = "candles";
   private fadeFrom = 0;
   private hover: { x: number; y: number } | null = null;
@@ -102,9 +106,10 @@ export class CandleChart {
     this.raf = requestAnimationFrame(this.frame);
   }
 
-  setCandles(candles: CandlePoint[], bucketMs: number) {
+  setCandles(candles: CandlePoint[], bucketMs: number, rangeMs: number) {
     this.candles = [...candles].sort((a, b) => a.t - b.t);
     this.bucketMs = bucketMs;
+    this.rangeMs = rangeMs;
   }
 
   setStyle(style: CandleStyle) {
@@ -156,12 +161,18 @@ export class CandleChart {
     const bottom = h - PAD_BOTTOM;
     this.paintDots(right, bottom);
     this.paintWatermark(right, bottom);
-    const last = candles.at(-1);
+    if (this.bucketMs === 0 || this.rangeMs === 0) return;
+    // A fixed time axis (his report: the day looked bigger than the hour): the window always spans the whole range,
+    // ending with the bucket running now, and each candle sits at its own time.
+    const end = (Math.floor(Date.now() / this.bucketMs) + 1) * this.bucketMs;
+    const start = end - this.rangeMs;
+    this.shown = candles.filter((candle) => candle.t >= start);
+    const last = this.shown.at(-1);
     if (!last) return;
 
     let lo = Number.POSITIVE_INFINITY;
     let hi = Number.NEGATIVE_INFINITY;
-    for (const candle of candles) {
+    for (const candle of this.shown) {
       lo = Math.min(lo, this.style === "line" ? candle.c : candle.l);
       hi = Math.max(hi, this.style === "line" ? candle.c : candle.h);
     }
@@ -170,24 +181,25 @@ export class CandleChart {
     const yMin = mid - span * (HALF + RANGE_PAD);
     const yMax = mid + span * (HALF + RANGE_PAD);
     const y = (p: number) => PAD_TOP + ((yMax - p) / (yMax - yMin)) * (bottom - PAD_TOP);
-    const slot = right / candles.length;
-    const x = (index: number) => slot * (index + HALF);
+    const slot = right / (this.rangeMs / this.bucketMs);
+    const xt = (t: number) => ((t - start) / this.bucketMs + HALF) * slot;
+    const x = (index: number) => xt(this.shown[index]?.t ?? start);
 
     this.paintGrid(right, bottom, y, yMin, yMax);
-    this.paintTimes(x, bottom);
+    this.paintTimes(xt, start, bottom);
     ctx.save();
     ctx.globalAlpha = Math.min(1, (clock - this.fadeFrom) / FADE_MS);
     if (this.style === "candles") this.paintCandles(x, y, slot);
     else this.paintCloses(x, y, bottom);
     ctx.restore();
     this.paintLive(last.c, y(last.c), right);
-    this.paintHover(x, y, slot, right, bottom);
+    this.paintHover(x, y, slot, right, bottom, start);
   }
 
   private paintCandles(x: (index: number) => number, y: (p: number) => number, slot: number) {
     const { ctx, palette } = this;
     const body = Math.max(1, slot * BODY_SHARE);
-    for (const [index, candle] of this.candles.entries()) {
+    for (const [index, candle] of this.shown.entries()) {
       const rose = candle.c >= candle.o;
       const color = rose ? palette.upLine : palette.downLine;
       const cx = x(index);
@@ -205,7 +217,7 @@ export class CandleChart {
   }
 
   private paintCloses(x: (index: number) => number, y: (p: number) => number, bottom: number) {
-    const { ctx, palette, candles } = this;
+    const { ctx, palette, shown: candles } = this;
     const first = candles[0];
     const last = candles.at(-1);
     if (!first || !last) return;
@@ -264,10 +276,13 @@ export class CandleChart {
     slot: number,
     right: number,
     bottom: number,
+    start: number,
   ) {
-    const { ctx, palette, hover, candles } = this;
+    const { ctx, palette, hover, shown: candles } = this;
     if (!hover || hover.x > right) return;
-    const index = Math.min(candles.length - 1, Math.max(0, Math.floor(hover.x / slot)));
+    // The bucket under the pointer, by time; an empty bucket shows nothing.
+    const at = start + Math.floor(hover.x / slot) * this.bucketMs;
+    const index = candles.findIndex((candle) => candle.t === at);
     const candle = candles[index];
     if (!candle) return;
     const cx = x(index);
@@ -311,17 +326,17 @@ export class CandleChart {
     ctx.restore();
   }
 
-  private paintTimes(x: (index: number) => number, bottom: number) {
-    const { ctx, palette, candles } = this;
-    const every = Math.max(1, Math.ceil(candles.length / TIME_LABELS));
+  /** Times evenly across the window, so the hour and the day read alike. */
+  private paintTimes(xt: (t: number) => number, start: number, bottom: number) {
+    const { ctx, palette } = this;
     ctx.save();
     ctx.font = `500 ${AXIS_FONT}px ${palette.mono}`;
     ctx.fillStyle = palette.muted;
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
-    for (let index = every - 1; index < candles.length; index += every) {
-      const candle = candles[index];
-      if (candle) ctx.fillText(TIME.format(candle.t), x(index), bottom + LABEL_GAP);
+    for (let mark = 1; mark <= TIME_LABELS; mark += 1) {
+      const t = start + (this.rangeMs * mark) / (TIME_LABELS + 1);
+      ctx.fillText(TIME.format(t), xt(t), bottom + LABEL_GAP);
     }
     ctx.restore();
   }

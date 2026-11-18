@@ -1,0 +1,41 @@
+pragma solidcash ^0.51.0;
+
+import "./rules.scash";
+
+// An AI agent's budget, owned by a player. The agent's key (held by Jōge's server, signed by the server's SDK, never
+// routed to a wallet) can only enter standard lane rounds for the owner, within a per-bet cap; the owner takes
+// everything back at any time. Daily limits and timing are the runner's rules on top (it never enters after
+// T_lock − margin); the covenant is what keeps a leaked agent key from doing anything else with the money.
+bigint constant AGENT_BET_FEE = 1500;
+
+contract AgentVault(bytes20 ownerPkh, pubkey agentKey, bigint perBetCap, bytes laneGateLockingBytecode) {
+    // Input 0 is a lane gate running `enter` (which checks the stake bounds, the gate and the ticket); this vault is
+    // input 1 and pays the stake. The ticket must pay the owner; the rest of the budget comes back to the vault.
+    function bet(sig agentSignature) {
+        require(checkSig(agentSignature, agentKey), "only the agent's key bets");
+        require(this.activeInputIndex == 1, "the vault pays as input 1");
+        require(tx.inputs.length == 2, "a lane gate and this vault only");
+        require(tx.inputs[0].lockingBytecode == laneGateLockingBytecode, "agents enter standard lane rounds only");
+        bytes ticket = tx.outputs[1].nftCommitment;
+        require(ticket.slice(12, 32) == bytes(ownerPkh), "the ticket pays the vault's owner");
+        bigint stake = bigint(ticket.slice(7, 12));
+        require(stake <= perBetCap, "stake above the agent's per-bet cap");
+        require(tx.outputs.length == 3, "gate, ticket and the vault's change");
+        require(tx.outputs[2].lockingBytecode == tx.inputs[1].lockingBytecode, "the rest comes back to the vault");
+        require(tx.outputs[2].tokenCategory == 0x, "the vault holds no tokens");
+        require(
+            tx.outputs[2].value == tx.inputs[1].value - stake - TICKET_DUST - AGENT_BET_FEE,
+            "the vault pays only the stake, the ticket dust and a fixed fee"
+        );
+    }
+
+    // The owner takes the budget back: input 1 is a coin from the owner's own address, signed over every output.
+    function withdraw() {
+        bytes owner = new LockingBytecodeP2PKH(ownerPkh);
+        bytes unlock = tx.inputs[1].unlockingBytecode;
+        require(tx.inputs[1].lockingBytecode == owner, "the owner must co-sign");
+        require(unlock.slice(0, 1) == SIGNATURE_PUSH, "the owner signs with Schnorr");
+        bytes sighash = unlock.slice(SIGHASH_BYTE, SIGHASH_BYTE + 1);
+        require(sighash == 0x41 || sighash == 0x61, "the owner's signature must cover every output");
+    }
+}

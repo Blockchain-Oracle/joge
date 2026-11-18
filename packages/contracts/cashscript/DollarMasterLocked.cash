@@ -1,0 +1,223 @@
+pragma cashscript ^0.14.0;
+
+import "./dollar.cash";
+import "./oracle.cash";
+
+// A locked dollar event waiting for its close: MasterLocked, with the pot in the sidecar at input 1. Fees are paid in
+// dollars (each fee output carries TOKEN_DUST satoshis from the master).
+// A locked round waiting for its close. Commitment (written by MasterOpen's lock):
+//   [0] tag 0x01 · [1,5) round id · [5] state 0x01 · [6] asset · [7] mode << 4 | outcomes · [8,12) T_close
+//   [12,14) creator fee bps · [14,34) creator pubkey hash · [34,38) lock data sequence S (USD/BCH for gold)
+//   [38,42) XAU/BCH lock sequence (gold only) · [42,48) pot · [48,51) entrants · [51, 51 + 5·N) totals per outcome
+//   [51 + 5·N, …) range boundaries (4 bytes each, RANGES mode)
+//
+// Settle: anyone, with the strike (the oracle's message S + 1) and the canonical pair at T_close. It pays the fees,
+// freezes the winning outcome, the pot after fees and the winning total, and hands the round to the sweep contract.
+contract DollarMasterLocked(
+    bytes32 category,
+    bytes sweepLockingBytecode,
+    bytes protocolLockingBytecode,
+    bytes sideLockingBytecode,
+    bytes32 dollarCategory,
+    pubkey oracleBtc,
+    pubkey oracleEth,
+    pubkey oracleBch,
+    pubkey oracleXau
+) {
+    function settle(
+        bytes strike,
+        datasig strikeSignature,
+        bytes previous,
+        datasig previousSignature,
+        bytes close,
+        datasig closeSignature
+    ) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        int asset = int(master.slice(6, 7));
+        require(asset != ASSET_GOLD, "gold settles with settleGold");
+        pubkey oracle = oracleBch;
+        if (asset == ASSET_BTC) {
+            oracle = oracleBtc;
+        } else if (asset == ASSET_ETH) {
+            oracle = oracleEth;
+        }
+        int lockSequence = int(master.slice(34, 38));
+        int strikePrice = priceAtSequence(strike, strikeSignature, oracle, lockSequence + 1);
+        int closeSequence = firstAtOrAfter(previous, previousSignature, close, closeSignature, oracle, int(master.slice(8, 12)));
+        require(closeSequence > lockSequence + 1, "the close must come after the strike");
+        require(
+            payOutDollar(master, strikePrice, messagePrice(close), sweepLockingBytecode, protocolLockingBytecode, sideLockingBytecode, dollarCategory),
+            "settlement must be exact"
+        );
+    }
+
+    function settleGold(
+        bytes strikeUsd,
+        datasig strikeUsdSignature,
+        bytes strikeXau,
+        datasig strikeXauSignature,
+        bytes previousUsd,
+        datasig previousUsdSignature,
+        bytes closeUsd,
+        datasig closeUsdSignature,
+        bytes previousXau,
+        datasig previousXauSignature,
+        bytes closeXau,
+        datasig closeXauSignature
+    ) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        require(int(master.slice(6, 7)) == ASSET_GOLD, "only gold settles with two feeds");
+        int closeTime = int(master.slice(8, 12));
+        int usdLock = int(master.slice(34, 38));
+        int xauLock = int(master.slice(38, 42));
+        int strikePrice = goldPrice(
+            priceAtSequence(strikeUsd, strikeUsdSignature, oracleBch, usdLock + 1),
+            priceAtSequence(strikeXau, strikeXauSignature, oracleXau, xauLock + 1)
+        );
+        int usdClose = firstAtOrAfter(previousUsd, previousUsdSignature, closeUsd, closeUsdSignature, oracleBch, closeTime);
+        int xauClose = firstAtOrAfter(previousXau, previousXauSignature, closeXau, closeXauSignature, oracleXau, closeTime);
+        require(usdClose > usdLock + 1 && xauClose > xauLock + 1, "the close must come after the strike");
+        int closePrice = goldPrice(messagePrice(closeUsd), messagePrice(closeXau));
+        require(
+            payOutDollar(master, strikePrice, closePrice, sweepLockingBytecode, protocolLockingBytecode, sideLockingBytecode, dollarCategory),
+            "settlement must be exact"
+        );
+    }
+
+    // If nobody can settle (an oracle gap breaks every pair), anyone voids the round once T_close + timeout has
+    // passed; everyone is refunded. The locktime is exactly the deadline so this transaction is unique too.
+    function timeoutVoid() {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        int deadline = int(master.slice(8, 12)) + SETTLE_TIMEOUT;
+        require(tx.time >= deadline, "too early to void");
+        require(tx.locktime == deadline, "locktime is exactly the deadline");
+        require(tx.inputs[0].sequenceNumber == TIMEOUT_SEQUENCE, "fixed sequence that enforces the locktime");
+        require(writeDollarSettlement(master, -1, 0, 0, sweepLockingBytecode, protocolLockingBytecode, sideLockingBytecode, dollarCategory), "void must be exact");
+    }
+}
+
+// Decides the outcome from the strike and close prices, then writes the settlement.
+function payOutDollar(
+    bytes master,
+    int strikePrice,
+    int closePrice,
+    bytes sweepLockingBytecode,
+    bytes protocolLockingBytecode,
+    bytes sideLockingBytecode,
+    bytes32 dollarCategory
+)
+    returns (bool)
+{
+    require(tx.locktime == 0, "settle carries no locktime");
+    require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+    int modeAndOutcomes = int(master.slice(7, 8));
+    int outcomes = modeAndOutcomes % NIBBLE;
+    int winner = -1;
+    // A tie, or a frozen feed (strike equals close), voids the round in either mode.
+    if (closePrice != strikePrice) {
+        if (modeAndOutcomes / NIBBLE == MODE_UPDOWN) {
+            winner = 1;
+            if (closePrice > strikePrice) {
+                winner = 0;
+            }
+        } else {
+            winner = 0;
+            int boundaries = 51 + 5 * outcomes;
+            for (int j = 0; j < outcomes - 1; j++) {
+                if (closePrice >= int(master.slice(boundaries + 4 * j, boundaries + 4 * j + 4))) {
+                    winner = winner + 1;
+                }
+            }
+        }
+    }
+    int winnerTotal = 0;
+    if (winner >= 0) {
+        winnerTotal = int(master.slice(51 + 5 * winner, 56 + 5 * winner));
+    }
+    return writeDollarSettlement(master, winner, winnerTotal, int(master.slice(42, 48)), sweepLockingBytecode, protocolLockingBytecode, sideLockingBytecode, dollarCategory);
+}
+
+// Writes the sweep record and pays the protocol and creator fees in dollars from the pot sidecar (each only if at least
+// MIN_DOLLAR_FEE; each fee output carries TOKEN_DUST satoshis from the master). No winning stake, or winner -1, means
+// void: no fees, every stake refunded. Outputs: the master, the pot sidecar, then the fees.
+function writeDollarSettlement(
+    bytes master,
+    int winner,
+    int winnerTotal,
+    int pot,
+    bytes sweepLockingBytecode,
+    bytes protocolLockingBytecode,
+    bytes sideLockingBytecode,
+    bytes32 dollarCategory
+) returns (bool) {
+    require(tx.inputs[0].tokenCategory.split(32)[1] == 0x01, "input 0 must be a mutable master");
+    require(master.slice(0, 1) == TAG_MASTER, "not a master commitment");
+    require(master.slice(5, 6) == STATE_LOCKED, "the round is not locked");
+    require(tx.version == TX_VERSION, "lifecycle transactions are version 2");
+    require(tx.inputs.length == 2, "settlement spends only the master and its pot sidecar");
+    require(isSide(1, sideLockingBytecode, dollarCategory), "input 1 must be the pot sidecar");
+    require(tx.inputs[1].sequenceNumber == tx.inputs[0].sequenceNumber, "the sidecar's sequence matches the master's");
+    int feeBps = int(master.slice(12, 14));
+    require(feeBps <= MAX_CREATOR_FEE_BPS, "creator fee above the cap");
+    bytes creatorPkh = master.slice(14, 34);
+    bytes entrants = master.slice(48, 51);
+
+    bool isVoid = winnerTotal == 0;
+    int protocolFee = 0;
+    int creatorFee = 0;
+    bytes next = TAG_MASTER + master.slice(1, 5) + toPaddedBytes(STATE_VOID, 1) + 0xff + toPaddedBytes(0, 6)
+        + toPaddedBytes(0, 6) + entrants + creatorPkh;
+    if (!isVoid) {
+        protocolFee = pot * PROTOCOL_FEE_BPS / BPS;
+        if (protocolFee < MIN_DOLLAR_FEE) {
+            protocolFee = 0;
+        }
+        creatorFee = pot * feeBps / BPS;
+        if (creatorFee < MIN_DOLLAR_FEE) {
+            creatorFee = 0;
+        }
+        next = TAG_MASTER + master.slice(1, 5) + toPaddedBytes(STATE_SETTLED, 1) + toPaddedBytes(winner, 1)
+            + toPaddedBytes(pot - protocolFee - creatorFee, 6) + toPaddedBytes(winnerTotal, 6) + entrants + creatorPkh;
+    }
+    int feeOutputs = 0;
+    if (protocolFee > 0) {
+        feeOutputs = 1;
+    }
+    if (creatorFee > 0) {
+        feeOutputs = feeOutputs + 1;
+    }
+    bytes category = tx.inputs[0].tokenCategory.split(32)[0];
+    require(tx.outputs[0].lockingBytecode == sweepLockingBytecode, "the round moves to the sweep contract");
+    require(tx.outputs[0].tokenCategory == category + 0x01, "the master keeps its mutable NFT");
+    require(tx.outputs[0].tokenAmount == 0, "no fungible tokens on the master");
+    require(tx.outputs[0].nftCommitment == next, "the settlement record must be exact");
+    require(
+        tx.outputs[0].value == tx.inputs[0].value - feeOutputs * TOKEN_DUST - SETTLE_FEE - SIDE_FEE,
+        "fixed settle fee, and the fee outputs' dust"
+    );
+    require(
+        requireSideOut(1, sideLockingBytecode, dollarCategory, tx.inputs[1].tokenAmount - protocolFee - creatorFee),
+        "the fees leave the pot sidecar"
+    );
+
+    int index = 2;
+    if (protocolFee > 0) {
+        require(tx.outputs[2].lockingBytecode == protocolLockingBytecode, "protocol fee output");
+        require(tx.outputs[2].tokenCategory == dollarCategory, "the protocol fee is in dollars");
+        require(tx.outputs[2].tokenAmount == protocolFee, "protocol fee amount");
+        require(tx.outputs[2].value == TOKEN_DUST, "a fee output carries the fixed dust");
+        index = 3;
+    }
+    if (creatorFee > 0) {
+        require(tx.outputs[index].lockingBytecode == new LockingBytecodeP2PKH(unsafe_bytes20(creatorPkh)), "creator fee output");
+        require(tx.outputs[index].tokenCategory == dollarCategory, "the creator fee is in dollars");
+        require(tx.outputs[index].tokenAmount == creatorFee, "creator fee amount");
+        require(tx.outputs[index].value == TOKEN_DUST, "a fee output carries the fixed dust");
+        index = index + 1;
+    }
+    require(tx.outputs.length == index, "no other outputs");
+    return true;
+}

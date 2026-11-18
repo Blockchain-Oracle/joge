@@ -1,0 +1,18 @@
+# Only the source an image needs: research, reference clones, caches, local state and secrets never enter a build.
+**/node_modules
+**/.next
+**/.turbo
+**/*.tsbuildinfo
+.git
+.claude
+context
+refs
+.firecrawl
+tmp.out
+packages/contracts/runs
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.wif
+**/.DS_Store

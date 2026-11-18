@@ -1,0 +1,192 @@
+/* The redo's moving pieces (D21), scoped by the classes themselves: Sensei's orb, agent faces, the kanji band. */
+/* Sensei's orb (Owarine/Masayume SenseiDock): 46 px, the ring drains to the next close, an idle pulse, teaser bubbles. */
+.nx-orb-wrap {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.nx-orb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px;
+  border-radius: 999px;
+  background: rgb(20 19 19 / 0.93);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 16px 40px -16px rgb(0 0 0 / 0.6),
+    inset 0 0 0 1px color-mix(in srgb, var(--vermilion) 35%, transparent);
+  transition:
+    gap 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    padding 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+[data-theme="light"] .nx-orb {
+  background: rgb(255 253 248 / 0.95);
+}
+.nx-orb:hover {
+  transform: translateY(-3px);
+  gap: 11px;
+  padding: 7px 7px 7px 18px;
+}
+.nx-orb-name {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width 320ms,
+    opacity 240ms;
+  font-family: var(--font-sora), sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+}
+.nx-orb:hover .nx-orb-name {
+  max-width: 108px;
+  opacity: 1;
+}
+.nx-orb-pulse {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid var(--vermilion);
+  opacity: 0;
+  pointer-events: none;
+  animation: nx-orb-idle 3.4s ease-out infinite;
+}
+.nx-orb[data-urgent] .nx-orb-pulse {
+  animation-duration: 1.4s;
+}
+@keyframes nx-orb-idle {
+  0% {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.22);
+  }
+}
+.nx-teaser {
+  position: relative;
+  margin-right: 5px;
+  border-radius: 15px 15px 4px 15px;
+  padding: 9px 14px;
+  font-family: var(--font-sora), sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  color: var(--vermilion-ink);
+  background: var(--vermilion);
+  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--vermilion) 70%, transparent);
+  transform-origin: bottom right;
+  animation: nx-teaser-pop 440ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.nx-teaser::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  bottom: -4px;
+  width: 9px;
+  height: 9px;
+  background: var(--vermilion);
+  border-radius: 0 0 3px 0;
+  transform: rotate(45deg);
+}
+@keyframes nx-teaser-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) translateY(8px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (max-width: 1023px) {
+  .nx-orb-wrap {
+    right: 14px;
+    bottom: 196px;
+  }
+}
+/* On a phone the dock carries Sensei's seal instead. */
+@media (max-width: 767px) {
+  .nx-orb-wrap {
+    display: none;
+  }
+}
+
+/* Agent faces (Owarine/Masayume AgentPortrait): a paper tile, a breath on the agent's own beat, a nod on hover. */
+.nx-face {
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--paper);
+}
+.nx-face svg {
+  width: 100%;
+  height: 100%;
+  animation: nx-breathe 3.6s ease-in-out infinite;
+  animation-delay: var(--phase, 0s);
+  transform-origin: 50% 80%;
+}
+.nx-face:hover svg {
+  animation: nx-nod 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes nx-breathe {
+  50% {
+    transform: translateY(-2.5%) scale(1.015);
+  }
+}
+@keyframes nx-nod {
+  40% {
+    transform: rotate(-6deg) translateY(2%);
+  }
+  70% {
+    transform: rotate(3deg);
+  }
+}
+
+/* The kanji as moving art (Agari's vertical 上がり): a vermilion band rises through 上 and falls through 下. */
+.nx-kanji-band {
+  background: linear-gradient(180deg, var(--ink) 0 40%, var(--vermilion) 50%, var(--ink) 60% 100%);
+  background-size: 100% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nx-band 5.2s ease-in-out infinite;
+}
+@keyframes nx-band {
+  0% {
+    background-position: 0 100%;
+  }
+  50% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-marquee,
+  .nx-orb-pulse,
+  .nx-teaser,
+  .nx-face svg,
+  .nx-kanji-band,
+  .nx-stamp,
+  .nx-ring[data-phase="last"] .nx-ring-time {
+    animation: none;
+  }
+}

@@ -1,0 +1,60 @@
+pragma cashscript ^0.14.0;
+
+import "./rules.cash";
+
+// Shared by Gate (lane rounds) and EventGate (events): a player's entry. Gate at input 0, the player's coins after.
+// The player's authority is their own coin (signed by their wallet); the ticket records where winnings go.
+function requireEntry(bytes32 category, bytes ticketLockingBytecode, int outcome, int stake, bytes20 payoutPkh) returns (bool) {
+    require(tx.inputs[0].tokenCategory == category + 0x02, "input 0 must be a gate");
+    bytes state = tx.inputs[0].nftCommitment;
+    require(state.slice(0, 1) == TAG_GATE, "not a gate commitment");
+
+    int classAndOutcomes = int(state.slice(6, 7));
+    int stakeClass = classAndOutcomes / NIBBLE;
+    int outcomes = classAndOutcomes % NIBBLE;
+    require(within(outcome, 0, outcomes), "no such outcome");
+    require(within(stake, MIN_STAKE, maxStake(stakeClass) + 1), "stake outside this round's bounds");
+
+    // New totals: one more entrant, the stake added to its outcome.
+    int start = 10 + outcome * 5;
+    int total = int(state.slice(start, start + 5));
+    int entrants = int(state.slice(7, 10));
+    bytes next = state.slice(0, 7) + toPaddedBytes(entrants + 1, 3) + state.slice(10, start)
+        + toPaddedBytes(total + stake, 5) + state.slice(start + 5, state.length);
+
+    require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode, "gate must come back to itself");
+    require(tx.outputs[0].tokenCategory == category + 0x02, "gate keeps its minting NFT");
+    require(tx.outputs[0].tokenAmount == 0, "no fungible tokens");
+    require(tx.outputs[0].nftCommitment == next, "gate totals must add this stake");
+    require(tx.outputs[0].value == tx.inputs[0].value + stake, "gate must hold the stake");
+    require(tx.outputs[0].value <= gateCap(stakeClass), "gate is full");
+
+    bytes ticket = TAG_TICKET + state.slice(1, 6) + toPaddedBytes(outcome, 1) + toPaddedBytes(stake, 5) + payoutPkh;
+    require(tx.outputs[1].lockingBytecode == ticketLockingBytecode, "output 1 must be the ticket");
+    require(tx.outputs[1].tokenCategory == category, "ticket is an immutable NFT of the round's category");
+    require(tx.outputs[1].tokenAmount == 0, "no fungible tokens");
+    require(tx.outputs[1].nftCommitment == ticket, "ticket must record round, gate, outcome, stake and payee");
+    require(tx.outputs[1].value == TICKET_DUST, "ticket carries the fixed dust");
+
+    // Nothing else may carry tokens in or out (stops smuggling another ticket or leaking minting K).
+    require(tx.outputs.length <= 3, "at most gate, ticket and change");
+    bool changeIsPlain = true;
+    if (tx.outputs.length == 3) {
+        changeIsPlain = tx.outputs[2].tokenCategory == 0x;
+    }
+    for (int i = 1; i < tx.inputs.length; i++) {
+        require(tx.inputs[i].tokenCategory == 0x, "funding inputs carry no tokens");
+    }
+    require(changeIsPlain, "change carries no tokens");
+    return true;
+}
+
+// The round's lock spends every gate together with its master; the master's lock function checks everything else.
+function requireMerge(bytes32 category, bytes own) returns (bool) {
+    bytes master = tx.inputs[0].nftCommitment;
+    require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be the round master");
+    require(master.slice(0, 1) == TAG_MASTER, "not a master commitment");
+    require(master.slice(5, 6) == STATE_OPEN, "the round is not open");
+    require(master.slice(1, 5) == own.slice(1, 5), "the master belongs to another round");
+    return true;
+}

@@ -1,0 +1,23 @@
+pragma cashscript ^0.14.0;
+
+import "./rules.cash";
+
+// A player's entry (an immutable NFT of category K, 32 bytes):
+//   [0] tag 0x03 · [1,5) round id · [5] gate index · [6] outcome · [7,12) stake · [12,32) payout pubkey hash
+// It moves only together with its own round master once settled or void (payout or refund), or with its own gate
+// (an event's exit before lock). Those functions account for every input, so nobody can sweep it elsewhere.
+contract Ticket(bytes32 category) {
+    function spend() {
+        bytes own = tx.inputs[this.activeInputIndex].nftCommitment;
+        bytes first = tx.inputs[0].nftCommitment;
+        require(first.slice(1, 5) == own.slice(1, 5), "input 0 belongs to another round");
+
+        bool byMaster = tx.inputs[0].tokenCategory == category + 0x01
+            && first.slice(0, 1) == TAG_MASTER
+            && int(first.slice(5, 6)) >= STATE_SETTLED;
+        bool byGate = tx.inputs[0].tokenCategory == category + 0x02
+            && first.slice(0, 1) == TAG_GATE
+            && first.slice(5, 6) == own.slice(5, 6);
+        require(byMaster || byGate, "a ticket moves only with its settled master or its own gate");
+    }
+}

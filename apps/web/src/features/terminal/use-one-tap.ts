@@ -1,0 +1,179 @@
+"use client";
+
+import type { RoundCard } from "@joge/db";
+import { MAX_STAKE, MIN_STAKE, type StakeClass } from "@joge/sdk";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState, useSyncExternalStore } from "react";
+import { useSpot } from "@/features/chart/use-spot";
+import { cue, toast } from "@/kit";
+import { limitProblem, useLimits } from "../limits/limits.ts";
+import { sats, usd } from "../rounds/format.ts";
+import { OPEN_MORE_EVENT } from "../shell/places.ts";
+import { useWorld } from "../shell/world.tsx";
+import { buildEntry, ENTRY_OVERHEAD, lostRace, sendEntry, txidOf } from "../ticket/entry.ts";
+import { recordEntry, updateEntry, useJournal } from "../ticket/journal.ts";
+import { estimatePayout } from "../ticket/payout.ts";
+import { useWalletCoins } from "../wallet/coins.ts";
+import { useWallet } from "../wallet/wallet-context.tsx";
+import { CLOSE_LEAD_SECONDS, STAKE_LADDER_USD, STAKE_SHARE } from "./constants.ts";
+
+const SATS_PER_BCH = 100_000_000;
+const SECOND_MS = 1_000;
+const STAKE_KEY = "joge:stake-usd";
+const LIMIT_WHEN = new Intl.DateTimeFormat("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
+
+/* The stake is a standing setting (Kakure, Owarine, Mitoshi): chosen once in the stack, used by every tap. */
+const listeners = new Set<() => void>();
+function chosenStake(): number | null {
+  try {
+    const raw = localStorage.getItem(STAKE_KEY);
+    return raw ? Number(raw) : null;
+  } catch {
+    return null;
+  }
+}
+export function setChosenStake(dollars: number) {
+  try {
+    localStorage.setItem(STAKE_KEY, String(dollars));
+  } catch {
+    // It still holds for this page.
+  }
+  for (const listener of listeners) listener();
+}
+const useChosenStake = () =>
+  useSyncExternalStore(
+    (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    chosenStake,
+    () => null,
+  );
+
+export type Side = 0 | 1;
+
+/**
+ * One tap from intent to the wallet (Abu's products: Kakure's preset stake, Owarine's one-tap terminal): the stake is
+ * a standing choice (5 % of the balance snapped to a ladder until the player picks one), Up or Down builds the entry
+ * from live chain reads and asks the wallet to sign it. Whatever blocks the tap is named on the button itself.
+ */
+export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stakeOverride?: number | null) {
+  const network = useWorld();
+  const wallet = useWallet();
+  const coins = useWalletCoins();
+  const client = useQueryClient();
+  const limits = useLimits();
+  const journal = useJournal();
+  const bchUsd = useSpot("BCH") ?? undefined;
+  const chosen = useChosenStake();
+  const [busy, setBusy] = useState<Side | null>(null);
+
+  const cap = MAX_STAKE[stakeClass];
+  const ladder = STAKE_LADDER_USD.filter((dollars) => !bchUsd || (dollars / bchUsd) * SATS_PER_BCH <= Number(cap));
+  const balanceUsd = bchUsd && coins.data ? (Number(coins.balance) / SATS_PER_BCH) * bchUsd : null;
+  const preset =
+    balanceUsd === null
+      ? (ladder[1] ?? ladder[0] ?? 0)
+      : (ladder.filter((dollars) => dollars <= balanceUsd * STAKE_SHARE).at(-1) ?? ladder[0] ?? 0);
+  const stakeUsd = chosen && ladder.includes(chosen) ? chosen : preset;
+  // An agent's proposal carries its own stake (sats); everything else uses the standing choice.
+  const stake = stakeOverride
+    ? BigInt(Math.min(Number(cap), Math.max(Number(MIN_STAKE), stakeOverride)))
+    : bchUsd
+      ? BigInt(Math.max(Number(MIN_STAKE), Math.round((stakeUsd / bchUsd) * SATS_PER_BCH)))
+      : MIN_STAKE;
+  const pays = (side: Side) => {
+    if (!round) return null;
+    const { pays: back } = estimatePayout(round, side, stake);
+    return Number(back) / Number(stake);
+  };
+
+  const now = Math.floor(Date.now() / SECOND_MS);
+  const limited = limitProblem({
+    limits,
+    journal,
+    network,
+    stakeSats: Number(stake),
+    stakeUsd: undefined,
+    bchUsd,
+    nowMs: now * SECOND_MS,
+    formatTime: (ms) => LIMIT_WHEN.format(ms),
+  });
+
+  let blocker: { label: string; onClick: () => void } | null = null;
+  if (limited) {
+    blocker = {
+      label: limited,
+      // Your own limit: the tap opens More, where the limits are.
+      onClick: () => window.dispatchEvent(new Event(OPEN_MORE_EVENT)),
+    };
+  } else if (!round || round.lockTime - now < CLOSE_LEAD_SECONDS) {
+    blocker = { label: "Next round opening", onClick: () => undefined };
+  } else if (wallet.state !== "connected") blocker = { label: "Pair a wallet", onClick: wallet.openConnect };
+  else if (coins.data && coins.balance < stake + ENTRY_OVERHEAD) {
+    blocker = {
+      label: "Fund your wallet",
+      onClick: () => {
+        void navigator.clipboard.writeText(wallet.payout?.address ?? "");
+        toast({ tone: "info", title: "Address copied", body: `Send at least ${sats(Number(stake + ENTRY_OVERHEAD))}` });
+      },
+    };
+  }
+
+  const enter = async (side: Side): Promise<boolean> => {
+    const payout = wallet.payout;
+    const change = wallet.keys.find((key) => key.path === "change" && key.index === 0) ?? payout;
+    if (blocker || !round || !payout || !change || !coins.data || busy !== null) return false;
+    setBusy(side);
+    cue("tap");
+    const entry = recordEntry({
+      network,
+      roundId: round.roundId,
+      outcome: side,
+      stake: stake.toString(),
+      usd: stakeUsd,
+    });
+    try {
+      const request = await buildEntry({
+        network,
+        roundId: round.roundId,
+        eventRound: false,
+        outcome: side,
+        stake,
+        coins: coins.data,
+        payout,
+        change,
+        prompt: `Jōge: ${side === 0 ? "Up" : "Down"} ${usd(stakeUsd)}, round #${round.roundId}`,
+      });
+      const signed = await wallet.sign(request.transaction, request.inputPaths);
+      updateEntry(entry.id, { state: "signed", txid: txidOf(signed) });
+      await sendEntry(network, signed);
+      updateEntry(entry.id, { state: "sent" });
+      cue("send");
+      toast({
+        tone: "up",
+        title: `${side === 0 ? "上 Up" : "下 Down"} ${usd(stakeUsd)}`,
+        body: `Round #${round.roundId}`,
+        href: `/r/${round.roundId}`,
+      });
+      void client.invalidateQueries({ queryKey: ["coins", network] });
+      void client.invalidateQueries({ queryKey: ["lobby", network] });
+      return true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const raced = lostRace(message);
+      updateEntry(entry.id, { state: raced ? "lost" : "failed", error: message });
+      cue("error");
+      toast(
+        raced
+          ? { tone: "info", title: "Someone entered at the same moment", body: "Tap again" }
+          : { tone: "down", title: "Not entered", body: message },
+      );
+      return false;
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return { enter, busy, blocker, stake, stakeUsd, ladder, pays };
+}

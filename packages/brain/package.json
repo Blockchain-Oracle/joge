@@ -1,0 +1,25 @@
+{
+  "name": "@joge/brain",
+  "private": true,
+  "type": "module",
+  "description": "J\u014dge's model layer: which model answers (resolved from configuration), Sensei's prompt, and the agents' read. Server only; the model never signs or sends.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./postures": "./src/postures.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test 'src/**/*.test.ts'"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "catalog:",
+    "@ai-sdk/openai": "catalog:",
+    "@joge/sdk": "workspace:*",
+    "ai": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

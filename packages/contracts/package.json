@@ -1,0 +1,35 @@
+{
+  "name": "@joge/contracts",
+  "private": true,
+  "type": "module",
+  "description": "J\u014dge's covenants: lane threads, factory, gates, tickets and the round master, written for the S00 language bake-off in CashScript and SolidCash.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./browser": "./src/browser.ts"
+  },
+  "scripts": {
+    "build": "node scripts/compile.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test 'test/**/*.test.ts'",
+    "fixtures": "node scripts/fetch-fixtures.ts"
+  },
+  "dependencies": {
+    "@bitauth/libauth": "catalog:",
+    "@electrum-cash/network": "catalog:",
+    "@joge/sdk": "workspace:*",
+    "@rpckit/core": "catalog:",
+    "@rpckit/fallback": "catalog:",
+    "@rpckit/websocket": "catalog:",
+    "@solidcash/solidcash": "catalog:",
+    "cashscript": "catalog:"
+  },
+  "devDependencies": {
+    "@solidcash/solidc": "catalog:",
+    "@types/node": "catalog:",
+    "@wizardconnect/core": "catalog:",
+    "@wizardconnect/dapp": "catalog:",
+    "cashc": "catalog:",
+    "typescript": "catalog:",
+    "uqr": "catalog:"
+  }
+}

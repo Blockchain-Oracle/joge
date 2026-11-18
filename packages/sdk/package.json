@@ -1,0 +1,20 @@
+{
+  "name": "@joge/sdk",
+  "private": true,
+  "type": "module",
+  "description": "Jōge's shared chain code: oracle message codec and pair finder, commitment layouts, payout maths and transaction builders. Runs in the browser and in the engine.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test 'src/**/*.test.ts'"
+  },
+  "dependencies": {
+    "@bitauth/libauth": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

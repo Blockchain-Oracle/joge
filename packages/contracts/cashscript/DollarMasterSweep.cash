@@ -1,0 +1,94 @@
+pragma cashscript ^0.14.0;
+
+import "./dollar.cash";
+
+// A settled or void dollar event paying out: MasterSweep, with the dollars in the pot sidecar at input 1. Commitment
+// as MasterSweep's (the pot and winning total are in dollar units).
+//
+// Sweep: anyone, in batches. Input 0 the master, input 1 the pot sidecar, inputs 2.. tickets of this round; output i
+// pays the owner of the ticket at input i: winner floor(stake × pot ÷ winning total) dollars, void the stake back in
+// dollars, loser nothing in dollars; every ticket also gets its dust back less the per-ticket fee. The batch that
+// takes the last ticket returns the master's satoshis (output 0) and what is left in the sidecar (output 1: the seeds
+// and any rounding) to the round's creator.
+contract DollarMasterSweep(bytes32 category, bytes ticketLockingBytecode, bytes sideLockingBytecode, bytes32 dollarCategory) {
+    function sweep(bytes padding) {
+        bytes master = tx.inputs[0].nftCommitment;
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master");
+        require(master.slice(0, 1) == TAG_MASTER, "not a master commitment");
+        int state = int(master.slice(5, 6));
+        require(state == STATE_SETTLED || state == STATE_VOID, "the round has not settled");
+        require(tx.version == TX_VERSION, "lifecycle transactions are version 2");
+        require(tx.locktime == 0, "sweep carries no locktime");
+        require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        require(isSide(1, sideLockingBytecode, dollarCategory), "input 1 must be the pot sidecar");
+        require(tx.inputs[1].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+
+        bytes roundId = master.slice(1, 5);
+        int winner = int(master.slice(6, 7));
+        int pot = int(master.slice(7, 13));
+        int winnerTotal = int(master.slice(13, 19));
+        int remaining = int(master.slice(19, 22));
+        int tickets = tx.inputs.length - 2;
+        require(tickets <= remaining, "more tickets than the round has left");
+        require(tickets > 0, "a sweep takes at least one ticket");
+        require(tx.outputs.length == tx.inputs.length, "one payout per ticket, plus the master and the sidecar");
+        require(padding == toPaddedBytes(0, tickets * SWEEP_PAD_PER_TICKET), "padding is fixed per ticket");
+
+        int ticketValue = 0;
+        int paidSats = 0;
+        int paidDollars = 0;
+        for (int i = 2; i < tx.inputs.length; i++) {
+            bytes ticket = tx.inputs[i].nftCommitment;
+            require(tx.inputs[i].tokenCategory == category, "input must be a ticket of this category");
+            require(tx.inputs[i].lockingBytecode == ticketLockingBytecode, "input must sit at the ticket contract");
+            require(tx.inputs[i].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+            require(ticket.slice(0, 1) == TAG_TICKET, "not a ticket commitment");
+            require(ticket.slice(1, 5) == roundId, "ticket belongs to another round");
+            int stake = int(ticket.slice(7, 12));
+            int share = 0;
+            if (state == STATE_VOID) {
+                share = stake;
+            } else if (int(ticket.slice(6, 7)) == winner) {
+                share = stake * pot / winnerTotal;
+            }
+            int dust = tx.inputs[i].value - SWEEP_FEE_PER_TICKET;
+            require(
+                tx.outputs[i].lockingBytecode == new LockingBytecodeP2PKH(unsafe_bytes20(ticket.slice(12, 32))),
+                "output pays the ticket's owner"
+            );
+            require(tx.outputs[i].value == dust, "the ticket's dust comes back less its share of the fee");
+            if (share > 0) {
+                require(tx.outputs[i].tokenCategory == dollarCategory, "the payout is in dollars");
+                require(tx.outputs[i].tokenAmount == share, "payout amount");
+            } else {
+                require(tx.outputs[i].tokenCategory == 0x, "a miss carries no tokens");
+            }
+            ticketValue = ticketValue + tx.inputs[i].value;
+            paidSats = paidSats + dust;
+            paidDollars = paidDollars + share;
+        }
+
+        int rest = tx.inputs[0].value + ticketValue - paidSats - SWEEP_FEE_BASE - SIDE_FEE - tickets * SWEEP_FEE_PER_TICKET;
+        int dollarsLeft = tx.inputs[1].tokenAmount - paidDollars;
+        int left = remaining - tickets;
+        require(tx.outputs[0].value == rest, "the master keeps exactly what is left");
+        if (left == 0) {
+            bytes creator = new LockingBytecodeP2PKH(unsafe_bytes20(master.slice(22, 42)));
+            require(tx.outputs[0].lockingBytecode == creator, "after the last ticket the master's satoshis go to the creator");
+            require(tx.outputs[0].tokenCategory == 0x, "the master's NFT is burned");
+            require(tx.outputs[1].lockingBytecode == creator, "and what is left in the sidecar too");
+            require(tx.outputs[1].tokenCategory == dollarCategory, "in dollars");
+            require(tx.outputs[1].tokenAmount == dollarsLeft, "every dollar left");
+            require(tx.outputs[1].value == tx.inputs[1].value, "with the sidecar's dust");
+        } else {
+            require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode, "the master carries on");
+            require(tx.outputs[0].tokenCategory == category + 0x01, "the master keeps its mutable NFT");
+            require(tx.outputs[0].tokenAmount == 0, "no fungible tokens on the master");
+            require(
+                tx.outputs[0].nftCommitment == master.slice(0, 19) + toPaddedBytes(left, 3) + master.slice(22, 42),
+                "only the tickets left change"
+            );
+            require(requireSideOut(1, sideLockingBytecode, dollarCategory, dollarsLeft), "the sidecar keeps the rest");
+        }
+    }
+}

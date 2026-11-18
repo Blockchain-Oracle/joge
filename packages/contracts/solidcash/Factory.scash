@@ -1,0 +1,190 @@
+pragma solidcash ^0.51.0;
+
+import "./opening.scash";
+
+// Custom rounds and events ("post your own countdown"): a minting NFT of category K that opens any round whose
+// parameters pass every rule below. Commitment: [0] tag 0x04 · [1] thread byte · [2,5) counter.
+// Several factory threads exist so creators rarely race for one coin.
+
+// The oracle feeds' committed end dates (General Protocols metadata, 2026-11-16): BTC, ETH and gold to 2027-01-15,
+// USD/BCH to 2028-04-15. A round must close before its feed's commitment ends.
+bigint constant FEED_END_SHORT = 1800014400;
+bigint constant FEED_END_BCH = 1839412800;
+
+// Dollar events (mirrors cashscript/dollar.cash): the stake class, and the sidecar every dollar gate is made with.
+bigint constant CLASS_DOLLAR = 3;
+bigint constant SIDE_SEED = 1;
+bigint constant TOKEN_DUST = 1000;
+
+contract Factory(
+    bytes category,
+    bytes masterLockingBytecode,
+    bytes gateLockingBytecode,
+    bytes eventGateLockingBytecode,
+    bytes protocolLockingBytecode,
+    pubkey clockOracle,
+    bytes dollarMasterLockingBytecode,
+    bytes dollarGateLockingBytecode,
+    bytes sideLockingBytecode,
+    bytes dollarCategory
+) {
+    function create(
+        bigint asset,
+        bigint mode,
+        bigint outcomes,
+        bigint gates,
+        bigint stakeClass,
+        bigint lockTime,
+        bigint closeTime,
+        bigint feeBps,
+        bytes20 creatorPkh,
+        bigint minPot,
+        bigint minEntrants,
+        bytes boundaries,
+        bigint budget,
+        bytes clockMessage,
+        datasig clockSignature
+    ) {
+        require(this.activeInputIndex == 0, "the factory thread must be input 0");
+        require(tx.inputs[0].tokenCategory == category + 0x02, "input 0 must be a factory thread of this category");
+        bytes thread = tx.inputs[0].nftCommitment;
+        require(thread.slice(0, 1) == TAG_FACTORY, "not a factory thread");
+
+        // What the round is.
+        require(within(asset, ASSET_BTC, ASSET_GOLD + 1), "unknown asset");
+        require(within(mode, MODE_UPDOWN, MODE_RANGES + 1), "unknown mode");
+        require(within(outcomes, 2, MAX_OUTCOMES + 1), "two to six outcomes");
+        require(mode == MODE_RANGES || outcomes == 2, "up/down has two outcomes");
+        require(within(gates, 1, MAX_GATES + 1), "one to four gates");
+        require(within(stakeClass, CLASS_SHORT, CLASS_DOLLAR + 1), "unknown stake class");
+        require(feeBps <= MAX_CREATOR_FEE_BPS, "creator fee above 3 %");
+        require(budget >= MIN_BUDGET, "the budget must cover the round's lifecycle fees");
+        require(minPot >= 0 && minEntrants >= 0, "minimums are not negative");
+
+        // When it runs: long enough to mean something, short rounds keep short-lane caps, gold needs an hour.
+        bigint length = closeTime - lockTime;
+        require(within(length, MIN_ROUND_SECONDS, MAX_ROUND_SECONDS + 1), "a round lasts 3 minutes to 30 days");
+        require(length >= HOUR || stakeClass == CLASS_SHORT, "rounds under an hour keep the short-lane caps");
+        require(asset != ASSET_GOLD || length >= HOUR, "gold rounds last at least an hour");
+        bigint feedEnd = FEED_END_SHORT;
+        if (asset == ASSET_BCH) {
+            feedEnd = FEED_END_BCH;
+        }
+        require(closeTime <= feedEnd, "the price feed is not committed that far");
+        require(requireClockAtLeast(clockMessage, clockSignature, clockOracle, lockTime - MAX_EVENT_ADVANCE), "clock");
+
+        // Price ranges: one boundary fewer than outcomes, strictly increasing.
+        bigint boundaryCount = 0;
+        if (mode == MODE_RANGES) {
+            boundaryCount = outcomes - 1;
+        }
+        require(boundaries.length == 4 * boundaryCount, "one boundary between each pair of ranges");
+        bigint previous = 0;
+        for (bigint j = 0; j < boundaryCount; j++) {
+            bigint boundary = bigint(boundaries.slice(4 * j, 4 * j + 4));
+            require(boundary > previous, "boundaries rise strictly");
+            previous = boundary;
+        }
+
+        bigint counter = bigint(thread.slice(2, 5));
+        bytes roundId = thread.slice(1, 2) + toPaddedBytes(counter, 3);
+        bytes record = openRecord(
+            roundId,
+            asset,
+            mode * NIBBLE + outcomes,
+            gates,
+            lockTime,
+            closeTime,
+            feeBps,
+            bytes(creatorPkh),
+            minPot,
+            minEntrants,
+            boundaries
+        );
+        bytes gateBytecode = gateLockingBytecode;
+        if (stakeClass == CLASS_EVENT) {
+            gateBytecode = eventGateLockingBytecode;
+        }
+
+        require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode, "the factory thread comes back to itself");
+        require(tx.outputs[0].tokenCategory == category + 0x02, "the factory keeps its minting NFT");
+        require(tx.outputs[0].tokenAmount == 0, "no fungible tokens");
+        require(tx.outputs[0].nftCommitment == thread.slice(0, 2) + toPaddedBytes(counter + 1, 3), "the counter moves on");
+        require(tx.outputs[0].value == tx.inputs[0].value, "the factory keeps its value");
+        if (stakeClass == CLASS_DOLLAR) {
+            // A dollar event: its master and gates sit at the dollar contracts, each gate with a seeded sidecar.
+            bigint dollarFeeIndex = 2 + 2 * gates;
+            require(tx.outputs[dollarFeeIndex].lockingBytecode == protocolLockingBytecode, "the creation fee goes to the protocol");
+            require(tx.outputs[dollarFeeIndex].value == CREATION_FEE, "fixed creation fee");
+            require(
+                requireDollarRoundOutputs(
+                    category,
+                    dollarMasterLockingBytecode,
+                    dollarGateLockingBytecode,
+                    sideLockingBytecode,
+                    dollarCategory,
+                    record,
+                    budget,
+                    roundId,
+                    gates,
+                    outcomes
+                ),
+                "the dollar event must open exactly"
+            );
+        } else {
+            bigint feeIndex = 2 + gates;
+            require(tx.outputs[feeIndex].lockingBytecode == protocolLockingBytecode, "the creation fee goes to the protocol");
+            require(tx.outputs[feeIndex].value == CREATION_FEE, "fixed creation fee");
+            require(
+                requireRoundOutputs(category, masterLockingBytecode, gateBytecode, record, budget, roundId, gates, stakeClass, outcomes),
+                "the round must open exactly"
+            );
+        }
+    }
+}
+
+// Outputs of a dollar event's opening: 1 the master, 2 .. 1 + G the dollar gates, 2 + G .. 1 + 2G their sidecars
+// (each seeded with SIDE_SEED of the dollar token from the creator), 2 + 2G the creation fee (checked by the caller),
+// then change: satoshis, or the creator's leftover dollars, but never another sidecar and never K.
+function requireDollarRoundOutputs(
+    bytes category,
+    bytes masterLockingBytecode,
+    bytes gateLockingBytecode,
+    bytes sideLockingBytecode,
+    bytes dollarCategory,
+    bytes record,
+    bigint budget,
+    bytes roundId,
+    bigint gates,
+    bigint outcomes
+) view returns (bool) {
+    require(tx.outputs[1].lockingBytecode == masterLockingBytecode, "output 1 opens the event's master");
+    require(tx.outputs[1].tokenCategory == category + 0x01, "the master is a mutable NFT of the category");
+    require(tx.outputs[1].tokenAmount == 0, "no fungible tokens");
+    require(tx.outputs[1].nftCommitment == record, "the open record must be exact");
+    require(tx.outputs[1].value == budget, "the master holds the round's budget");
+    for (bigint i = 0; i < gates; i++) {
+        bigint index = 2 + i;
+        require(tx.outputs[index].lockingBytecode == gateLockingBytecode, "gates sit at the dollar gate contract");
+        require(tx.outputs[index].tokenCategory == category + 0x02, "a gate is a minting NFT of the category");
+        require(tx.outputs[index].tokenAmount == 0, "no fungible tokens");
+        require(tx.outputs[index].nftCommitment == gateRecord(roundId, i, CLASS_DOLLAR, outcomes), "the gate record must be exact");
+        require(tx.outputs[index].value == GATE_DUST, "a gate starts with its dust");
+        bigint side = 2 + gates + i;
+        require(tx.outputs[side].lockingBytecode == sideLockingBytecode, "each gate gets a sidecar");
+        require(tx.outputs[side].tokenCategory == dollarCategory, "a sidecar holds only the dollar token");
+        require(tx.outputs[side].tokenAmount == SIDE_SEED, "a sidecar starts with its seed");
+        require(tx.outputs[side].value == TOKEN_DUST, "a sidecar carries the fixed dust");
+    }
+    for (bigint i = 3 + 2 * gates; i < tx.outputs.length; i++) {
+        bytes change = tx.outputs[i].tokenCategory;
+        require(change == 0x || change == dollarCategory, "change carries satoshis or dollars only");
+        require(tx.outputs[i].lockingBytecode != sideLockingBytecode, "no extra sidecar");
+    }
+    for (bigint i = 1; i < tx.inputs.length; i++) {
+        bytes funding = tx.inputs[i].tokenCategory;
+        require(funding == 0x || funding == dollarCategory, "funding carries satoshis or dollars only");
+        require(tx.inputs[i].lockingBytecode != sideLockingBytecode, "no sidecar may fund an opening");
+    }
+    return true;
+}

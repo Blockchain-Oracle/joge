@@ -1,0 +1,33 @@
+# Research, reference clones and agent/tool state stay out of git
+context/
+.firecrawl/
+refs/
+.claude/
+tmp.out
+
+# OS / editors
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Node / builds
+node_modules/
+.pnpm-store/
+.turbo/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets and local state (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.wif
+
+# Proof runs write their measurements here; the summary table is copied into docs by hand
+packages/contracts/runs/

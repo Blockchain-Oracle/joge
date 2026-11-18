@@ -1,0 +1,95 @@
+{
+  "network": "chipnet",
+  "category": "31858a2c7f9a23b9a6d4ab2eeb458df5f2bb6e2bd31e40d93c88560cbce39029",
+  "genesisTxid": "0d5eb3f49608949ac25c2999beec9cc778ee4906ae78b5f0d67ed438b611b81c",
+  "createdAt": "2026-11-17T09:06:15.000Z",
+  "protocolLockingBytecode": "76a9148976a7ddeb5051925733bf0d68a2efa2c7e5585488ac",
+  "dollarCategory": "bcd6c6c5fe8e25f674ba2cd6121d6a97428f1d33484c3e1fc0f8f59d8e7da641",
+  "lockingBytecode": {
+    "gate": "aa200d5575f13604a1d49bf65cf5e00e0d34444feb10ee53d9a6e4cbefc647a8b27a87",
+    "eventGate": "aa208ce84a11b39cf6e2f2f319fdb4d7a559a123aa2716bfad5ac08b2be6a7d4f1c887",
+    "ticket": "202990e3bc0c56883cd9401ed32b6ebbf2f58d45eb2eabd4a6b9239a7f2c8a8531c0cf00cf76557f75517f775279557f75517f778800ce5379517e8778517f7551879a78567f75557f778152a29a00ce547a527e875279517f7552879a7b567f75557f77537a567f75557f77879a9b",
+    "masterOpen": "aa20039324b0685948c5029b0429f6d4b3b1dbf49bcb1bc0f35a0a1a895d9193537f87",
+    "masterLocked": "aa20de9b572635e07b0ed158c37d639802e956406792df2714b074b06201cae6df9b87",
+    "masterSweep": "aa20fa5dac9cb829ea26514ad88eb17c355cc10ff1e0e132b0b278d5ce560e41246687",
+    "laneThread": "aa20321479f9b22262f71ecca6d38243be4505fef9bd5e5c9045490414b69009c19687",
+    "factory": "aa2017213650799bfc2220a9ec79e3c5267b09983d025439440ea2f2b7cc61e6cec087",
+    "dollarGate": "aa201a1941428624e8a7769ba7d1f1a0154fd21027161d8f861d7aab4050e21bcb7087",
+    "dollarSide": "aa2032afab6c4ab910bf1d0a1a7aed10e7bcc9ffb12fa4b20e09767067eb9267ae5d87",
+    "dollarMasterOpen": "aa2050a95f0e2d26e2246842df3371e8cb11ae8b62593d579cb44d7ad0df73767edb87",
+    "dollarMasterLocked": "aa20c8cff45b925d9826b70a37a1ed3e2322df1925c969148134cdb65337620ed78f87",
+    "dollarMasterSweep": "aa2058df0695577e2e06c4e17f340961a5b385997327e25fc61231e61275bd7fde4c87"
+  },
+  "factoryThreads": [
+    1,
+    2,
+    3
+  ],
+  "lanes": [
+    {
+      "thread": 16,
+      "asset": "BTC",
+      "seconds": 180
+    },
+    {
+      "thread": 17,
+      "asset": "BTC",
+      "seconds": 300
+    },
+    {
+      "thread": 18,
+      "asset": "BTC",
+      "seconds": 900
+    },
+    {
+      "thread": 19,
+      "asset": "ETH",
+      "seconds": 180
+    },
+    {
+      "thread": 20,
+      "asset": "ETH",
+      "seconds": 300
+    },
+    {
+      "thread": 21,
+      "asset": "ETH",
+      "seconds": 900
+    },
+    {
+      "thread": 22,
+      "asset": "BCH",
+      "seconds": 180
+    },
+    {
+      "thread": 23,
+      "asset": "BCH",
+      "seconds": 300
+    },
+    {
+      "thread": 24,
+      "asset": "BCH",
+      "seconds": 900
+    },
+    {
+      "thread": 25,
+      "asset": "BTC",
+      "seconds": 3600
+    },
+    {
+      "thread": 26,
+      "asset": "ETH",
+      "seconds": 3600
+    },
+    {
+      "thread": 27,
+      "asset": "BCH",
+      "seconds": 3600
+    },
+    {
+      "thread": 28,
+      "asset": "GOLD",
+      "seconds": 3600
+    }
+  ]
+}

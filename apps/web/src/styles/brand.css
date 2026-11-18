@@ -1,0 +1,42 @@
+/* The mark (brand/geometry.ts) moves like a price leaving the line: 上 lifts and 下 drops. */
+.jg-mark-up,
+.jg-mark-down {
+  transition: transform 260ms var(--ease-out);
+}
+
+/* Once as the landing opens: 上 rises into place, 下 falls into place. */
+.jg-mark-in .jg-mark-up {
+  animation: jg-mark-rise 700ms var(--ease-out) both;
+}
+.jg-mark-in .jg-mark-down {
+  animation: jg-mark-fall 700ms var(--ease-out) both;
+}
+@keyframes jg-mark-rise {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+}
+@keyframes jg-mark-fall {
+  from {
+    transform: translateY(-14px);
+    opacity: 0;
+  }
+}
+
+/* Hovering the link that holds it. */
+a:hover .jg-mark .jg-mark-up,
+a:focus-visible .jg-mark .jg-mark-up {
+  transform: translateY(-3px);
+}
+a:hover .jg-mark .jg-mark-down,
+a:focus-visible .jg-mark .jg-mark-down {
+  transform: translateY(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jg-mark-in .jg-mark-up,
+  .jg-mark-in .jg-mark-down {
+    animation: none;
+  }
+}

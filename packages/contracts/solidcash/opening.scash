@@ -1,0 +1,86 @@
+pragma solidcash ^0.51.0;
+
+import "./rules.scash";
+import "./oracle.scash";
+
+// Shared by the lane threads and the factory (both mint category K): constants and the checks that every newly
+// opened round is exactly what the player contracts expect. Mirrors packages/sdk/src/round/constants.ts.
+
+bytes1 constant TAG_FACTORY = 0x04;
+bytes1 constant TAG_LANE = 0x05;
+bigint constant LANE_GATES = 2;
+bigint constant LANE_BUDGET = 20000;
+bigint constant LANE_OPENER_FEE_BPS = 50;
+bigint constant HOUR = 3600;
+bigint constant MIN_ROUND_SECONDS = 180;
+bigint constant MAX_ROUND_SECONDS = 2592000;
+bigint constant MAX_EVENT_ADVANCE = 2592000;
+bigint constant MIN_BUDGET = 10000;
+bigint constant CREATION_FEE = 2000;
+bigint constant MAX_GATES = 4;
+
+// The open-round record MasterOpen reads (see cashscript/MasterOpen.cash).
+function openRecord(
+    bytes roundId,
+    bigint asset,
+    bigint modeAndOutcomes,
+    bigint gates,
+    bigint lockTime,
+    bigint closeTime,
+    bigint feeBps,
+    bytes creatorPkh,
+    bigint minPot,
+    bigint minEntrants,
+    bytes boundaries
+) pure returns (bytes) {
+    return TAG_MASTER + roundId + STATE_OPEN + toPaddedBytes(asset, 1) + toPaddedBytes(modeAndOutcomes, 1)
+        + toPaddedBytes(gates, 1) + toPaddedBytes(lockTime, 4) + toPaddedBytes(closeTime, 4) + toPaddedBytes(feeBps, 2)
+        + creatorPkh + toPaddedBytes(minPot, 5) + toPaddedBytes(minEntrants, 2) + boundaries;
+}
+
+// An empty gate record (see cashscript/Gate.cash): no entrants, zero totals.
+function gateRecord(bytes roundId, bigint gateIndex, bigint stakeClass, bigint outcomes) pure returns (bytes) {
+    return TAG_GATE + roundId + toPaddedBytes(gateIndex, 1) + toPaddedBytes(stakeClass * NIBBLE + outcomes, 1)
+        + toPaddedBytes(0, 3) + toPaddedBytes(0, 5 * outcomes);
+}
+
+// Outputs 1 .. 1 + gates of an opening transaction: the master, then every gate, each exact.
+function requireRoundOutputs(
+    bytes category,
+    bytes masterLockingBytecode,
+    bytes gateLockingBytecode,
+    bytes record,
+    bigint budget,
+    bytes roundId,
+    bigint gates,
+    bigint stakeClass,
+    bigint outcomes
+) view returns (bool) {
+    require(tx.outputs[1].lockingBytecode == masterLockingBytecode, "output 1 opens the round's master");
+    require(tx.outputs[1].tokenCategory == category + 0x01, "the master is a mutable NFT of the category");
+    require(tx.outputs[1].tokenAmount == 0, "no fungible tokens");
+    require(tx.outputs[1].nftCommitment == record, "the open record must be exact");
+    require(tx.outputs[1].value == budget, "the master holds the round's budget");
+    for (bigint i = 0; i < gates; i++) {
+        bigint index = 2 + i;
+        require(tx.outputs[index].lockingBytecode == gateLockingBytecode, "gates sit at the gate contract");
+        require(tx.outputs[index].tokenCategory == category + 0x02, "a gate is a minting NFT of the category");
+        require(tx.outputs[index].tokenAmount == 0, "no fungible tokens");
+        require(tx.outputs[index].nftCommitment == gateRecord(roundId, i, stakeClass, outcomes), "the gate record must be exact");
+        require(tx.outputs[index].value == GATE_DUST, "a gate starts with its dust");
+    }
+    for (bigint i = 2 + gates; i < tx.outputs.length; i++) {
+        require(tx.outputs[i].tokenCategory == 0x, "change carries no tokens");
+    }
+    for (bigint i = 1; i < tx.inputs.length; i++) {
+        require(tx.inputs[i].tokenCategory == 0x, "funding inputs carry no tokens");
+    }
+    return true;
+}
+
+// A signed oracle price is a lower bound on the current time: `latest` must be at least `earliest`.
+function requireClockAtLeast(bytes message, datasig signature, pubkey oracle, bigint earliest) pure returns (bool) {
+    requireSignedPrice(message, signature, oracle);
+    require(messageTimestamp(message) >= earliest, "too early to open this round");
+    return true;
+}

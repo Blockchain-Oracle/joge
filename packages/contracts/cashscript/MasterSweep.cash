@@ -1,0 +1,77 @@
+pragma cashscript ^0.14.0;
+
+import "./rules.cash";
+
+// A settled or void round paying out. Commitment:
+//   [0] tag 0x01 · [1,5) round id · [5] state 0x02 settled / 0x03 void · [6] winning outcome (0xff when void)
+//   [7,13) pot after fees · [13,19) winning stake total · [19,22) tickets left · [22,42) creator pubkey hash
+//
+// Sweep: anyone, in batches. Input i (i ≥ 1) is a ticket of this round and output i pays its owner:
+//   winner: floor(stake × pot ÷ winning total) + ticket dust − per-ticket fee; void: stake + dust − fee;
+//   loser: dust − fee. Payouts use figures frozen at settlement, so batch order never changes anyone's amount.
+// The batch that takes the last ticket burns the master and returns what is left to the round's creator.
+contract MasterSweep(bytes32 category, bytes ticketLockingBytecode) {
+    // `padding` buys operation-cost budget (800 per unlocking byte): exactly SWEEP_PAD_PER_TICKET zero bytes per ticket,
+    // so one sweep pays hundreds of tickets and every client still builds the same bytes.
+    function sweep(bytes padding) {
+        bytes master = tx.inputs[0].nftCommitment;
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master");
+        require(master.slice(0, 1) == TAG_MASTER, "not a master commitment");
+        int state = int(master.slice(5, 6));
+        require(state == STATE_SETTLED || state == STATE_VOID, "the round has not settled");
+        require(tx.version == TX_VERSION, "lifecycle transactions are version 2");
+        require(tx.locktime == 0, "sweep carries no locktime");
+        require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+
+        bytes roundId = master.slice(1, 5);
+        int winner = int(master.slice(6, 7));
+        int pot = int(master.slice(7, 13));
+        int winnerTotal = int(master.slice(13, 19));
+        int remaining = int(master.slice(19, 22));
+        int tickets = tx.inputs.length - 1;
+        require(tickets <= remaining, "more tickets than the round has left");
+        require(tickets > 0 || remaining == 0, "a sweep takes at least one ticket");
+        require(tx.outputs.length == tx.inputs.length, "one payout per ticket, plus the master");
+        require(padding == toPaddedBytes(0, tickets * SWEEP_PAD_PER_TICKET), "padding is fixed per ticket");
+
+        int ticketValue = 0;
+        int paid = 0;
+        for (int i = 1; i < tx.inputs.length; i++) {
+            bytes ticket = tx.inputs[i].nftCommitment;
+            require(tx.inputs[i].tokenCategory == category, "input must be a ticket of this category");
+            require(tx.inputs[i].lockingBytecode == ticketLockingBytecode, "input must sit at the ticket contract");
+            require(tx.inputs[i].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+            require(ticket.slice(0, 1) == TAG_TICKET, "not a ticket commitment");
+            require(ticket.slice(1, 5) == roundId, "ticket belongs to another round");
+            int stake = int(ticket.slice(7, 12));
+            int share = 0;
+            if (state == STATE_VOID) {
+                share = stake;
+            } else if (int(ticket.slice(6, 7)) == winner) {
+                share = stake * pot / winnerTotal;
+            }
+            int payout = share + tx.inputs[i].value - SWEEP_FEE_PER_TICKET;
+            require(
+                tx.outputs[i].lockingBytecode == new LockingBytecodeP2PKH(unsafe_bytes20(ticket.slice(12, 32))),
+                "output pays the ticket's owner"
+            );
+            require(tx.outputs[i].value == payout, "payout amount");
+            require(tx.outputs[i].tokenCategory == 0x, "payout carries no tokens");
+            ticketValue = ticketValue + tx.inputs[i].value;
+            paid = paid + payout;
+        }
+
+        int rest = tx.inputs[0].value + ticketValue - paid - SWEEP_FEE_BASE - tickets * SWEEP_FEE_PER_TICKET;
+        int left = remaining - tickets;
+        bool burned = left == 0
+            && tx.outputs[0].lockingBytecode == new LockingBytecodeP2PKH(unsafe_bytes20(master.slice(22, 42)))
+            && tx.outputs[0].tokenCategory == 0x;
+        bool kept = left > 0
+            && tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode
+            && tx.outputs[0].tokenCategory == category + 0x01
+            && tx.outputs[0].tokenAmount == 0
+            && tx.outputs[0].nftCommitment == master.slice(0, 19) + toPaddedBytes(left, 3) + master.slice(22, 42);
+        require(tx.outputs[0].value == rest, "the master keeps exactly what is left");
+        require(burned || kept, "the master carries on, or goes back to its creator after the last ticket");
+    }
+}

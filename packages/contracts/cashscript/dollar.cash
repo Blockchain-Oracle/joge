@@ -1,0 +1,54 @@
+pragma cashscript ^0.14.0;
+
+import "./rules.cash";
+
+// Dollar events (F11): stakes and payouts in a dollar token (ParyonUSD on mainnet, 2 decimals) instead of satoshis.
+// A coin carries one token category, and gates and masters are NFTs of category K, so a round's dollars sit beside
+// them in sidecars (TokenSide.cash): one per gate, merged into one beside the master at the lock. Every number here is
+// mirrored in packages/sdk/src/round/dollar.ts; change both together.
+
+// The dollar stake class (high nibble of the gate's class byte) and its bounds, in token units (cents).
+int constant CLASS_DOLLAR = 3;
+int constant DOLLAR_MIN_STAKE = 10;
+int constant DOLLAR_MAX_STAKE = 5000;
+int constant DOLLAR_GATE_CAP = 100000;
+// A token output cannot be empty, so every sidecar is made holding this much; the lock counts the rest as pot, and
+// the seeds go back to the creator after the last payout (like gate dust).
+int constant SIDE_SEED = 1;
+// Satoshis every sidecar, and every dollar fee output, carries.
+int constant TOKEN_DUST = 1000;
+// A dollar lock spends a sidecar per gate as well as the gate: measured ~2,160 bytes plus ~920 per gate (2 gates:
+// ~4,000 bytes), and gold adds ~300; these fees keep every lock above 1 sat/byte.
+int constant DOLLAR_LOCK_FEE_BASE = 2800;
+int constant DOLLAR_LOCK_FEE_PER_GATE = 1100;
+// Settle and sweep spend the pot sidecar too.
+int constant SIDE_FEE = 300;
+// Dollar fees are paid from one cent (an output's dust is paid from the round's budget, not from the pot).
+int constant MIN_DOLLAR_FEE = 1;
+
+// Input `index` is a sidecar: at the sidecar contract, holding only the dollar token (no NFT).
+function isSide(int index, bytes sideLockingBytecode, bytes32 dollarCategory) returns (bool) {
+    return tx.inputs[index].lockingBytecode == sideLockingBytecode && tx.inputs[index].tokenCategory == dollarCategory;
+}
+
+// Output `index` is a sidecar holding exactly `amount` of the dollar token and TOKEN_DUST satoshis.
+function requireSideOut(int index, bytes sideLockingBytecode, bytes32 dollarCategory, int amount) returns (bool) {
+    require(tx.outputs[index].lockingBytecode == sideLockingBytecode, "the sidecar goes back to the sidecar contract");
+    require(tx.outputs[index].tokenCategory == dollarCategory, "a sidecar holds only the dollar token");
+    require(tx.outputs[index].tokenAmount == amount, "the sidecar's dollars must be exact");
+    require(tx.outputs[index].value == TOKEN_DUST, "a sidecar carries the fixed dust");
+    return true;
+}
+
+// No input from `from` on, and no output from `fromOutput` on, may sit at the sidecar contract. Right after a round
+// is made all its sidecars share the creating transaction, so without this an entry could pass a sibling sidecar as
+// "funding" and drain it, or leave a fake sidecar as "change" to swap in at the lock; either would freeze the round.
+function requireNoOtherSides(int from, int fromOutput, bytes sideLockingBytecode) returns (bool) {
+    for (int i = from; i < tx.inputs.length; i++) {
+        require(tx.inputs[i].lockingBytecode != sideLockingBytecode, "no other sidecar may be spent here");
+    }
+    for (int o = fromOutput; o < tx.outputs.length; o++) {
+        require(tx.outputs[o].lockingBytecode != sideLockingBytecode, "no other sidecar may be made here");
+    }
+    return true;
+}

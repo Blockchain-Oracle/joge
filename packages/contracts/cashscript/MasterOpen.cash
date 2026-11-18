@@ -1,0 +1,160 @@
+pragma cashscript ^0.14.0;
+
+import "./rules.cash";
+import "./oracle.cash";
+
+// A round before its lock (mutable NFT of category K). Commitment:
+//   [0] tag 0x01 · [1,5) round id · [5] state 0x00 · [6] asset · [7] mode << 4 | outcomes · [8] gate count G
+//   [9,13) T_lock · [13,17) T_close · [17,19) creator fee bps · [19,39) creator pubkey hash
+//   [39,44) minimum pot · [44,46) minimum entrants · [46, 46 + 4·(N-1)) range boundaries (RANGES mode)
+//
+// Lock: anyone, once the oracle has signed its first price at or after T_lock. It merges every gate, so no entry can
+// follow, and records the lock message's data sequence S; the strike is the oracle's next message, S + 1, which nobody
+// racing the lock can know yet. A round with no entries, one side only, or below its minimums is void right here.
+// Lock timeout: if the oracle never signs past T_lock (an outage), anyone voids the round after T_close + timeout.
+contract MasterOpen(
+    bytes32 category,
+    bytes lockedLockingBytecode,
+    bytes sweepLockingBytecode,
+    pubkey oracleBtc,
+    pubkey oracleEth,
+    pubkey oracleBch,
+    pubkey oracleXau
+) {
+    function lock(bytes previous, datasig previousSignature, bytes first, datasig firstSignature) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        int asset = int(master.slice(6, 7));
+        require(asset != ASSET_GOLD, "gold locks with lockGold");
+        pubkey oracle = oracleBch;
+        if (asset == ASSET_BTC) {
+            oracle = oracleBtc;
+        } else if (asset == ASSET_ETH) {
+            oracle = oracleEth;
+        }
+        int sequence = firstAtOrAfter(previous, previousSignature, first, firstSignature, oracle, int(master.slice(9, 13)));
+        require(tx.locktime == 0, "lock carries no locktime");
+        require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        require(
+            closeGates(master, toPaddedBytes(sequence, 4) + toPaddedBytes(0, 4), false, lockedLockingBytecode, sweepLockingBytecode),
+            "gates must close"
+        );
+    }
+
+    function lockGold(
+        bytes previousUsd,
+        datasig previousUsdSignature,
+        bytes firstUsd,
+        datasig firstUsdSignature,
+        bytes previousXau,
+        datasig previousXauSignature,
+        bytes firstXau,
+        datasig firstXauSignature
+    ) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        require(int(master.slice(6, 7)) == ASSET_GOLD, "only gold locks with two feeds");
+        int lockTime = int(master.slice(9, 13));
+        int usdSequence = firstAtOrAfter(previousUsd, previousUsdSignature, firstUsd, firstUsdSignature, oracleBch, lockTime);
+        int xauSequence = firstAtOrAfter(previousXau, previousXauSignature, firstXau, firstXauSignature, oracleXau, lockTime);
+        require(tx.locktime == 0, "lock carries no locktime");
+        require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        require(
+            closeGates(
+                master,
+                toPaddedBytes(usdSequence, 4) + toPaddedBytes(xauSequence, 4),
+                false,
+                lockedLockingBytecode,
+                sweepLockingBytecode
+            ),
+            "gates must close"
+        );
+    }
+
+    // The oracle never signed past T_lock: after T_close + timeout anyone merges the gates into a void round, and every
+    // ticket is refunded. The locktime is exactly the deadline, so this transaction is unique too.
+    function lockTimeout() {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        int deadline = int(master.slice(13, 17)) + SETTLE_TIMEOUT;
+        require(tx.time >= deadline, "too early to void");
+        require(tx.locktime == deadline, "locktime is exactly the deadline");
+        require(tx.inputs[0].sequenceNumber == TIMEOUT_SEQUENCE, "fixed sequence that enforces the locktime");
+        require(closeGates(master, toPaddedBytes(0, 8), true, lockedLockingBytecode, sweepLockingBytecode), "gates must close");
+    }
+}
+
+// Merges input 0 (this master) with inputs 1..G (its gates, in gate order) into one output: the locked round, or the
+// void round ready for refunds. `sequences` is the 8-byte lock record (two feeds for gold, else the second is zero).
+// The pot is what the gates hold beyond their creation dust: every stake, plus any event exit fees left behind.
+function closeGates(
+    bytes master,
+    bytes sequences,
+    bool forceVoid,
+    bytes lockedLockingBytecode,
+    bytes sweepLockingBytecode
+) returns (bool) {
+    require(master.slice(0, 1) == TAG_MASTER, "not a master commitment");
+    require(master.slice(5, 6) == STATE_OPEN, "the round is not open");
+    bytes roundId = master.slice(1, 5);
+    bytes category = tx.inputs[0].tokenCategory.split(32)[0];
+    int outcomes = int(master.slice(7, 8)) % NIBBLE;
+    int gates = int(master.slice(8, 9));
+
+    require(tx.version == TX_VERSION, "lifecycle transactions are version 2");
+    require(tx.inputs.length == 1 + gates, "every gate, and nothing else, must be merged");
+    require(tx.outputs.length == 1, "the lock has one output");
+
+    int gateValue = 0;
+    int entrants = 0;
+    for (int i = 1; i < tx.inputs.length; i++) {
+        bytes gate = tx.inputs[i].nftCommitment;
+        require(tx.inputs[i].tokenCategory == category + 0x02, "input must be a gate of this category");
+        require(gate.slice(0, 1) == TAG_GATE, "not a gate commitment");
+        require(gate.slice(1, 5) == roundId, "gate belongs to another round");
+        require(int(gate.slice(5, 6)) == i - 1, "gates must be in gate order");
+        require(int(gate.slice(6, 7)) % NIBBLE == outcomes, "gate and master disagree on outcomes");
+        require(tx.inputs[i].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        entrants = entrants + int(gate.slice(7, 10));
+        gateValue = gateValue + tx.inputs[i].value;
+    }
+
+    bytes totals = 0x;
+    int staked = 0;
+    int sidesWithStake = 0;
+    for (int outcome = 0; outcome < outcomes; outcome++) {
+        int start = 10 + outcome * 5;
+        int sum = 0;
+        for (int i = 1; i < tx.inputs.length; i++) {
+            sum = sum + int(tx.inputs[i].nftCommitment.slice(start, start + 5));
+        }
+        totals = totals + toPaddedBytes(sum, 5);
+        staked = staked + sum;
+        if (sum > 0) {
+            sidesWithStake = sidesWithStake + 1;
+        }
+    }
+    int pot = gateValue - gates * GATE_DUST;
+    require(pot >= staked, "gates hold every stake");
+
+    bool isVoid = forceVoid || sidesWithStake < 2 || pot < int(master.slice(39, 44)) || entrants < int(master.slice(44, 46));
+    bytes next = TAG_MASTER + roundId + toPaddedBytes(STATE_VOID, 1) + 0xff + toPaddedBytes(0, 6) + toPaddedBytes(0, 6)
+        + toPaddedBytes(entrants, 3) + master.slice(19, 39);
+    bytes destination = sweepLockingBytecode;
+    if (!isVoid) {
+        next = TAG_MASTER + roundId + STATE_LOCKED + master.slice(6, 8) + master.slice(13, 39) + sequences
+            + toPaddedBytes(pot, 6) + toPaddedBytes(entrants, 3) + totals + master.slice(46, master.length);
+        destination = lockedLockingBytecode;
+    }
+    require(tx.outputs[0].lockingBytecode == destination, "the round moves to its next contract");
+    require(tx.outputs[0].tokenCategory == category + 0x01, "the master keeps its mutable NFT");
+    require(tx.outputs[0].tokenAmount == 0, "no fungible tokens");
+    require(tx.outputs[0].nftCommitment == next, "the lock record must be exact");
+    // Every gate of a round has the same stake class (the factory and the lanes make them so).
+    int perGate = LOCK_FEE_PER_GATE;
+    if (int(tx.inputs[1].nftCommitment.slice(6, 7)) / NIBBLE == CLASS_EVENT) {
+        perGate = EVENT_LOCK_FEE_PER_GATE;
+    }
+    require(tx.outputs[0].value == tx.inputs[0].value + gateValue - LOCK_FEE_BASE - perGate * gates, "fixed lock fee");
+    return true;
+}

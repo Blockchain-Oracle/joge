@@ -1,0 +1,19 @@
+pragma cashscript ^0.14.0;
+
+import "./entry.cash";
+
+// One of a lane round's G entry gates (a minting NFT of category K). Entries spread over gates so two players rarely
+// race for the same coin. Commitment, at most 40 bytes because Selene refuses to sign inputs with longer commitments:
+//   [0] tag 0x02 · [1,5) round id · [5] gate index · [6] stake class << 4 | outcomes
+//   [7,10) live entrant count · [10, 10 + 5·N) stake total per outcome
+// Lane gates have no exit, which keeps every lane entry small; events use EventGate.
+contract Gate(bytes32 category, bytes ticketLockingBytecode) {
+    function enter(int outcome, int stake, bytes20 payoutPkh) {
+        require(this.activeInputIndex == 0, "the gate must be input 0");
+        require(requireEntry(category, ticketLockingBytecode, outcome, stake, payoutPkh), "entry must be exact");
+    }
+
+    function merge() {
+        require(requireMerge(category, tx.inputs[this.activeInputIndex].nftCommitment), "only the round's own lock merges a gate");
+    }
+}

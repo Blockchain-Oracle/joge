@@ -1,0 +1,31 @@
+pragma cashscript ^0.14.0;
+
+import "./rules.cash";
+
+// A dollar round's dollars (fungible tokens of the dollar category), held beside one of its gates, or beside its
+// master from the lock on. It has no rules of its own about amounts: it only insists on moving together with the gate
+// or master it was made with, whose exact-shape rules (DollarGate, DollarMasterOpen/Locked/Sweep) then decide every
+// unit. "Made with" means created by the same transaction: every function that moves a gate or master re-creates its
+// sidecar in that same transaction, so the pair always shares an outpoint transaction hash, and no other round's gate
+// or master ever does (one transaction never makes two rounds' gates or masters).
+contract TokenSide(bytes32 category) {
+    function move() {
+        bytes parent = tx.inputs[this.activeInputIndex].outpointTransactionHash;
+        bool paired = false;
+        for (int i = 0; i < tx.inputs.length; i++) {
+            if (tx.inputs[i].outpointTransactionHash == parent) {
+                bytes held = tx.inputs[i].tokenCategory;
+                if (held == category + 0x02) {
+                    if (tx.inputs[i].nftCommitment.slice(0, 1) == TAG_GATE) {
+                        paired = true;
+                    }
+                } else if (held == category + 0x01) {
+                    if (tx.inputs[i].nftCommitment.slice(0, 1) == TAG_MASTER) {
+                        paired = true;
+                    }
+                }
+            }
+        }
+        require(paired, "a sidecar moves only with the gate or master it was made with");
+    }
+}

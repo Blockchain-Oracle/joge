@@ -1,0 +1,175 @@
+pragma cashscript ^0.14.0;
+
+import "./dollar.cash";
+import "./oracle.cash";
+
+// A dollar event before its lock (mutable NFT of category K): MasterOpen, with the stakes in its gates' sidecars.
+// Same commitment and rules as MasterOpen; the lock also merges every sidecar into one pot sidecar beside the master. Commitment:
+//   [0] tag 0x01 · [1,5) round id · [5] state 0x00 · [6] asset · [7] mode << 4 | outcomes · [8] gate count G
+//   [9,13) T_lock · [13,17) T_close · [17,19) creator fee bps · [19,39) creator pubkey hash
+//   [39,44) minimum pot · [44,46) minimum entrants · [46, 46 + 4·(N-1)) range boundaries (RANGES mode)
+//
+// Lock: anyone, once the oracle has signed its first price at or after T_lock. It merges every gate, so no entry can
+// follow, and records the lock message's data sequence S; the strike is the oracle's next message, S + 1, which nobody
+// racing the lock can know yet. A round with no entries, one side only, or below its minimums is void right here.
+// Lock timeout: if the oracle never signs past T_lock (an outage), anyone voids the round after T_close + timeout.
+contract DollarMasterOpen(
+    bytes32 category,
+    bytes lockedLockingBytecode,
+    bytes sweepLockingBytecode,
+    bytes sideLockingBytecode,
+    bytes32 dollarCategory,
+    pubkey oracleBtc,
+    pubkey oracleEth,
+    pubkey oracleBch,
+    pubkey oracleXau
+) {
+    function lock(bytes previous, datasig previousSignature, bytes first, datasig firstSignature) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        int asset = int(master.slice(6, 7));
+        require(asset != ASSET_GOLD, "gold locks with lockGold");
+        pubkey oracle = oracleBch;
+        if (asset == ASSET_BTC) {
+            oracle = oracleBtc;
+        } else if (asset == ASSET_ETH) {
+            oracle = oracleEth;
+        }
+        int sequence = firstAtOrAfter(previous, previousSignature, first, firstSignature, oracle, int(master.slice(9, 13)));
+        require(tx.locktime == 0, "lock carries no locktime");
+        require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        require(
+            closeDollarGates(master, toPaddedBytes(sequence, 4) + toPaddedBytes(0, 4), false, lockedLockingBytecode, sweepLockingBytecode, sideLockingBytecode, dollarCategory),
+            "gates must close"
+        );
+    }
+
+    function lockGold(
+        bytes previousUsd,
+        datasig previousUsdSignature,
+        bytes firstUsd,
+        datasig firstUsdSignature,
+        bytes previousXau,
+        datasig previousXauSignature,
+        bytes firstXau,
+        datasig firstXauSignature
+    ) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        require(int(master.slice(6, 7)) == ASSET_GOLD, "only gold locks with two feeds");
+        int lockTime = int(master.slice(9, 13));
+        int usdSequence = firstAtOrAfter(previousUsd, previousUsdSignature, firstUsd, firstUsdSignature, oracleBch, lockTime);
+        int xauSequence = firstAtOrAfter(previousXau, previousXauSignature, firstXau, firstXauSignature, oracleXau, lockTime);
+        require(tx.locktime == 0, "lock carries no locktime");
+        require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        require(
+            closeDollarGates(
+                master,
+                toPaddedBytes(usdSequence, 4) + toPaddedBytes(xauSequence, 4),
+                false,
+                lockedLockingBytecode,
+                sweepLockingBytecode,
+                sideLockingBytecode,
+                dollarCategory
+            ),
+            "gates must close"
+        );
+    }
+
+    // The oracle never signed past T_lock: after T_close + timeout anyone merges the gates into a void round, and every
+    // ticket is refunded. The locktime is exactly the deadline, so this transaction is unique too.
+    function lockTimeout() {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        int deadline = int(master.slice(13, 17)) + SETTLE_TIMEOUT;
+        require(tx.time >= deadline, "too early to void");
+        require(tx.locktime == deadline, "locktime is exactly the deadline");
+        require(tx.inputs[0].sequenceNumber == TIMEOUT_SEQUENCE, "fixed sequence that enforces the locktime");
+        require(closeDollarGates(master, toPaddedBytes(0, 8), true, lockedLockingBytecode, sweepLockingBytecode, sideLockingBytecode, dollarCategory), "gates must close");
+    }
+}
+
+// Merges input 0 (this master) with inputs 1..G (its dollar gates, in gate order) and inputs G+1..2G (the gates'
+// sidecars) into the locked (or void) master at output 0 and one pot sidecar at output 1 holding every dollar. The pot
+// is what the sidecars hold beyond their seeds: every stake, plus any exit fees left behind. The seeds stay in the pot
+// sidecar until the last payout returns them to the creator.
+function closeDollarGates(
+    bytes master,
+    bytes sequences,
+    bool forceVoid,
+    bytes lockedLockingBytecode,
+    bytes sweepLockingBytecode,
+    bytes sideLockingBytecode,
+    bytes32 dollarCategory
+) returns (bool) {
+    require(master.slice(0, 1) == TAG_MASTER, "not a master commitment");
+    require(master.slice(5, 6) == STATE_OPEN, "the round is not open");
+    bytes roundId = master.slice(1, 5);
+    bytes category = tx.inputs[0].tokenCategory.split(32)[0];
+    int outcomes = int(master.slice(7, 8)) % NIBBLE;
+    int gates = int(master.slice(8, 9));
+
+    require(tx.version == TX_VERSION, "lifecycle transactions are version 2");
+    require(tx.inputs.length == 1 + 2 * gates, "every gate and one sidecar per gate, and nothing else");
+    require(tx.outputs.length == 2, "the lock makes the master and the pot sidecar");
+
+    int gateValue = 0;
+    int entrants = 0;
+    int held = 0;
+    for (int i = 1; i <= gates; i++) {
+        bytes gate = tx.inputs[i].nftCommitment;
+        require(tx.inputs[i].tokenCategory == category + 0x02, "input must be a gate of this category");
+        require(gate.slice(0, 1) == TAG_GATE, "not a gate commitment");
+        require(gate.slice(1, 5) == roundId, "gate belongs to another round");
+        require(int(gate.slice(5, 6)) == i - 1, "gates must be in gate order");
+        require(int(gate.slice(6, 7)) == CLASS_DOLLAR * NIBBLE + outcomes, "a dollar gate with the master's outcomes");
+        require(tx.inputs[i].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        entrants = entrants + int(gate.slice(7, 10));
+        gateValue = gateValue + tx.inputs[i].value;
+        int side = gates + i;
+        require(isSide(side, sideLockingBytecode, dollarCategory), "inputs G+1..2G must be sidecars");
+        require(tx.inputs[side].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+        require(tx.inputs[side].value == TOKEN_DUST, "a sidecar carries the fixed dust");
+        held = held + tx.inputs[side].tokenAmount;
+    }
+
+    bytes totals = 0x;
+    int staked = 0;
+    int sidesWithStake = 0;
+    for (int outcome = 0; outcome < outcomes; outcome++) {
+        int start = 10 + outcome * 5;
+        int sum = 0;
+        for (int i = 1; i <= gates; i++) {
+            sum = sum + int(tx.inputs[i].nftCommitment.slice(start, start + 5));
+        }
+        totals = totals + toPaddedBytes(sum, 5);
+        staked = staked + sum;
+        if (sum > 0) {
+            sidesWithStake = sidesWithStake + 1;
+        }
+    }
+    int pot = held - gates * SIDE_SEED;
+    require(pot >= staked, "the sidecars hold every stake");
+
+    bool isVoid = forceVoid || sidesWithStake < 2 || pot < int(master.slice(39, 44)) || entrants < int(master.slice(44, 46));
+    bytes next = TAG_MASTER + roundId + toPaddedBytes(STATE_VOID, 1) + 0xff + toPaddedBytes(0, 6) + toPaddedBytes(0, 6)
+        + toPaddedBytes(entrants, 3) + master.slice(19, 39);
+    bytes destination = sweepLockingBytecode;
+    if (!isVoid) {
+        next = TAG_MASTER + roundId + STATE_LOCKED + master.slice(6, 8) + master.slice(13, 39) + sequences
+            + toPaddedBytes(pot, 6) + toPaddedBytes(entrants, 3) + totals + master.slice(46, master.length);
+        destination = lockedLockingBytecode;
+    }
+    require(tx.outputs[0].lockingBytecode == destination, "the round moves to its next contract");
+    require(tx.outputs[0].tokenCategory == category + 0x01, "the master keeps its mutable NFT");
+    require(tx.outputs[0].tokenAmount == 0, "no fungible tokens on the master");
+    require(tx.outputs[0].nftCommitment == next, "the lock record must be exact");
+    // The sidecars' satoshis join the master, less the pot sidecar's own dust and a fixed fee.
+    require(
+        tx.outputs[0].value
+            == tx.inputs[0].value + gateValue + (gates - 1) * TOKEN_DUST - DOLLAR_LOCK_FEE_BASE - DOLLAR_LOCK_FEE_PER_GATE * gates,
+        "fixed lock fee"
+    );
+    require(requireSideOut(1, sideLockingBytecode, dollarCategory, held), "one pot sidecar holds every dollar");
+    return true;
+}

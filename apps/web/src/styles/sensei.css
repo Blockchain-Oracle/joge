@@ -1,0 +1,100 @@
+/*
+ * Sensei's conversation (D21), from Owarine's panel: a 27 px seal beside each reply, bubbles that pop in, three
+ * bouncing dots while it reads, a caret while the reply types itself, follow-up chips under the last answer.
+ */
+
+.nx-msg {
+  animation: nx-msg-in 340ms var(--ease-out) both;
+}
+@keyframes nx-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(9px) scale(0.985);
+  }
+}
+
+/* Replies: a surface bubble with its tail corner at the seal. */
+.nx-bubble {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 17px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+.nx-bubble[data-from="sensei"] {
+  border-top-left-radius: 6px;
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.nx-bubble[data-from="you"] {
+  border-bottom-right-radius: 6px;
+  background: var(--vermilion);
+  color: #fff;
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--vermilion) 70%, transparent);
+}
+
+.nx-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--vermilion);
+  animation: nx-caret 0.9s steps(1) infinite;
+}
+@keyframes nx-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+.nx-dots {
+  display: inline-flex;
+  gap: 5px;
+  padding: 14px 16px;
+}
+.nx-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  animation: nx-dot 0.9s var(--ease-out) infinite;
+}
+.nx-dots i:nth-child(2) {
+  animation-delay: 150ms;
+}
+.nx-dots i:nth-child(3) {
+  animation-delay: 300ms;
+}
+@keyframes nx-dot {
+  30% {
+    transform: translateY(-4px);
+  }
+  60% {
+    transform: translateY(0);
+  }
+}
+
+/* A follow-up: a vermilion-edged pill. */
+.nx-chip {
+  height: 34px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--vermilion) 55%, transparent);
+  transition: background-color var(--dur-hover) var(--ease-out);
+}
+.nx-chip:hover {
+  background: color-mix(in srgb, var(--vermilion) 14%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-msg,
+  .nx-caret,
+  .nx-dots i {
+    animation: none;
+  }
+}

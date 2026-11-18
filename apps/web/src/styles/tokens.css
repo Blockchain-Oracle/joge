@@ -1,0 +1,191 @@
+/*
+ * Jōge's design tokens (D21, 2026-11-18): the look rebuilt from the strongest move of each of Abu's own prediction
+ * products (context/build-research/fidelity/), approved on the /concept page.
+ *   Masayume → Mitoshi → Kakure: a near-black stage, vermilion as the ONE brand colour, every figure in mono.
+ *   Senryo: Up and Down as flooded plates (acid lime / coral) with a darker bottom edge.
+ *   Mitoshi: the cream day world.
+ * Night is the default world; [data-theme="light"] is day.
+ */
+:root {
+  --bg: #050505;
+  --canvas: #050505;
+  --stage: #0a0a0a;
+  --surface-1: #141414;
+  --surface-2: #1f1f1f;
+  --surface-3: #2e2e2e;
+  --ink: #ffffff;
+  --ink-2: #b5b5b5;
+  --muted: #7a7a7a;
+  --faint: #3a3a3a;
+  --ink-inverse: #050505;
+  --hairline: rgb(255 255 255 / 0.08);
+  --strong: rgb(255 255 255 / 0.16);
+  --glass: rgb(255 255 255 / 0.06);
+  --meter-off: rgb(255 255 255 / 0.1);
+  --scrim: rgb(0 0 0 / 0.6);
+
+  /* Vermilion: the brand, Sensei, the seal, the last seconds. Nothing else is vermilion. */
+  --vermilion: #e04d26;
+  --vermilion-deep: #b83a1b;
+  --vermilion-ink: #ffffff;
+  /* The mark's two strokes (the plates' colours at night; the darker text colours by day). */
+  --mark-up: var(--up);
+  --mark-down: var(--down);
+
+  /* The two sides (Senryo's plates): a flood with ink on it and a darker edge underneath. */
+  --up: #b5f543;
+  --up-deep: #7fb224;
+  --up-edge: #7fb224;
+  --up-ink: #0b0f02;
+  --up-text: #b5f543;
+  --down: #ff647c;
+  --down-deep: #d9435c;
+  --down-edge: #d9435c;
+  --down-ink: #1a0307;
+  --down-text: #ff647c;
+
+  /* The main action: an ink pill. */
+  --accent: #ffffff;
+  --accent-deep: #ffffff;
+  --accent-press: #d9d9d9;
+  --accent-ink: #050505;
+  --flood: var(--vermilion);
+  --flood-ink: var(--vermilion-ink);
+  /* "Live, not decided yet": neutral. */
+  --cyan: #b5b5b5;
+  --cyan-deep: #7a7a7a;
+  --cyan-text: #d4d4d4;
+  --gold: #c99a2e;
+  --gold-deep: #9a7218;
+  --gold-text: #e3b45a;
+  --warning: #f2994a;
+  --info: #60a5fa;
+  --rainbow: linear-gradient(90deg, var(--ink) 0%, var(--ink) 100%);
+
+  --up-wash: color-mix(in srgb, var(--up) 18%, transparent);
+  --down-wash: color-mix(in srgb, var(--down) 18%, transparent);
+  --accent-wash: rgb(255 255 255 / 0.06);
+  --accent-dim: color-mix(in srgb, var(--up) 70%, transparent);
+
+  /* Raised cards (the old dark cards now sit as the first surface). */
+  --dark: #141414;
+  --dark-2: #1f1f1f;
+  --dark-ink: #ffffff;
+  --dark-ink-2: #b5b5b5;
+  --dark-mute: #7a7a7a;
+  --dark-line: rgb(255 255 255 / 0.08);
+
+  /* Glass floats on the chart (Kakure: card at 78 %, 14 px blur, 140 % saturation). */
+  --float: rgb(20 20 20 / 0.78);
+  --float-ring: rgb(255 255 255 / 0.1);
+  --sticker-edge: #ffffff;
+  /* Paper (receipts, agent faces, the pairing code): Mitoshi's cream in both worlds. */
+  --paper: #f4eee3;
+  --paper-ink: #141210;
+  --cream: #f4eee3;
+  --cream-ink: #141210;
+  --cream-hairline: #dcd3c2;
+
+  --card-shadow: none;
+  --card-lip: 0px;
+  --pill-shadow: inset 0 0 0 1px var(--strong);
+  --key-top: none;
+  --key-lip: 0px;
+  --lip-neutral: transparent;
+  --lip-up: transparent;
+  --lip-down: transparent;
+  --lip-accent: transparent;
+  --lip-gold: transparent;
+  --glow-up: transparent;
+  --glow-down: transparent;
+  --glow-accent: transparent;
+  --glow-gold: transparent;
+  --candy-shadow: none;
+  --stage-glow: none;
+  --shadow-float: 0 24px 48px -20px rgb(0 0 0 / 0.85);
+
+  /* Kept for components retired in the redo (split-flap). */
+  --flap: #141414;
+  --flap-ink: #ffffff;
+  --flap-seam: rgb(0 0 0 / 0.55);
+  --board: #0a0a0a;
+
+  --radius-row: 12px;
+  --radius-card: 24px;
+  --radius-dock: 32px;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-press: 90ms;
+  --dur-hover: 120ms;
+  --dur-state: 180ms;
+  --dur-pill: 280ms;
+  --dur-drawer-in: 380ms;
+  --dur-drawer-out: 240ms;
+
+  --z-sticky: 30;
+  --z-chrome: 40;
+  --z-float: 45;
+  --z-menu: 50;
+  --z-drawer: 60;
+  --z-command: 70;
+  --z-modal: 100;
+  --z-popover: 105;
+  --z-toast: 110;
+  --z-fx: 115;
+  --z-skip: 120;
+
+  color-scheme: dark;
+}
+
+/* Day: Mitoshi's cream world; the plates stay, their text inks darken to read on cream. */
+:root[data-theme="light"] {
+  --mark-up: var(--up-text);
+  --mark-down: var(--down-text);
+  --bg: #f4eee3;
+  --canvas: #f4eee3;
+  --stage: #efe8db;
+  --surface-1: #fffdf8;
+  --surface-2: #ebe3d4;
+  --surface-3: #d9cfbd;
+  --ink: #141210;
+  --ink-2: #4f4a43;
+  --muted: #8a8378;
+  --faint: #cfc6b6;
+  --ink-inverse: #fffdf8;
+  --hairline: rgb(20 18 16 / 0.09);
+  --strong: rgb(20 18 16 / 0.18);
+  --glass: rgb(20 18 16 / 0.05);
+  --meter-off: rgb(20 18 16 / 0.09);
+  --scrim: rgb(20 18 16 / 0.4);
+
+  --vermilion: #d93e1f;
+  --up-text: #2f7a00;
+  --down-text: #c8283f;
+  --accent: #141210;
+  --accent-deep: #000000;
+  --accent-press: #2a2622;
+  --accent-ink: #fffdf8;
+  --cyan: #4f4a43;
+  --cyan-deep: #8a8378;
+  --cyan-text: #2e2a25;
+  --gold-text: #8e6418;
+  --warning: #b8770f;
+  --info: #2563eb;
+  --accent-wash: rgb(20 18 16 / 0.06);
+
+  --dark: #fffdf8;
+  --dark-2: #ebe3d4;
+  --dark-ink: #141210;
+  --dark-ink-2: #4f4a43;
+  --dark-mute: #8a8378;
+  --dark-line: rgb(20 18 16 / 0.09);
+
+  --float: rgb(255 253 248 / 0.82);
+  --float-ring: rgb(20 18 16 / 0.1);
+  --shadow-float: 0 2px 4px rgb(20 18 16 / 0.06), 0 18px 40px -12px rgb(20 18 16 / 0.25);
+
+  color-scheme: light;
+}

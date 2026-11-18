@@ -1,0 +1,190 @@
+pragma solidcash ^0.51.0;
+
+// SolidCash port of cashscript/MasterLocked.cash (S00 bake-off; kept in step for BAKEOFF=1 runs).
+import "../rules.scash";
+import "../oracle.scash";
+
+// A locked round waiting for its close. Commitment (written by MasterOpen's lock):
+//   [0] tag 0x01 · [1,5) round id · [5] state 0x01 · [6] asset · [7] mode << 4 | outcomes · [8,12) T_close
+//   [12,14) creator fee bps · [14,34) creator pubkey hash · [34,38) lock data sequence S (USD/BCH for gold)
+//   [38,42) XAU/BCH lock sequence (gold only) · [42,48) pot · [48,51) entrants · [51, 51 + 5·N) totals per outcome
+//   [51 + 5·N, …) range boundaries (4 bytes each, RANGES mode)
+//
+// Settle: anyone, with the strike (the oracle's message S + 1) and the canonical pair at T_close. It pays the fees,
+// freezes the winning outcome, the pot after fees and the winning total, and hands the round to the sweep contract.
+contract MasterLocked(
+    bytes32 category,
+    bytes sweepLockingBytecode,
+    bytes protocolLockingBytecode,
+    pubkey oracleBtc,
+    pubkey oracleEth,
+    pubkey oracleBch,
+    pubkey oracleXau
+) {
+    function settle(
+        bytes strike,
+        datasig strikeSignature,
+        bytes previous,
+        datasig previousSignature,
+        bytes close,
+        datasig closeSignature
+    ) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        bigint asset = bigint(master.slice(6, 7));
+        require(asset != ASSET_GOLD, "gold settles with settleGold");
+        pubkey oracle = oracleBch;
+        if (asset == ASSET_BTC) {
+            oracle = oracleBtc;
+        } else if (asset == ASSET_ETH) {
+            oracle = oracleEth;
+        }
+        bigint lockSequence = bigint(master.slice(34, 38));
+        bigint strikePrice = priceAtSequence(strike, strikeSignature, oracle, lockSequence + 1);
+        bigint closeSequence = firstAtOrAfter(previous, previousSignature, close, closeSignature, oracle, bigint(master.slice(8, 12)));
+        require(closeSequence > lockSequence + 1, "the close must come after the strike");
+        require(
+            payOut(master, strikePrice, messagePrice(close), sweepLockingBytecode, protocolLockingBytecode),
+            "settlement must be exact"
+        );
+    }
+
+    function settleGold(
+        bytes strikeUsd,
+        datasig strikeUsdSignature,
+        bytes strikeXau,
+        datasig strikeXauSignature,
+        bytes previousUsd,
+        datasig previousUsdSignature,
+        bytes closeUsd,
+        datasig closeUsdSignature,
+        bytes previousXau,
+        datasig previousXauSignature,
+        bytes closeXau,
+        datasig closeXauSignature
+    ) {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        require(bigint(master.slice(6, 7)) == ASSET_GOLD, "only gold settles with two feeds");
+        bigint closeTime = bigint(master.slice(8, 12));
+        bigint usdLock = bigint(master.slice(34, 38));
+        bigint xauLock = bigint(master.slice(38, 42));
+        bigint strikePrice = goldPrice(
+            priceAtSequence(strikeUsd, strikeUsdSignature, oracleBch, usdLock + 1),
+            priceAtSequence(strikeXau, strikeXauSignature, oracleXau, xauLock + 1)
+        );
+        bigint usdClose = firstAtOrAfter(previousUsd, previousUsdSignature, closeUsd, closeUsdSignature, oracleBch, closeTime);
+        bigint xauClose = firstAtOrAfter(previousXau, previousXauSignature, closeXau, closeXauSignature, oracleXau, closeTime);
+        require(usdClose > usdLock + 1 && xauClose > xauLock + 1, "the close must come after the strike");
+        bigint closePrice = goldPrice(messagePrice(closeUsd), messagePrice(closeXau));
+        require(
+            payOut(master, strikePrice, closePrice, sweepLockingBytecode, protocolLockingBytecode),
+            "settlement must be exact"
+        );
+    }
+
+    // If nobody can settle (an oracle gap breaks every pair), anyone voids the round once T_close + timeout has
+    // passed; everyone is refunded. The locktime is exactly the deadline so this transaction is unique too.
+    function timeoutVoid() {
+        require(tx.inputs[0].tokenCategory == category + 0x01, "input 0 must be a round master of this category");
+        bytes master = tx.inputs[0].nftCommitment;
+        bigint deadline = bigint(master.slice(8, 12)) + SETTLE_TIMEOUT;
+        require(tx.time >= deadline, "too early to void");
+        require(tx.locktime == deadline, "locktime is exactly the deadline");
+        require(tx.inputs[0].sequenceNumber == TIMEOUT_SEQUENCE, "fixed sequence that enforces the locktime");
+        require(writeSettlement(master, -1, 0, 0, sweepLockingBytecode, protocolLockingBytecode), "void must be exact");
+    }
+}
+
+// Decides the outcome from the strike and close prices, then writes the settlement.
+function payOut(bytes master, bigint strikePrice, bigint closePrice, bytes sweepLockingBytecode, bytes protocolLockingBytecode) view returns (bool)
+{
+    require(tx.locktime == 0, "settle carries no locktime");
+    require(tx.inputs[0].sequenceNumber == FINAL_SEQUENCE, "fixed sequence");
+    bigint modeAndOutcomes = bigint(master.slice(7, 8));
+    bigint outcomes = modeAndOutcomes % NIBBLE;
+    bigint winner = -1;
+    // A tie, or a frozen feed (strike equals close), voids the round in either mode.
+    if (closePrice != strikePrice) {
+        if (modeAndOutcomes / NIBBLE == MODE_UPDOWN) {
+            winner = 1;
+            if (closePrice > strikePrice) {
+                winner = 0;
+            }
+        } else {
+            winner = 0;
+            bigint boundaries = 51 + 5 * outcomes;
+            for (bigint j = 0; j < outcomes - 1; j++) {
+                if (closePrice >= bigint(master.slice(boundaries + 4 * j, boundaries + 4 * j + 4))) {
+                    winner = winner + 1;
+                }
+            }
+        }
+    }
+    bigint winnerTotal = 0;
+    if (winner >= 0) {
+        winnerTotal = bigint(master.slice(51 + 5 * winner, 56 + 5 * winner));
+    }
+    return writeSettlement(master, winner, winnerTotal, bigint(master.slice(42, 48)), sweepLockingBytecode, protocolLockingBytecode);
+}
+
+// Writes the sweep record and pays the protocol and creator fees (each only if at least MIN_FEE_OUTPUT; a smaller
+// fee stays in the pot). No winning stake, or winner -1, means void: no fees, every stake refunded.
+function writeSettlement(
+    bytes master,
+    bigint winner,
+    bigint winnerTotal,
+    bigint pot,
+    bytes sweepLockingBytecode,
+    bytes protocolLockingBytecode
+) view returns (bool) {
+    require(tx.inputs[0].tokenCategory.split(32)[1] == 0x01, "input 0 must be a mutable master");
+    require(master.slice(0, 1) == TAG_MASTER, "not a master commitment");
+    require(master.slice(5, 6) == STATE_LOCKED, "the round is not locked");
+    require(tx.version == TX_VERSION, "lifecycle transactions are version 2");
+    require(tx.inputs.length == 1, "settlement spends only the master");
+    bigint feeBps = bigint(master.slice(12, 14));
+    require(feeBps <= MAX_CREATOR_FEE_BPS, "creator fee above the cap");
+    bytes creatorPkh = master.slice(14, 34);
+    bytes entrants = master.slice(48, 51);
+
+    bool isVoid = winnerTotal == 0;
+    bigint protocolFee = 0;
+    bigint creatorFee = 0;
+    bytes next = TAG_MASTER + master.slice(1, 5) + toPaddedBytes(STATE_VOID, 1) + 0xff + toPaddedBytes(0, 6)
+        + toPaddedBytes(0, 6) + entrants + creatorPkh;
+    if (!isVoid) {
+        protocolFee = pot * PROTOCOL_FEE_BPS / BPS;
+        if (protocolFee < MIN_FEE_OUTPUT) {
+            protocolFee = 0;
+        }
+        creatorFee = pot * feeBps / BPS;
+        if (creatorFee < MIN_FEE_OUTPUT) {
+            creatorFee = 0;
+        }
+        next = TAG_MASTER + master.slice(1, 5) + toPaddedBytes(STATE_SETTLED, 1) + toPaddedBytes(winner, 1)
+            + toPaddedBytes(pot - protocolFee - creatorFee, 6) + toPaddedBytes(winnerTotal, 6) + entrants + creatorPkh;
+    }
+    bytes category = tx.inputs[0].tokenCategory.split(32)[0];
+    require(tx.outputs[0].lockingBytecode == sweepLockingBytecode, "the round moves to the sweep contract");
+    require(tx.outputs[0].tokenCategory == category + 0x01, "the master keeps its mutable NFT");
+    require(tx.outputs[0].tokenAmount == 0, "no fungible tokens");
+    require(tx.outputs[0].nftCommitment == next, "the settlement record must be exact");
+    require(tx.outputs[0].value == tx.inputs[0].value - protocolFee - creatorFee - SETTLE_FEE, "fixed settle fee");
+
+    bigint index = 1;
+    if (protocolFee > 0) {
+        require(tx.outputs[1].lockingBytecode == protocolLockingBytecode, "protocol fee output");
+        require(tx.outputs[1].value == protocolFee, "protocol fee amount");
+        require(tx.outputs[1].tokenCategory == 0x, "fee carries no tokens");
+        index = 2;
+    }
+    if (creatorFee > 0) {
+        require(tx.outputs[index].lockingBytecode == new LockingBytecodeP2PKH(unsafe_bytes20(creatorPkh)), "creator fee output");
+        require(tx.outputs[index].value == creatorFee, "creator fee amount");
+        require(tx.outputs[index].tokenCategory == 0x, "fee carries no tokens");
+        index = index + 1;
+    }
+    require(tx.outputs.length == index, "no other outputs");
+    return true;
+}

@@ -1,0 +1,97 @@
+/*
+ * The landing (D21): Agari's vertical kanji and numbered sections, Kakure's live hero card and its heartbeat (a ring and
+ * a stamp each time the oracle signs), Mitoshi's silver title with one vermilion phrase.
+ */
+
+.lp-title {
+  background: linear-gradient(180deg, var(--ink) 0%, color-mix(in srgb, var(--ink) 62%, var(--muted)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.lp-title-accent {
+  background: linear-gradient(180deg, #ff8a62 0%, var(--vermilion) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* "Live on Bitcoin Cash": a breathing dot. */
+.lp-live {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--up);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--up) 60%, transparent);
+  animation: lp-live 2s ease-out infinite;
+}
+@keyframes lp-live {
+  70% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* 上下 down the right edge, a vermilion band running through it (Agari's 上がり). */
+.lp-kanji {
+  writing-mode: vertical-rl;
+  font-family: var(--font-serif-jp), serif;
+  font-weight: 700;
+  font-size: clamp(6rem, 11vw, 12rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  opacity: 0.16;
+  user-select: none;
+}
+
+/* The heartbeat: each signed price sends a ring out of the card and presses a stamp onto it. */
+.lp-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 34px;
+  box-shadow: 0 0 0 2px var(--vermilion);
+  pointer-events: none;
+  animation: lp-pulse 1.8s var(--ease-out) both;
+}
+@keyframes lp-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+.lp-signed {
+  transform: rotate(-2deg);
+  animation: lp-signed 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes lp-signed {
+  from {
+    opacity: 0;
+    transform: rotate(-2deg) scale(1.6);
+  }
+}
+
+/* Content rises in once (Kakure, 700 ms on the drawer curve). */
+.lp-rise {
+  animation: lp-rise 700ms var(--ease-drawer) both;
+}
+@keyframes lp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-live,
+  .lp-pulse,
+  .lp-signed,
+  .lp-rise {
+    animation: none;
+  }
+}

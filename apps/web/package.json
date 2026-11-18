@@ -1,0 +1,46 @@
+{
+  "name": "@joge/web",
+  "private": true,
+  "type": "module",
+  "description": "J\u014dge's app: the lobby, rounds, events, agents and judge mode, plus the read API and live stream it is built on.",
+  "scripts": {
+    "dev": "next dev --port 3300",
+    "build": "next build",
+    "start": "next start --port 3300",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/react": "catalog:",
+    "@bitauth/libauth": "catalog:",
+    "@dicebear/core": "catalog:",
+    "@dicebear/notionists": "catalog:",
+    "@joge/brain": "workspace:*",
+    "@joge/chart": "workspace:*",
+    "@joge/contracts": "workspace:*",
+    "@joge/db": "workspace:*",
+    "@joge/sdk": "workspace:*",
+    "@number-flow/react": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "@wizardconnect/core": "catalog:",
+    "@wizardconnect/dapp": "catalog:",
+    "@wizardconnect/react": "catalog:",
+    "ai": "catalog:",
+    "cashscript": "catalog:",
+    "lucide-react": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "server-only": "catalog:",
+    "uqr": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@web3icons/core": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
+  }
+}

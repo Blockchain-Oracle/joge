@@ -1,0 +1,15 @@
+{
+  "name": "@joge/chart",
+  "private": true,
+  "type": "module",
+  "description": "Jōge's price chart: one canvas, a 60 Hz eased price line over a round's time window, the opening line it is judged against, signed oracle prints as dots, lock and close markers. No dependencies; colours come from the page's CSS tokens.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,22 @@
+pragma cashscript ^0.14.0;
+
+import "./oracle.cash";
+
+// Proof P1 only: exposes the oracle module so it can be run against real General Protocols boundaries.
+contract OracleProbe(pubkey oracle) {
+    function boundary(
+        bytes previous,
+        datasig previousSignature,
+        bytes first,
+        datasig firstSignature,
+        int boundaryTime,
+        int expectedSequence
+    ) {
+        int sequence = firstAtOrAfter(previous, previousSignature, first, firstSignature, oracle, boundaryTime);
+        require(sequence == expectedSequence);
+    }
+
+    function strike(bytes message, datasig signature, int sequence, int expectedPrice) {
+        require(priceAtSequence(message, signature, oracle, sequence) == expectedPrice);
+    }
+}

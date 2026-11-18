@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChartWindow, RoundLevels } from "@joge/chart";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, History } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { cue, Ring, Sheet, Skeleton } from "@/kit";
@@ -9,11 +9,11 @@ import { AssetCube } from "@/marks/asset";
 import { LiveChart } from "../chart/live-chart.tsx";
 import { clockTime, laneLabel } from "../rounds/format.ts";
 import { useNow } from "../rounds/use-now.ts";
-import { LaneRail, LastResults } from "./lane-rail.tsx";
+import { LaneRail } from "./lane-rail.tsx";
 import { SidePlates } from "./side-plates.tsx";
 import { Stack } from "./stack.tsx";
 import { useCountdownCues } from "./use-countdown-cues.ts";
-import { useLane, useWakeLane } from "./use-lane.ts";
+import { useLane } from "./use-lane.ts";
 import { useOneTap } from "./use-one-tap.ts";
 
 const SECOND_MS = 1_000;
@@ -32,7 +32,6 @@ const NAMES = { BTC: "Bitcoin", ETH: "Ether", BCH: "Bitcoin Cash", GOLD: "Gold" 
 export function Terminal() {
   const now = useNow();
   const { lane, lanes, live, next, strike, loading } = useLane();
-  useWakeLane(lane?.thread);
   const [lanesOpen, setLanesOpen] = useState(false);
   const stakeClass = lane && lane.seconds >= HOUR_SECONDS ? "hourly" : "short";
   const tap = useOneTap(next, stakeClass);
@@ -97,7 +96,12 @@ export function Terminal() {
               <Ring leftMs={left * SECOND_MS} spanMs={span} size={HERO_RING} label="Entries close" />
             </Link>
           ) : null}
-          <LastResults lane={lane} />
+          <Link
+            href={`/rounds/previous?asset=${lane.asset}`}
+            className="nx-glass flex h-9 items-center gap-1.5 rounded-full px-3.5 font-semibold text-[13px]"
+          >
+            <History aria-hidden className="size-4" /> Previous
+          </Link>
         </div>
         <div className="absolute top-1/2 left-3 -translate-y-1/2 md:left-6">
           <Stack tap={tap} />

@@ -3,7 +3,7 @@
 import type { ChartWindow, RoundLevels } from "@joge/chart";
 import { HOUR_SECONDS, TICKET_DUST, toDollars } from "@joge/sdk";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowUpRight, ChevronLeft, ChevronRight, SearchX, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, SearchX, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSpot } from "@/features/chart/use-spot";
@@ -12,7 +12,7 @@ import { ASSET_TONE, AssetCube } from "@/marks/asset";
 import { LiveChart } from "../chart/live-chart.tsx";
 import { profileHref } from "../players/api.ts";
 import { RoundFilmPlayer } from "../replay/round-film.tsx";
-import { laneLabel, usd } from "../rounds/format.ts";
+import { laneLabel, roundName, usd } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
 import { useClockTime, useNow } from "../rounds/use-now.ts";
 import { ShareActions } from "../share/share-actions.tsx";
@@ -31,7 +31,6 @@ const ROLLING: ChartWindow = { kind: "rolling", spanMs: ROLLING_SPAN_MS };
 const STEP_LABEL = { lock: "Lock this round", settle: "Settle this round", pay: "Pay the tickets" } as const;
 const HERO_RING = 76;
 /** Lane round ids step by this per round (id = thread + counter × 256). */
-const LANE_STEP = 256;
 
 /**
  * One round (D21): who it is (asset, length, number), its state as a ring while it runs or its result as a stamp once
@@ -108,7 +107,7 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
         toast({
           tone: "up",
           title: STEP_LABEL[result.done],
-          body: `#${round.roundId}`,
+          body: roundName(round),
           href: `/proof/${round.roundId}`,
         });
       void client.invalidateQueries({ queryKey: ["round", network, roundId] });
@@ -137,26 +136,9 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
                   {round.laneSeconds ? laneLabel(round.laneSeconds) : ""}
                 </span>
               </Link>
-              {/* A lane round's neighbours are one counter step away (round id = thread + counter × 256). */}
-              {round.laneSeconds && round.roundId - LANE_STEP >= round.thread ? (
-                <Link
-                  href={`/r/${round.roundId - LANE_STEP}`}
-                  aria-label="Previous round"
-                  className="nx-glass grid size-9 place-items-center rounded-full"
-                >
-                  <ChevronLeft aria-hidden className="size-4" />
-                </Link>
-              ) : null}
-              <span className="nx-num text-[13px] text-[var(--muted)]">#{round.roundId}</span>
-              {round.laneSeconds && round.state !== "open" ? (
-                <Link
-                  href={`/r/${round.roundId + LANE_STEP}`}
-                  aria-label="Next round"
-                  className="nx-glass grid size-9 place-items-center rounded-full"
-                >
-                  <ChevronRight aria-hidden className="size-4" />
-                </Link>
-              ) : null}
+              <span className="nx-num px-2 text-[13px] text-[var(--muted)]">
+                {clockTime(round.lockTime)}–{clockTime(round.closeTime)}
+              </span>
             </span>
             {hero !== null ? (
               <p className="flex flex-wrap items-baseline gap-x-3">

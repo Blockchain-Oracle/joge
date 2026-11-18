@@ -3,10 +3,10 @@
 import type { LaneView } from "@joge/db";
 import { toDollars } from "@joge/sdk";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { lobbyQuery } from "../rounds/api.ts";
 import { useWorld } from "../shell/world.tsx";
-import { DEFAULT_THREAD } from "./constants.ts";
+import { DEFAULT_THREAD, MARKET_THREADS } from "./constants.ts";
 
 const LANE_KEY = "joge:lane";
 const listeners = new Set<() => void>();
@@ -17,30 +17,6 @@ const stored = () => {
     return DEFAULT_THREAD;
   }
 };
-
-const running = (lane: LaneView) => lane.next !== null || lane.live !== null;
-/** How often a lane on screen asks to stay awake (the server keeps it 30 minutes per ask). */
-const MINUTE_MS = 60_000;
-const WAKE_EVERY_MINUTES = 5;
-const WAKE_EVERY_MS = WAKE_EVERY_MINUTES * MINUTE_MS;
-
-/**
- * Keeps the lane on screen awake: asks once when it appears and every few minutes while it stays (the keeper's
- * on-demand mode opens rounds only on lanes someone is looking at; always-open lanes ignore it).
- */
-export function useWakeLane(thread: number | undefined) {
-  const network = useWorld();
-  useEffect(() => {
-    if (thread === undefined) return;
-    const wake = () => {
-      if (document.visibilityState !== "visible") return;
-      void fetch(`/api/lanes/${thread}/wake?network=${network}`, { method: "POST" }).catch(() => undefined);
-    };
-    wake();
-    const timer = setInterval(wake, WAKE_EVERY_MS);
-    return () => clearInterval(timer);
-  }, [thread, network]);
-}
 
 /** The lane on screen survives a reload (Agari's pinned ticker). */
 export function pickLane(thread: number) {
@@ -64,9 +40,9 @@ export function useLane() {
     stored,
     () => DEFAULT_THREAD,
   );
-  // Every lane: the running ones first, then the sleeping ones (on-demand lanes wake when picked).
+  // The four markets, in their order (BTC, ETH, BCH every 5 minutes; gold every hour).
   const all = lobby.data?.lanes ?? [];
-  const lanes: LaneView[] = [...all.filter(running), ...all.filter((lane) => !running(lane))];
+  const lanes: LaneView[] = MARKET_THREADS.flatMap((thread) => all.filter((lane) => lane.thread === thread));
   const lane = lanes.find((candidate) => candidate.thread === thread) ?? lanes[0];
   const live = lane?.live ?? null;
   const strike =

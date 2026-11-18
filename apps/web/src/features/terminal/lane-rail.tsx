@@ -2,11 +2,9 @@
 
 import type { LaneView } from "@joge/db";
 import { Moon } from "lucide-react";
-import Link from "next/link";
 import { useSpot } from "@/features/chart/use-spot";
 import { cue, cx, Ring } from "@/kit";
 import { AssetCube } from "@/marks/asset";
-import { RoundStamp } from "../round/verdict.tsx";
 import { laneLabel, usd } from "../rounds/format.ts";
 import { useNow } from "../rounds/use-now.ts";
 import { LaneAgents } from "./lane-agents.tsx";
@@ -84,31 +82,5 @@ export function LaneRail({
       </div>
       {lane ? <LaneAgents lane={lane} /> : null}
     </div>
-  );
-}
-
-const SHOWN_RESULTS = 5;
-const RESULT_STAMP = 30;
-
-/**
- * The lane's last results as small stamps (上 / 下 / 無), newest first; each opens its round playing its film. This is
- * the way from the live screen into what already happened.
- */
-export function LastResults({ lane }: { lane: LaneView }) {
-  const recent = lane.recent.slice(0, SHOWN_RESULTS);
-  if (recent.length === 0) return null;
-  return (
-    <nav className="flex flex-col items-end gap-1.5" aria-label="Last results">
-      {recent.map((round) => (
-        <Link
-          key={round.roundId}
-          href={`/r/${round.roundId}?play=1`}
-          aria-label={`Replay round ${round.roundId}`}
-          className="transition-transform hover:scale-110"
-        >
-          <RoundStamp state={round.state} winner={round.winner} size={RESULT_STAMP} />
-        </Link>
-      ))}
-    </nav>
   );
 }

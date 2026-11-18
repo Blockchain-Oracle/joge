@@ -50,3 +50,7 @@ export function countdown(until: number, now: number) {
   const two = (value: number) => String(value).padStart(2, "0");
   return hours > 0 ? `${hours}:${two(minutes)}:${two(seconds)}` : `${minutes}:${two(seconds)}`;
 }
+
+/** A round as people name it, by market and time, never by its number: "BTC 5 min · 14:05–14:10". */
+export const roundName = (round: { asset: AssetId; laneSeconds: number | null; lockTime: number; closeTime: number }) =>
+  `${round.asset === "GOLD" ? "Gold" : round.asset}${round.laneSeconds ? ` ${laneLabel(round.laneSeconds)}` : ""} · ${clockTime(round.lockTime)}–${clockTime(round.closeTime)}`;

@@ -1,7 +1,7 @@
 import { TICKET_DUST } from "@joge/sdk";
 import type { Cue } from "@/kit";
 import type { TicketRow } from "../portfolio/ticket-row.tsx";
-import { laneLabel } from "../rounds/format.ts";
+import { clockTime, laneLabel } from "../rounds/format.ts";
 
 /**
  * A player's story (the portfolio film): every decided ticket in the order its round closed, as one beat each on a
@@ -65,7 +65,7 @@ export function storyOf(rows: TicketRow[]): Story | null {
     return {
       roundId: single ? first.ticket.roundId : null,
       label: single
-        ? `${first.round.asset} ${first.round.laneSeconds ? laneLabel(first.round.laneSeconds) : ""} #${first.ticket.roundId}`
+        ? `${first.round.asset} ${first.round.laneSeconds ? laneLabel(first.round.laneSeconds) : ""} · ${clockTime(first.round.closeTime)}`
         : `${group.length} rounds`,
       outcome: won > lost ? "won" : lost > won ? "lost" : net >= 0 ? (won > 0 ? "won" : "refunded") : "lost",
       net,

@@ -1,4 +1,14 @@
-import { Activity, Bot, CandlestickChart, Compass, type LucideIcon, Palette, Ticket, Trophy } from "lucide-react";
+import {
+  Activity,
+  Bot,
+  CandlestickChart,
+  Compass,
+  History,
+  type LucideIcon,
+  Palette,
+  Ticket,
+  Trophy,
+} from "lucide-react";
 import type { Route } from "next";
 
 export interface Place {
@@ -36,6 +46,7 @@ export interface Page {
 /** Everything else reachable from More and ⌘K. */
 export const PAGES: Page[] = [
   // The first-run guide, reopened from here and ⌘K (the host opens it for `?guide=1`).
+  { label: "Previous rounds", href: "/rounds/previous", icon: History, group: "app" },
   { label: "Guide", href: "/rounds?guide=1" as Route, icon: Compass, group: "joge" },
   { label: "Status", href: "/status", icon: Activity, group: "joge" },
   // The design gallery is for building Jōge, not for players: it is listed only in development.
@@ -47,10 +58,11 @@ export const PAGES: Page[] = [
 export const placeFor = (path: string): Place | undefined =>
   PLACES.find((place) => place.paths.some((prefix) => path === prefix || path.startsWith(prefix)));
 
-/** Where a page deeper than its place goes back to: a proof returns to its round; anything else to its place. */
+/** Where a page deeper than its place goes back to: a proof to its round, a round to the previous rounds, else its place. */
 export function backFor(path: string): { href: Route; label: string } | null {
   const proof = /^\/proof\/(\d+)/.exec(path);
-  if (proof) return { href: `/r/${proof[1]}` as Route, label: `Round #${proof[1]}` };
+  if (proof) return { href: `/r/${proof[1]}` as Route, label: "The round" };
+  if (path.startsWith("/r/")) return { href: "/rounds/previous", label: "Previous rounds" };
   const place = placeFor(path);
   if (!place || place.paths.some((prefix) => path === prefix)) return null;
   return { href: place.href, label: place.label };

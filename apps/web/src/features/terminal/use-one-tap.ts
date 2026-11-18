@@ -9,7 +9,7 @@ import { cue, toast } from "@/kit";
 import { useFaucet } from "../guide/faucet.ts";
 import { openGuide } from "../guide/store.ts";
 import { limitProblem, useLimits } from "../limits/limits.ts";
-import { usd } from "../rounds/format.ts";
+import { roundName, usd } from "../rounds/format.ts";
 import { OPEN_MORE_EVENT } from "../shell/places.ts";
 import { useWorld } from "../shell/world.tsx";
 import { buildEntry, ENTRY_OVERHEAD, lostRace, sendEntry, txidOf } from "../ticket/entry.ts";
@@ -154,7 +154,7 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
       toast({
         tone: "up",
         title: `${side === 0 ? "上 Up" : "下 Down"} ${usd(stakeUsd)}`,
-        body: `Round #${round.roundId}`,
+        body: roundName(round),
         href: `/r/${round.roundId}`,
       });
       void client.invalidateQueries({ queryKey: ["coins", network] });

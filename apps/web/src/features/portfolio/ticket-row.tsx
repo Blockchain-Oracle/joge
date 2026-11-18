@@ -6,7 +6,7 @@ import { ChevronRight, Play } from "lucide-react";
 import Link from "next/link";
 import { cx } from "@/kit";
 import { AssetCube } from "@/marks/asset";
-import { laneLabel } from "../rounds/format.ts";
+import { clockTime, laneLabel } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
 
 export interface TicketRow {
@@ -54,7 +54,8 @@ export function TicketLine({ ticket, round }: TicketRow) {
       <Side outcome={ticket.outcome} />
       <AssetCube asset={round.asset} size={26} />
       <span className="nx-num min-w-0 flex-1 truncate text-[13px] text-[var(--muted)]">
-        {round.laneSeconds ? laneLabel(round.laneSeconds) : ""} #{ticket.roundId}
+        {round.laneSeconds ? laneLabel(round.laneSeconds) : ""} · {clockTime(round.lockTime)}–
+        {clockTime(round.closeTime)}
       </span>
       <span className="nx-num text-[14px] text-[var(--ink-2)]">{money.format(ticket.stake)}</span>
       <span className="nx-num w-20 text-right text-[14px] font-semibold">

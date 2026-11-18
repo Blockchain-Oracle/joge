@@ -1,5 +1,5 @@
 import { FEEDS, type FeedId, feedsOf, GOLD_FACTOR, LANES } from "@joge/sdk";
-import { and, asc, desc, eq, gte, inArray, isNull, lte, notInArray, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, lte, notInArray, or, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
 import {
   CHART_POINTS,
@@ -357,3 +357,20 @@ export async function wantedLanes(db: Db, network: Network, now: Date): Promise<
     .where(and(eq(laneDemand.network, network), gte(laneDemand.until, now)));
   return new Set(rows.map((row) => row.thread));
 }
+
+/** Finished rounds someone played, of some lanes, newest first (Previous rounds); `before` (close time) pages back. */
+export const previousRounds = (db: Db, network: Network, threads: number[], before: number, limit: number) =>
+  db
+    .select()
+    .from(rounds)
+    .where(
+      and(
+        eq(rounds.network, network),
+        inArray(rounds.thread, threads),
+        inArray(rounds.state, ["settled", "void"]),
+        gt(rounds.entrants, 0),
+        lt(rounds.closeTime, before),
+      ),
+    )
+    .orderBy(desc(rounds.closeTime))
+    .limit(limit);

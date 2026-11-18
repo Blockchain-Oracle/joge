@@ -4,6 +4,7 @@ import { useCallback, useRef } from "react";
 import { confetti, cue, toast } from "@/kit";
 import { useLiveEvent } from "@/live/hooks";
 import type { LiveEvents } from "@/live/stream";
+import { roundName } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
 import { useJournal } from "../ticket/journal.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
@@ -47,11 +48,11 @@ export function ResultWatch() {
       const href = `/r/${event.roundId}?play=1`;
       if (event.kind === "sweep") {
         const paid = tickets.reduce((sum, ticket) => sum + (ticket.payoutSats ?? 0), 0);
-        if (paid > 0) toast({ tone: "up", title: `Paid ${format.current(paid)}`, body: `#${event.roundId}`, href });
+        if (paid > 0) toast({ tone: "up", title: `Paid ${format.current(paid)}`, body: roundName(view.round), href });
         return;
       }
       if (view.round.state === "void") {
-        toast({ tone: "info", seal: "無効", title: "Refunded", body: `#${event.roundId}`, href });
+        toast({ tone: "info", seal: "無効", title: "Refunded", body: roundName(view.round), href });
         return;
       }
       const hit = tickets.some((ticket) => ticket.outcome === view.round.winner);
@@ -59,7 +60,7 @@ export function ResultWatch() {
         tone: hit ? "up" : "info",
         seal: hit ? "的中" : "外れ",
         title: hit ? "You were right" : "Not this time",
-        body: `${view.round.winner === 0 ? "Up" : "Down"} won · #${event.roundId}`,
+        body: `${view.round.winner === 0 ? "Up" : "Down"} won · ${roundName(view.round)}`,
         href,
       });
       setTimeout(() => cue(hit ? "win" : "loss"), AFTER_STAMP_MS);

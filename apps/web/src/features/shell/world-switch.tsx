@@ -2,6 +2,7 @@
 
 import { type MouseEvent, useCallback, useRef, useState } from "react";
 import { cx, Sheet, SlideToConfirm } from "@/kit";
+import { MAINNET_LIVE } from "../theme/theme.ts";
 import { centreOf, switchWorld, useWorld } from "./world.tsx";
 
 /** The flood starts once the sheet has slid away, so it visibly spreads from the switch. */
@@ -62,7 +63,13 @@ export function WorldSwitch({ words = false, className }: { words?: boolean; cla
             <li>Chipnet rounds and tickets stay apart.</li>
             <li>Back to chipnet in one tap.</li>
           </ul>
-          <SlideToConfirm label="Slide to use real money" onConfirm={onConfirmed} />
+          {MAINNET_LIVE ? (
+            <SlideToConfirm label="Slide to use real money" onConfirm={onConfirmed} />
+          ) : (
+            <p className="rounded-full bg-[var(--surface-2)] py-4 text-center font-semibold text-[14px] text-[var(--ink-2)]">
+              Mainnet opens soon
+            </p>
+          )}
         </div>
       </Sheet>
     </>

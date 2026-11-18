@@ -1,19 +1,14 @@
 "use client";
 
-import { Bell, ChevronLeft, Menu, Search, Trophy } from "lucide-react";
+import { Bell, ChevronLeft, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Logo } from "@/brand/mark";
 import { cx } from "@/kit";
-import { MAINNET_LIVE } from "../theme/theme.ts";
-import { HealthChip } from "./health-chip.tsx";
 import { backFor, PLACES, placeFor } from "./places.ts";
+import { useScrolled } from "./use-scrolled.ts";
 import { WalletButton } from "./wallet-button.tsx";
 import { WorldSwitch } from "./world-switch.tsx";
-
-/** How far the page moves before the header takes its own ground. */
-const SCROLLED_PX = 8;
 
 /**
  * The header (D21): the seal and the name, the places as pills (desktop), notices, the wallet and the menu. On a phone
@@ -34,13 +29,7 @@ export function Header({
   const place = placeFor(path);
   const back = backFor(path);
   // Pinned while the page scrolls; once it has moved, a lighter frosted ground sets it apart from the stage.
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLLED_PX);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const scrolled = useScrolled();
   return (
     <header
       data-scrolled={scrolled ? "" : undefined}
@@ -69,7 +58,7 @@ export function Header({
           })}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          {MAINNET_LIVE ? <WorldSwitch words /> : <HealthChip />}
+          <WorldSwitch words />
           <button
             type="button"
             onClick={onSearch}
@@ -78,13 +67,6 @@ export function Header({
           >
             <Search size={18} aria-hidden />
           </button>
-          <Link
-            href="/leaderboard"
-            aria-label="Leaders"
-            className="nx-glass grid size-11 place-items-center rounded-full md:hidden"
-          >
-            <Trophy size={18} aria-hidden />
-          </Link>
           <button
             type="button"
             onClick={onNotices}

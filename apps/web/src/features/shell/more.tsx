@@ -1,13 +1,14 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import { Bell, Globe, Search } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/brand/mark";
 import { Drawer } from "@/kit";
 import { LimitsPanel } from "../limits/limits-panel.tsx";
 import { WalletPlate } from "../wallet/wallet-plate.tsx";
 import { PAGES, PLACES } from "./places.ts";
-import { Preferences } from "./prefs.tsx";
+import { Preferences, SettingRow } from "./prefs.tsx";
+import { WorldSwitch } from "./world-switch.tsx";
 
 /**
  * More (D21): the wallet, search and notices, then every setting as an icon, a word and its control. Places live in
@@ -29,6 +30,11 @@ export function More({
   return (
     <Drawer open={open} onClose={onClose} title={<Logo size={36} />}>
       <div className="flex flex-col gap-5">
+        <div className="rounded-[24px] bg-[var(--surface-2)] px-4">
+          <SettingRow icon={<Globe size={18} aria-hidden />} label="Network">
+            <WorldSwitch />
+          </SettingRow>
+        </div>
         <WalletPlate />
         <div className="grid grid-cols-2 gap-2">
           <button

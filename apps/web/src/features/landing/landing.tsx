@@ -9,6 +9,7 @@ import { useNow } from "../rounds/use-now.ts";
 import { BlazeBanner } from "../shell/banner.tsx";
 import { LiveSync } from "../shell/live-sync.tsx";
 import { PLACES } from "../shell/places.ts";
+import { useScrolled } from "../shell/use-scrolled.ts";
 import { useLane } from "../terminal/use-lane.ts";
 import { MAINNET_LIVE } from "../theme/theme.ts";
 import { BUILT_ON, FINAL, HERO, WALLETS } from "./copy.ts";
@@ -34,8 +35,10 @@ function PlayButton({ label }: { label: string }) {
 }
 
 function Nav() {
+  // Pinned like the app's header: once the page moves it takes the same lighter, frosted ground.
+  const scrolled = useScrolled();
   return (
-    <nav className="flex items-center justify-between gap-4 py-5">
+    <nav data-scrolled={scrolled ? "" : undefined} className="jg-header flex items-center justify-between gap-4 py-5">
       <Link href="/" aria-label="Jōge home" className="flex items-center">
         <Logo size={44} className="jg-mark-in" />
       </Link>

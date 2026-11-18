@@ -4,16 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle, Ticket, Trophy } from "lucide-react";
 import Link from "next/link";
 import { EmptyState, Skeleton } from "@/kit";
+import { openGuide } from "../guide/store.ts";
 import { profileHref } from "../players/api.ts";
 import { StoryFilm } from "../replay/story-film.tsx";
+import { clockTime } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useJournal } from "../ticket/journal.ts";
+import { useWalletCoins } from "../wallet/coins.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { WALLETS } from "../wallet/wallets.ts";
 import { Side, TicketLine, type TicketRow } from "./ticket-row.tsx";
 
 const PERCENT = 100;
+const SECOND_MS = 1_000;
+/** Enough for a first call (a $0.10 stake and its fees), as the guide counts it. */
+const FUNDED_SATS = 60_000n;
 const SETTLED = new Set(["won", "lost", "refunded"]);
 
 /**
@@ -25,6 +31,7 @@ export function Portfolio() {
   const wallet = useWallet();
   const journal = useJournal();
   const money = useMoney();
+  const coins = useWalletCoins();
   const receive = wallet.keys.filter((key) => key.path === "receive").map((key) => key.pkh);
   const tickets = useQuery({
     queryKey: ["tickets", network, receive.join(",")],
@@ -50,12 +57,13 @@ export function Portfolio() {
           ))}
         </ul>
         <h1 className="nx-display text-[clamp(30px,5vw,44px)]">Your tickets</h1>
+        {/* The guide walks a first-timer through it: a wallet, pairing, coins, a first call. */}
         <button
           type="button"
-          onClick={wallet.openConnect}
-          className="nx-display h-14 rounded-full bg-[var(--ink)] px-8 text-[17px] text-[var(--ink-inverse)]"
+          onClick={() => openGuide("wallet")}
+          className="nx-display h-14 rounded-full bg-[var(--vermilion)] px-8 text-[17px] text-white"
         >
-          Pair a wallet
+          Get started
         </button>
       </div>
     );
@@ -116,7 +124,7 @@ export function Portfolio() {
               className="flex items-center gap-3 rounded-[18px] bg-[var(--surface-1)] p-3"
             >
               <Side outcome={entry.outcome} />
-              <span className="nx-num flex-1 text-[14px] text-[var(--ink-2)]">#{entry.roundId}</span>
+              <span className="nx-num flex-1 text-[14px] text-[var(--ink-2)]">{clockTime(entry.at / SECOND_MS)}</span>
               <span className="nx-num text-[15px] font-semibold">{money.format(Number(entry.stake))}</span>
               {entry.state === "failed" ? (
                 <span className="nx-eyebrow text-[var(--down-text)]">failed</span>
@@ -128,7 +136,16 @@ export function Portfolio() {
         </section>
       ) : null}
       {rows.length === 0 ? (
-        <EmptyState icon={Ticket} title="No tickets yet" action={{ label: "Play a round", href: "/rounds" }} />
+        // Paired but nothing played: the next step, coins first if the wallet has too few for a call.
+        coins.data && coins.balance < FUNDED_SATS ? (
+          <EmptyState
+            icon={Ticket}
+            title={network === "chipnet" ? "Get test BCH to play" : "Add BCH to play"}
+            action={{ label: network === "chipnet" ? "Get test BCH" : "Add BCH", onClick: () => openGuide("fund") }}
+          />
+        ) : (
+          <EmptyState icon={Ticket} title="No tickets yet" action={{ label: "Play a round", href: "/rounds" }} />
+        )
       ) : (
         <section className="flex flex-col gap-1.5" aria-label="Tickets">
           {rows.map(({ ticket, round }) => (

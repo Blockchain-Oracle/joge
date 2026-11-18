@@ -1,11 +1,10 @@
 "use client";
 
-import { BellRing, Globe, Moon, Palette, Sun, SunMoon, Vibrate, Volume2 } from "lucide-react";
+import { BellRing, Moon, Palette, Sun, SunMoon, Vibrate, Volume2 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { feedbackPrefs, Segmented, Switch, setFeedbackPrefs } from "@/kit";
 import { type PushState, usePush } from "../push/push.ts";
-import { applyTheme, currentTheme, MAINNET_LIVE, type ThemeChoice } from "../theme/theme.ts";
-import { WorldSwitch } from "./world-switch.tsx";
+import { applyTheme, currentTheme, type ThemeChoice } from "../theme/theme.ts";
 
 const THEMES = [
   { value: "dark", label: <Moon size={14} aria-label="Night" /> },
@@ -64,11 +63,6 @@ export function Preferences() {
   }, []);
   return (
     <>
-      {MAINNET_LIVE ? (
-        <SettingRow icon={<Globe size={18} aria-hidden />} label="World">
-          <WorldSwitch />
-        </SettingRow>
-      ) : null}
       <SettingRow icon={<Palette size={18} aria-hidden />} label="Theme">
         <Segmented
           label="Theme"

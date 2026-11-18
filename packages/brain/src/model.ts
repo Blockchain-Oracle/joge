@@ -5,8 +5,8 @@ import { APICallError, createGateway, type LanguageModel } from "ai";
 /**
  * Which model answers, as Sensei and for the agents. Server only; a setting, not code:
  *
- *   AI_MODEL="anthropic/claude-opus-5.5"   (the default)
- *   AI_MODEL="openai/gpt-5.4"
+ *   AI_MODEL="openai/gpt-5.4-mini"   (the default: a short read every round, so a small fast model — Masayume's lesson)
+ *   AI_MODEL="openai/gpt-5.4"        (a bigger model, if ever wanted)
  *
  * The credential decides the route, first match wins:
  *   1. AI_BASE_URL + AI_API_KEY → any OpenAI-compatible endpoint (OpenRouter, Together, a local server).
@@ -15,7 +15,7 @@ import { APICallError, createGateway, type LanguageModel } from "ai";
  *   4. nothing → null, and the caller says which variable to set.
  * A key you already hold is tried before the gateway, so it needs no gateway account.
  */
-export const DEFAULT_AI_MODEL = "anthropic/claude-opus-5.5";
+export const DEFAULT_AI_MODEL = "openai/gpt-5.4-mini";
 
 type Factory = (modelId: string) => LanguageModel;
 

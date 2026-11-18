@@ -3,6 +3,7 @@
 import { stringify } from "@bitauth/libauth";
 import { useWizardConnect, type WizardConnectState } from "@wizardconnect/react";
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { MARK_BOX, markSvg } from "@/brand/geometry";
 import { toast } from "@/kit";
 import { useWorld } from "../shell/world.tsx";
 import { type PathName, type WalletKey, walletKeys } from "./keys.ts";
@@ -42,13 +43,19 @@ const WalletContext = createContext<WalletApi | null>(null);
  * WizardConnect, Jōge's way: the official hook keeps the relay, the session and reconnects; this context adds the
  * wallet's addresses, the pairing sheet's state, and signing with CashScript's request object made relay-safe.
  */
-const APP_ICON = "/icons/icon-192.png";
+/**
+ * The name and icon a wallet shows for us (his report: Cashonize listed "Unknown dApp" and the logo came and went).
+ * The icon travels inside the pairing message as a data URI — no fetch, so no mixed-content block from an http page
+ * and nothing to fail — and the name is plain, like Hashi's.
+ */
+const DAPP_NAME = "Jōge";
+const DAPP_ICON = `data:image/svg+xml;utf8,${encodeURIComponent(
+  markSvg().replace(">", `><rect width="${MARK_BOX}" height="${MARK_BOX}" rx="14" fill="#0a0a0a"/>`),
+)}`;
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const network = useWorld();
-  // The wallet shows this icon on its own screen, so it must be a full URL, not a path on our site.
-  const dappIcon = typeof window === "undefined" ? APP_ICON : new URL(APP_ICON, window.location.origin).href;
-  const wizard = useWizardConnect({ dappName: "Jōge 上下", dappIcon, sessionKey: SESSION_KEY });
+  const wizard = useWizardConnect({ dappName: DAPP_NAME, dappIcon: DAPP_ICON, sessionKey: SESSION_KEY });
   const [connectOpen, setConnectOpen] = useState(false);
   const announced = useRef(false);
   const { manager, state } = wizard;

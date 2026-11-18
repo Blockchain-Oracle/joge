@@ -61,7 +61,7 @@ export function HeroRound() {
               <AssetCube asset={lane.asset} size={40} />
               <span className="flex flex-col">
                 <span className="nx-display text-[18px]">{NAMES[lane.asset]}</span>
-                <span className="nx-num text-[12px] text-[var(--muted)]">{laneLabel(lane.seconds)} rounds</span>
+                <span className="text-[13px] text-[var(--muted)]">{laneLabel(lane.seconds)} rounds</span>
               </span>
             </span>
             {left !== null && left > 0 ? (

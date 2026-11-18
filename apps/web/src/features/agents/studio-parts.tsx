@@ -154,7 +154,7 @@ export function LaneGrid({ lanes, onChange }: { lanes: number[]; onChange: (lane
           >
             <AssetCube asset={lane.asset} size={30} />
             <span className="nx-display flex-1 text-[15px]">
-              {lane.asset} <span className="nx-num font-semibold opacity-60">{laneLabel(lane.seconds)}</span>
+              {lane.asset} <span className="font-semibold opacity-60">{laneLabel(lane.seconds)}</span>
             </span>
             {running.has(lane.thread) ? <LiveDot tone="up" /> : null}
           </button>

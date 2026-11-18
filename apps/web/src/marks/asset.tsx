@@ -40,8 +40,8 @@ export function AssetCube({ asset, size = 44, className }: { asset: AssetId; siz
   const tone = ASSET_TONE[asset];
   return (
     <span
-      className={cx("jg-candy", className)}
-      style={{ width: size, height: size, "--c1": tone.solid } as CSSProperties}
+      className={cx("inline-grid shrink-0 place-items-center rounded-full text-white", className)}
+      style={{ width: size, height: size, background: tone.solid } satisfies CSSProperties}
     >
       <AssetMark asset={asset} size={Math.round(size * MARK_SHARE)} />
     </span>

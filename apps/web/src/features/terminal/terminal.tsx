@@ -27,7 +27,7 @@ const NAMES = { BTC: "Bitcoin", ETH: "Ether", BCH: "Bitcoin Cash", GOLD: "Gold" 
  * The round screen (D21), rebuilt from Abu's products: the chart is the stage (Kakure), the question is five words
  * (Masayume's hero question), time is a ring that ticks its last five seconds (Senryo, Kakure's games), the stake is a
  * standing setting in a glass stack (Kakure), and Up/Down are flooded plates that call in one tap (Senryo, Owarine).
- * The lanes sit in a rail (Kakure's 20 rem rail); on a phone they open from the asset chip.
+ * The four markets sit in a narrow rail beside the round; on a phone they open from the asset chip.
  */
 export function Terminal() {
   const now = useNow();
@@ -56,7 +56,7 @@ export function Terminal() {
   const decidedAt = next ? clockTime(next.closeTime) : "--:--";
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_248px]">
       <section
         aria-label={`${NAMES[lane.asset]} ${laneLabel(lane.seconds)}`}
         className="relative h-[calc(100dvh-180px)] min-h-[540px] overflow-hidden rounded-[32px] bg-[var(--stage)] shadow-[inset_0_0_0_1px_var(--hairline)] md:h-[calc(100dvh-104px)]"
@@ -75,7 +75,7 @@ export function Terminal() {
           >
             <AssetCube asset={lane.asset} size={32} />
             <span className="nx-display text-[16px]">{NAMES[lane.asset]}</span>
-            <span className="nx-num text-[13px] text-[var(--muted)]">{laneLabel(lane.seconds)}</span>
+            <span className="text-[14px] text-[var(--muted)]">{laneLabel(lane.seconds)}</span>
             <ChevronDown aria-hidden className="size-4 text-[var(--muted)] lg:hidden" />
           </button>
           <h1 className="nx-display max-w-[11ch] text-[clamp(34px,5vw,64px)]">

@@ -154,3 +154,26 @@
     clip-path: circle(150vmax at var(--flood-x, 50%) var(--flood-y, 50%));
   }
 }
+
+/*
+ * The header stays pinned while the page scrolls. At the top it sits on the page; once the page has moved it takes a
+ * lighter, frosted ground with a hairline below. The ground reaches both edges of the window through border-image (the
+ * header itself stays inside the column, so nothing widens the page).
+ */
+.jg-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-chrome);
+  border-image: linear-gradient(transparent 0 0) fill 0 / / 0 100vmax;
+  transition: border-image 200ms ease-out;
+}
+.jg-header[data-scrolled] {
+  border-image:
+    linear-gradient(
+      color-mix(in srgb, var(--surface-1) 88%, transparent) calc(100% - 1px),
+      var(--hairline) calc(100% - 1px)
+    )
+    fill 0 / / 0 100vmax;
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+}

@@ -1,5 +1,5 @@
 import { ASSET_FEED, FEEDS } from "@joge/sdk";
-import { and, eq, gte, inArray, lte, notExists, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lte, notExists, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
 import { oracleSeries, priceSeries, type RoundRow } from "./queries.ts";
 import { type Network, roundPaths, rounds, tickets, transactions } from "./schema.ts";
@@ -154,4 +154,32 @@ export async function roundFilm(db: Db, network: Network, roundId: number): Prom
       .sort((a, b) => a.at - b.at),
     source: kept ? "kept" : live.length >= 2 ? "live" : "signed",
   };
+}
+
+/**
+ * A market's last decided rounds with their kept price paths, newest first: the Previous rounds strip draws each as a
+ * candle (a round whose path was never kept falls back to its signed strike and close).
+ */
+export async function roundStrip(db: Db, network: Network, thread: number, limit: number) {
+  const list = await db
+    .select()
+    .from(rounds)
+    .where(and(eq(rounds.network, network), eq(rounds.thread, thread), inArray(rounds.state, [...DECIDED])))
+    .orderBy(desc(rounds.closeTime))
+    .limit(limit);
+  if (list.length === 0) return [];
+  const paths = await db
+    .select()
+    .from(roundPaths)
+    .where(
+      and(
+        eq(roundPaths.network, network),
+        inArray(
+          roundPaths.roundId,
+          list.map((round) => round.roundId),
+        ),
+      ),
+    );
+  const byId = new Map(paths.map((path) => [path.roundId, path.points]));
+  return list.map((round) => ({ round, points: byId.get(round.roundId) ?? [] }));
 }

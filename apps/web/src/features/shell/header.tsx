@@ -3,6 +3,7 @@
 import { Bell, ChevronLeft, Menu, Search, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Logo } from "@/brand/mark";
 import { cx } from "@/kit";
 import { MAINNET_LIVE } from "../theme/theme.ts";
@@ -10,6 +11,9 @@ import { HealthChip } from "./health-chip.tsx";
 import { backFor, PLACES, placeFor } from "./places.ts";
 import { WalletButton } from "./wallet-button.tsx";
 import { WorldSwitch } from "./world-switch.tsx";
+
+/** How far the page moves before the header takes its own ground. */
+const SCROLLED_PX = 8;
 
 /**
  * The header (D21): the seal and the name, the places as pills (desktop), notices, the wallet and the menu. On a phone
@@ -29,8 +33,19 @@ export function Header({
   const path = usePathname();
   const place = placeFor(path);
   const back = backFor(path);
+  // Pinned while the page scrolls; once it has moved, a lighter frosted ground sets it apart from the stage.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > SCROLLED_PX);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <header className="flex flex-col gap-1 pt-[max(env(safe-area-inset-top),10px)] pb-3 md:pt-4">
+    <header
+      data-scrolled={scrolled ? "" : undefined}
+      className="jg-header flex flex-col gap-1 pt-[max(env(safe-area-inset-top),10px)] pb-3 md:pt-4"
+    >
       <div className="flex h-12 items-center gap-3">
         <Link href="/" aria-label="Jōge home" className="flex shrink-0 items-center">
           <Logo size={40} />

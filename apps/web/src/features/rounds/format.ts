@@ -34,8 +34,9 @@ const TIME = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digi
 /** A moment (seconds) as a local wall-clock time, the way the chart's axis reads it ("22:05"). */
 export const clockTime = (seconds: number) => TIME.format(seconds * MS_PER_SECOND);
 
-/** "3 min", "1 h". */
-export const laneLabel = (seconds: number) => (seconds >= HOUR ? `${seconds / HOUR} h` : `${seconds / MINUTE} min`);
+/** "5 min", "1 hour" (read in the text face, never the figures' monospace). */
+export const laneLabel = (seconds: number) =>
+  seconds >= HOUR ? `${seconds / HOUR} hour${seconds / HOUR === 1 ? "" : "s"}` : `${seconds / MINUTE} min`;
 
 /** Shown wherever a time or countdown is not known yet (server render, before hydration). */
 export const UNKNOWN_TIME = "--:--";

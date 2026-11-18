@@ -1,23 +1,16 @@
 ---
-title: Agents and Sensei
-description: Sensei reads a round with you and hands you a one-tap ticket. Agents play for you from an on-chain vault whose covenant only lets them bet, and only for you.
-icon: Bot
+title: Sensei and agents
+description: "Sensei reads a round with you and hands you a one-tap ticket. Agents play for you from an on-chain vault that can only bet, and only for you."
 ---
 
-<Shot src="/shots/wide/agent.webp" alt="An agent's page: Night owl II, its face, a $0.06 vault, its brief, Copy this agent, and Decisions as a grid of tiles coloured by outcome" caption="An agent on chipnet: its vault read live from the chain, its brief, and every decision it made." url="joge.84.46.247.92.sslip.io/agents/2" />
+<Crop src="/shots/crop/sensei.webp" alt="Sensei's panel: a live price strip, Read BTC 5 min, and the starters Coin-flip? and I lost my last two" caption="Sensei, one tap from any round." width={420} />
+
+## Sensei
+
+Tap the orb (on a phone, the seal in the dock) and ask for a read. Sensei gives a straight call, <Up />, <Down /> or sit out, with one reason and one risk, and up to two ticket cards you can enter with one tap. It never signs anything. It hears this browser's recent results and pace, never your address, and after a losing run or four asks in three minutes it tells you to slow down and points to your limits.
 
 | | Sensei | Agents |
 |---|---|---|
-| **What it is** | A coach in a side panel | A player you build |
-| **Who signs** | You, always: its trade cards open your normal entry | Ask you: you sign its proposal. Plays alone: the agent's own key, from its vault |
-| **Money it can touch** | None | Its vault, only as entries that pay you, each under its cap |
-| **Model** | `openai/gpt-5.4-mini` by default (`AI_MODEL`) | The same, or no model at all for **Partner** |
-| **Brakes** | Tells you to skip a round; points to your play limits | Confidence floor, crowding limit, loss breaker, daily cap |
-
-<Cards>
-  <Card title="Sensei" href="/docs/agents/sensei" description="A straight call, one reason, one risk, and a brake." />
-  <Card title="Build an agent" href="/docs/agents/studio" description="Face, style, markets, risk. Try a read before you create it." />
-  <Card title="The vault" href="/docs/agents/vault" description="What the agent's key can and can't do, enforced on chain." />
-  <Card title="Decisions" href="/docs/agents/decisions" description="Every call an agent made or skipped, and why." />
-  <Card title="Partners" href="/docs/agents/partners" description="Agents that take the empty side so a lone call still plays." />
-</Cards>
+| Who signs | you, always | you (Asks you) or its own key, from its vault (Plays alone) |
+| Money it touches | none | its vault, only as bets that pay you |
+| Model | `openai/gpt-5.4-mini` by default | the same, or none for Partners |

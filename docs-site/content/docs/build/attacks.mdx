@@ -1,0 +1,25 @@
+---
+title: Attacks refused
+description: "77 contract tests, 23 of them attacks. Each one tries to steal, inflate or reorder something, and each is refused by the contract's own rule."
+---
+
+`pnpm --filter @joge/contracts test` runs every function in Bitcoin Cash's own script VM, with real General Protocols messages: **77 tests, all passing.**
+
+| Attack | Refused because |
+|---|---|
+| A stake outside the round's bounds | "stake outside this round's bounds" |
+| Inflate the gate's totals | "gate totals must add this stake" |
+| A ticket that claims more than was paid | "ticket must record round, gate, outcome, stake and payee" |
+| Send the ticket anywhere else, or mint a second | "output 1 must be the ticket" · "at most gate, ticket and change" |
+| Smuggle another player's ticket in as funding | "funding inputs carry no tokens" |
+| Overfill a gate | "gate is full" |
+| Lock with a gate left out, or out of order | "every gate, and nothing else" · "gates must be in gate order" |
+| Lock before the oracle passed the start | "first message must be at or after the boundary" |
+| Take more than the fixed fee, or send a second version | "fixed lock fee" · "fixed sequence" |
+| Use any line but the message after the lock | "strike must be the message after the lock message" |
+| Name the other side as winner | "the settlement record must be exact" |
+| Pay a ticket more than its share, or to someone else | "payout amount" · "output pays the ticket's owner" |
+| Burn the round while tickets are unpaid | "the master carries on…" |
+| Pay a ticket from another round | "ticket belongs to another round" |
+
+The lane thread, factory, agent vault and event gate have their own refusals in the same suite: slots off the grid, rounds too short or too far ahead, stakes above an agent's cap, tickets for anyone but its owner.

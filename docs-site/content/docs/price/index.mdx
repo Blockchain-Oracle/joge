@@ -1,0 +1,15 @@
+---
+title: Signed every minute
+description: "General Protocols signs each market's price about once a minute. The contracts check those signatures themselves."
+---
+
+<Logo name="general-protocols.png" size={26} /> **General Protocols** runs the price oracles Bitcoin Cash contracts already settle on. Each oracle signs a 16-byte message about once a minute: a time, two sequence numbers and the price. Jōge's contracts check that signature on chain against the oracle's public key, which is built into the contract.
+
+| Market | Feed | Signed until |
+|---|---|---|
+| <Logo name="coin-btc.svg" /> Bitcoin | USD/BTC | 15 Jan 2027 |
+| <Logo name="coin-eth.svg" /> Ether | USD/ETH | 15 Jan 2027 |
+| <Logo name="coin-bch.svg" /> Bitcoin Cash | USD/BCH | 15 Apr 2028 |
+| <Logo name="coin-gold.svg" /> Gold | USD/BCH ÷ XAU/BCH, both feeds | 15 Jan 2027 |
+
+> Between signatures the chart moves with an exchange ticker, re-based to the oracle's level at every signed price. Only the signed messages ever settle a round.

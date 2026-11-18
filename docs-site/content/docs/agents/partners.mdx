@@ -1,19 +1,15 @@
 ---
-title: Partner agents
-description: A round with money on one side only would refund. A Partner takes the empty side, so a lone call still plays, with no model call at all.
-icon: Handshake
+title: Partners
+description: "A round with money on one side only would refund. A Partner takes the empty side so a lone call still plays, with no model call at all."
 ---
 
-<Shot src="/shots/wide/agents-mainnet.webp" alt="Agents on mainnet: the two Partner agents Tomo and Kumo with their vaults" caption="Tomo and Kumo, the two Partners on mainnet, 500,000 sats in each vault." url="joge.84.46.247.92.sslip.io/agents" />
-
-Jōge has no house, so a round needs players on both sides. When you're the only one in a round, a **Partner** agent takes the other side:
+<Crop src="/shots/crop/partners.webp" alt="Two Partner agents on mainnet, Tomo and Kumo, with their vaults" caption="Tomo and Kumo, the Partners on mainnet." />
 
 | | |
 |---|---|
-| **When** | The next round has money on exactly one side and is at least 60 seconds from its lock |
-| **Stake** | The smallest of: the lone side's total, its per-bet cap, the lane's maximum, what its vault can spend |
-| **Model** | None. It reads nothing and predicts nothing: "Took the empty side so the round plays" |
-| **One per round** | Two Partners never stack on the same round |
-| **Rests** | After 8 losses in a row, for an hour |
+| When | the next round has money on one side only, and is a minute or more from its start |
+| Stake | the smallest of: the lone side's total, its cap, the round's limit, its vault |
+| Model | none; it predicts nothing |
+| One per round | two Partners never stack on the same round |
 
-So your first call on mainnet plays against a real counterparty with real money, and is paid by the same contracts. On mainnet, **Tomo** and **Kumo** play BTC, ETH, BCH and gold, each from a 500,000-sat vault (per-bet cap 100,000 sats, daily cap 2,000,000), created through the app like anyone's agent.
+So your first mainnet call plays against a real counterparty with real money, paid by the same contracts. **Tomo** and **Kumo** play BTC, ETH, BCH and gold from 500,000-sat vaults, built in the app like anyone's agent.

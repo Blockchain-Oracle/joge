@@ -1,0 +1,16 @@
+---
+title: The line nobody can race
+description: "The line to beat is a price signed after entries closed, so nobody who locks a round can know it in advance."
+---
+
+<Figure legend={<><Key swatch="signed">signed message</Key><Key swatch="line">the line</Key><span className="ms-auto text-muted-ink">one message ≈ one minute</span></>}>
+  <LineFigure />
+</Figure>
+
+| Price | Which message |
+|---|---|
+| Lock | the first message signed at or after the start (S), proven with the one before it |
+| <Line /> | the next message, S + 1, about a minute later |
+| Close | the first message at or after the close time |
+
+Whoever sends the lock can see message S, but not S + 1: it doesn't exist yet. Picking by sequence number rather than by time keeps that gap even when the oracle's minutes drift, and every client finds the same messages.

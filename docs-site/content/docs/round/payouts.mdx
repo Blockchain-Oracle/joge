@@ -1,0 +1,29 @@
+---
+title: Payouts and fees
+description: "The winning side splits the whole pot by stake. The figures are written at settlement and paid by the contract, to the sat."
+---
+
+<Figure legend={<><Key swatch="up">Up won</Key><Key swatch="down">Down lost</Key><Key swatch="muted">deposit back</Key><span className="ms-auto text-muted-ink">sats · round 785</span></>}>
+  <MoneyFigure />
+</Figure>
+
+## The formula
+
+| Ticket | Paid |
+|---|---|
+| On the winning side | <Sats>stake × net pot ÷ its side's total</Sats> + 1,200 − 250 |
+| On the losing side | its deposit: 1,200 − 250 = 950 sats |
+| Refunded round | stake + 950 |
+
+Every ticket carries a 1,200-sat deposit; 250 of it pays that ticket's share of the payout transaction. The figures are written into the round when it settles, so the order tickets are paid in never changes anything, and winners can never be paid more than the pot.
+
+## Fees
+
+| Fee | Rate | Goes to | Taken only if |
+|---|---|---|---|
+| Protocol | 2% of the pot | Jōge | the round is decided and 2% is at least 1,000 sats |
+| Opener | 0.5% of the pot | whoever opened the round | the round is decided and 0.5% is at least 1,000 sats |
+
+> A fee too small to pay stays with the winners. In round 785 the pot was 25,500 sats, so 2% would have been 510: not taken. <Up /> was paid 26,450.
+
+The steps after the entry have fixed fees written into the contracts, so every client builds the same transaction: lock 3,000 sats, settle 2,200, and 1,000 per payout plus 250 per ticket, all paid from the round's own 20,000-sat budget and the tickets' deposits. What's left of the budget goes back to the opener.

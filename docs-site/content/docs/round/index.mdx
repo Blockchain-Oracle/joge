@@ -1,0 +1,30 @@
+---
+title: A round's life
+description: "Five moments, each one a Bitcoin Cash transaction that the contracts accept in exactly one form, so anyone can send it."
+---
+
+This is mainnet round 785: Bitcoin over five minutes, two players, from open to payout. <You>You</You> sign only your entry. Everything after it is decided by a <Signed>signed price</Signed> and the contract.
+
+## The five moments
+
+<Figure legend={<><Key swatch="up">Up</Key><Key swatch="down">Down</Key><Key swatch="line">line to beat</Key><Key swatch="signed">signed price</Key><span className="ms-auto text-muted-ink">mainnet · round 785</span></>}>
+  <RoundFigure />
+</Figure>
+
+At the start, General Protocols signs a price; the one after it becomes <Line />. At the close the price is either above it (<Up />) or below it (<Down />), and the contract pays the side that called it.
+
+## Who sends each step
+
+| Step | Sent by | Paid from |
+|---|---|---|
+| Open | Anyone (the keeper) | The opener's coins |
+| Enter | Your wallet | Your coins |
+| Lock | Anyone | The round's budget |
+| Settle | Anyone | The round's budget |
+| Pay | Anyone | The budget and each ticket's deposit |
+
+Round 785 on chain: [open](https://explorer.bch.ninja/tx/332051cda19f58d5a0dbad1b9d2379c5aa531091d27b44fac92f14ce8b5db850) · [enter ▲](https://explorer.bch.ninja/tx/1761f0bb236ff2d89a147d2edfacb95d4de679efa786c945a73a0d98ff9bd3a9) · [enter ▼](https://explorer.bch.ninja/tx/9563d49d83394cfb9ff29eeb7b3bbb3c30b31abd0d6e7d3aba467d46152ba45a) · [lock](https://explorer.bch.ninja/tx/267afed9a754ea8c8e530bb730080cc10d934c478b969990001647a823b9b492) · [settle](https://explorer.bch.ninja/tx/1c2ccd6449ede751a93ecaff9d0a621b10530eadbc3cfe906bb7cee858c3c58f) · [pay](https://explorer.bch.ninja/tx/1474ff082d7a3e70f56b580bbf3cb107374b3c5e30215462aae1a803ae666acf).
+
+## Lanes keep time
+
+Each market and length is a **lane** with its own thread on chain. Its rounds start on a fixed grid (every five minutes for a 5-minute lane), and the thread opens only the next slot it hasn't opened, so two rounds for the same slot can't exist. While one round runs, the next takes entries. The chain has 13 lanes: 3, 5 and 15 minutes on BTC, ETH and BCH, and an hour on all four markets; the app plays four of them.

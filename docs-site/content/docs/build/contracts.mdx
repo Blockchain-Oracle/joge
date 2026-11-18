@@ -1,0 +1,40 @@
+---
+title: The contracts
+description: "Nine covenants in two languages. CashScript holds everything a player's money touches; SolidCash opens lanes, creates rounds and boxes in the agents."
+---
+
+| Contract | Language | Size | Its job |
+|---|---|---|---|
+| `LaneThread` | SolidCash | 575 B | opens a lane's next round on its grid |
+| `Factory` | SolidCash | 1,084 B | validated custom rounds and events |
+| `Gate` | CashScript | 353 B | takes entries, mints tickets |
+| `EventGate` | CashScript | 644 B | an event's gate, with leaving before the start |
+| `Ticket` | CashScript | 78 B | moves only with its own decided round |
+| `MasterOpen` | CashScript | 808 B | locks at the first signed price past the start |
+| `MasterLocked` | CashScript | 878 B | proves the line and the close; decides; fees |
+| `MasterSweep` | CashScript | 409 B | pays tickets in batches |
+| `AgentVault` | SolidCash | 134 B | an agent's money: bets that pay its owner |
+
+Both languages were built and measured side by side first. Contracts a wallet signs against are CashScript; SolidCash writes the ones signed by a server key or by nobody. Five more CashScript contracts carry dollar-staked events in ParyonUSD.
+
+## State lives in the tokens
+
+| Token | Holds | Size |
+|---|---|---|
+| Lane thread | next start, counter | 12 B |
+| Master | the round's record: market, times, fee, then pot, line and winner | 42–61 B |
+| Gate | entrants and the total per side | 20 B |
+| Ticket | round, side, stake, payout address | 32 B |
+
+Gates and tickets stay at or under 40 bytes, the most Selene will sign over.
+
+## On chain
+
+| Transaction | Bytes |
+|---|---|
+| Enter | 1,042 |
+| Lock (2 gates) | 2,502 |
+| Settle | 1,601 |
+| Pay 200 tickets | 22,048 · 63% of the compute budget |
+
+Tickets are bare-script outputs, half the size of P2SH32 ones in a payout.

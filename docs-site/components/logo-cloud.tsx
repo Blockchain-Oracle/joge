@@ -9,8 +9,15 @@ import type { CSSProperties } from "react"
 export type Brand = { name: string; logo?: string }
 
 /** One brand's real mark (a file in public/logos), also used inline in tables. */
+/** Wordmarks wider than they are tall: drawn at the line's height, their own width. */
+const WIDE = new Set(["general-protocols.png"])
+
 export function Logo({ name, size = 18, className = "" }: { name: string; size?: number; className?: string }) {
   const src = `/logos/${name}`
+  if (WIDE.has(name)) {
+    // biome-ignore lint/performance/noImgElement: a static export; the marks are tiny pre-sized files
+    return <img src={src} alt="" height={size} style={{ height: size, width: "auto" }} className={`inline-block align-[-0.22em] ${className}`} />
+  }
   return (
     // biome-ignore lint/performance/noImgElement: a static export; the marks are tiny pre-sized files
     <img

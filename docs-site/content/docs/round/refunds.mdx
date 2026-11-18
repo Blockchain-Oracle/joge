@@ -1,0 +1,14 @@
+---
+title: Refunds
+description: "No winner, no fee. When a round can't be decided fairly, every ticket gets its stake back."
+---
+
+| When | Decided at |
+|---|---|
+| Nobody entered, or only one side has money | the lock |
+| The close equals <Line /> (a tie, or a frozen price) | the settle |
+| The oracle never signs past the start or the close | anyone, 6 hours after the close |
+
+A refund pays each ticket its stake plus its deposit, less 250 sats for the payout transaction. No fee is taken.
+
+On mainnet a lone call rarely refunds: a **Partner** agent takes the empty side so the round plays ([4.5](/docs/agents/partners)).

@@ -1,68 +1,87 @@
-import { Accordion, Accordions } from "fumadocs-ui/components/accordion"
-import { File, Files, Folder } from "fumadocs-ui/components/files"
-import { ImageZoom } from "fumadocs-ui/components/image-zoom"
 import { Step, Steps } from "fumadocs-ui/components/steps"
-import { Tab, Tabs } from "fumadocs-ui/components/tabs"
-import { TypeTable } from "fumadocs-ui/components/type-table"
 import defaultMdxComponents from "fumadocs-ui/mdx"
-import { icons } from "lucide-react"
 import type { MDXComponents } from "mdx/types"
-import type { ComponentProps } from "react"
-import { BRANDS, WALLETS } from "@/lib/brands"
-import { CashTokensCard } from "./blaze"
-import { Diagram } from "./diagram"
-import { JogeMark } from "./joge-mark"
-import { Logo, LogoCloud } from "./logo-cloud"
-import { Phone, Phones, Sheet, Shot } from "./phone"
+import type { ComponentProps, ReactNode } from "react"
+import { DemandFigure } from "./figures/demand-figure"
+import { LineFigure } from "./figures/line-figure"
+import { MoneyFigure } from "./figures/money-figure"
+import { RoundFigure } from "./figures/round-figure"
+import { SystemFigure } from "./figures/system-figure"
+import { VaultFigure } from "./figures/vault-figure"
+import { Figure, H2, Key, Note, P } from "./frame/page-parts"
+import { Logo } from "./logo-cloud"
+import { Down, Line, Sats, Signed, Up, You } from "./manual/glyph"
+import { Spotlight } from "./manual/spotlight"
 
-/** What Jōge is built on, as the endless row. */
-function Brands() {
-  return <LogoCloud brands={BRANDS} />
+/** A real screen, cropped to what the page is about, on its own (no spotlight). */
+function Crop({ src, alt, caption, width }: { src: string; alt: string; caption?: ReactNode; width?: number }) {
+  return (
+    <figure className="my-8">
+      <div className="overflow-hidden rounded-[22px] border border-fd-border" style={width ? { maxWidth: width } : undefined}>
+        {/* biome-ignore lint/performance/noImgElement: a static export; the file is pre-sized */}
+        <img src={src} alt={alt} loading="lazy" className="block h-auto w-full" />
+      </div>
+      {caption ? <figcaption className="mt-2.5 font-mono text-[12px] text-muted-ink">{caption}</figcaption> : null}
+    </figure>
+  )
 }
 
-/** Jōge's CashTokens address as a card with its QR code, for a docs page. */
-function CashTokens() {
-  return <CashTokensCard framed />
+/** A real screen with one part lit, framed like the figures. */
+function Lit(props: ComponentProps<typeof Spotlight> & { caption?: ReactNode }) {
+  const { caption, ...spot } = props
+  return (
+    <Figure legend={caption ? <span>{caption}</span> : undefined}>
+      <Spotlight {...spot} />
+    </Figure>
+  )
 }
 
-/** The wallets that pair with Jōge. */
-function Wallets() {
-  return <LogoCloud brands={WALLETS} seconds={30} />
+/** Small numbered steps: the number in mono, then the words. */
+function Facts({ children }: { children: ReactNode }) {
+  return <div className="my-6 grid gap-3 sm:grid-cols-2">{children}</div>
 }
-
-/** A lucide icon by name, so .mdx files can write `icon={<Icon name="Route" />}` without imports. */
-function Icon({ name, ...props }: { name: keyof typeof icons } & ComponentProps<"svg">) {
-  const Glyph = icons[name]
-  // A name lucide doesn't have renders nothing rather than breaking the page.
-  return Glyph ? <Glyph {...props} /> : null
+function Fact({ label, children }: { label: ReactNode; children: ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-fd-border bg-surface p-5">
+      <p className="font-mono text-[11.5px] tracking-[0.1em] text-muted-ink uppercase">{label}</p>
+      <div className="mt-2 text-[15.5px] leading-[1.55] text-ink-2">{children}</div>
+    </div>
+  )
 }
 
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
-    img: (props: ComponentProps<"img">) => <ImageZoom {...(props as ComponentProps<typeof ImageZoom>)} />,
-    Accordion,
-    Accordions,
-    Files,
-    Folder,
-    File,
-    Step,
+    h2: ({ id, children }: ComponentProps<"h2">) => <H2 id={id ?? ""}>{children}</H2>,
+    p: ({ children }: ComponentProps<"p">) => <P>{children}</P>,
+    blockquote: ({ children }: ComponentProps<"blockquote">) => <Note>{children}</Note>,
+    table: (props: ComponentProps<"table">) => (
+      <div className="my-6 overflow-x-auto rounded-2xl border border-fd-border">
+        <table {...props} />
+      </div>
+    ),
     Steps,
-    Tab,
-    Tabs,
-    TypeTable,
-    Diagram,
-    Brands,
-    Wallets,
-    CashTokens,
+    Step,
+    Figure,
+    Key,
+    Note,
+    Crop,
+    Lit,
+    Facts,
+    Fact,
     Logo,
-    LogoCloud,
-    JogeMark,
-    Phone,
-    Phones,
-    Shot,
-    Sheet,
-    Icon,
+    Up,
+    Down,
+    Line,
+    Signed,
+    You,
+    Sats,
+    RoundFigure,
+    MoneyFigure,
+    SystemFigure,
+    VaultFigure,
+    DemandFigure,
+    LineFigure,
     ...components,
   } satisfies MDXComponents
 }

@@ -1,44 +1,22 @@
 ---
 title: The API
-description: The read API the app is built on. Public, JSON, per world with ?network=chipnet or mainnet.
-icon: Braces
+description: "The read API the app is built on: public JSON, per world with ?network=chipnet or mainnet."
 ---
-
-Every route takes `?network=chipnet|mainnet`. Base: `https://joge.84.46.247.92.sslip.io`.
 
 | Route | Returns |
 |---|---|
-| `GET /api/lobby` | Each lane's next, live and last rounds |
-| `GET /api/rounds/{id}` | One round: record, gates, entries, transactions |
-| `GET /api/rounds/{id}/proof` | The raw signed messages behind its lock, line and close |
-| `GET /api/rounds/{id}/film` | Its kept price path, signed prices and entries (the replay) |
-| `GET /api/rounds/previous` · `/strip` | Played rounds of a market; its last 48 rounds as candles |
-| `GET /api/prices/{asset}` | Signed prices and the live line (up to 6 hours) |
-| `GET /api/candles/{asset}` | `range=1h` (1-minute) or `1d` (15-minute) candles |
-| `GET /api/leaderboard` | `period=day|week|all` |
-| `GET /api/players/{pkh}` · `/api/tickets?pkh=` | A player's record and tickets |
-| `GET /api/agents` · `/api/agents/{id}` · `/api/agents/decisions` | Agents by money entrusted, one agent with its reads, the latest 80 decisions |
-| `GET /api/status` | Feed and line freshness, heartbeats, lanes, the model in use |
-| `GET /api/stream` | Server-Sent Events: `oracle`, `price`, `round`, `agent` |
-| `POST /api/lanes/{thread}/wake` | Wake a market for 10 minutes |
+| `/api/lobby` | each market's next, live and last rounds |
+| `/api/rounds/{id}` | one round: record, gates, entries, transactions |
+| `/api/rounds/{id}/proof` | the signed messages behind its lock, line and close |
+| `/api/rounds/{id}/film` | its price path, signed prices and entries |
+| `/api/prices/{asset}` · `/api/candles/{asset}` | signed prices and the live line; candles |
+| `/api/leaderboard` · `/api/players/{pkh}` | the board; a player's record |
+| `/api/agents` · `/api/agents/decisions` | agents; the latest decisions |
+| `/api/status` | freshness of every feed and part |
+| `/api/stream` | live events (Server-Sent Events) |
 
 ```bash title="A real mainnet round"
 curl -s "https://joge.84.46.247.92.sslip.io/api/rounds/785?network=mainnet"
 ```
 
-```json title="Abridged"
-{
-  "round": {
-    "roundId": 785, "asset": "BTC", "laneSeconds": 300, "state": "settled",
-    "totals": [13655, 11845], "pot": 25500,
-    "strikePrice": 6297632, "closePrice": 6307376, "winner": 0,
-    "settleTxid": "1c2ccd6449ede751a93ecaff9d0a621b10530eadbc3cfe906bb7cee858c3c58f"
-  },
-  "entries": [
-    { "outcome": 0, "stake": 13655, "status": "won", "payoutSats": 26450 },
-    { "outcome": 1, "stake": 11845, "status": "lost", "payoutSats": 950 }
-  ]
-}
-```
-
-Prices are in cents (`6297632` = $62,976.32); amounts in satoshis. Writes that need a wallet (creating an agent, pausing it) take a sign-in: a transaction your wallet signs with a challenge in it, never broadcast, checked on the server with the Bitcoin Cash VM.
+Prices are in cents (`6297632` is $62,976.32); amounts in satoshis.

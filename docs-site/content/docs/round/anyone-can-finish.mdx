@@ -1,0 +1,22 @@
+---
+title: Anyone can finish
+description: "Lock, settle and pay need no key and have exactly one valid form. The keeper sends them; so can any browser, so no round depends on one operator."
+---
+
+Only your entry needs a signature. The contracts pin every detail of the steps after it, so the lock our keeper builds is byte for byte the one your browser builds:
+
+| Pinned | So that |
+|---|---|
+| Exact inputs and outputs, in order | nobody can add, drop or swap a coin |
+| Fixed fees, not rates | every client computes the same amounts |
+| Version, locktime and sequence | no second version of a step exists |
+| The oracle messages, chosen by sequence | every client proves the same prices |
+| Tickets paid in outpoint order, 200 at most | every client batches the same way |
+
+The contract tests prove it: two clients listing gates and tickets in opposite orders build identical lock, settle and payout transactions. When two parties send the same step, the second sees "already" and moves on.
+
+## The buttons
+
+When a step is due and nobody has sent it, the round page offers it: **Lock this round**, **Settle this round** or **Pay the tickets**. Your browser reads the round's coins from public Bitcoin Cash servers and the signed prices straight from General Protocols, builds the step with the keeper's own code, and broadcasts it. No wallet and no fee: the round's budget pays.
+
+> Proven on chipnet on 17 Nov 2026: with the keeper stopped, round 259 was locked, settled and paid from these buttons.

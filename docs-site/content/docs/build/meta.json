@@ -1,7 +1,1 @@
-{
-  "title": "Build",
-  "description": "The architecture, the engine, the packages, the API, and running your own keeper.",
-  "icon": "Blocks",
-  "root": true,
-  "pages": ["index", "engine", "packages", "api", "self-host"]
-}
+{ "title": "Build", "description": "Architecture, contracts, engine, API.", "pages": ["index", "contracts", "attacks", "engine", "api", "self-host"] }

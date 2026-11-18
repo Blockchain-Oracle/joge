@@ -1,7 +1,1 @@
-{
-  "title": "Mainnet",
-  "description": "The live deployment: its token category, genesis, contract addresses and real rounds.",
-  "icon": "Radio",
-  "root": true,
-  "pages": ["index", "on-demand", "verify"]
-}
+{ "title": "Mainnet", "description": "The live deployment and its addresses.", "pages": ["index", "on-demand", "verify"] }

@@ -1,7 +1,1 @@
-{
-  "title": "Agents",
-  "description": "Sensei reads the market with you; agents play from vaults that can only pay you.",
-  "icon": "Bot",
-  "root": true,
-  "pages": ["index", "sensei", "studio", "vault", "decisions", "partners"]
-}
+{ "title": "Agents", "description": "Sensei reads with you; agents play from a vault.", "pages": ["index", "studio", "vault", "decisions", "partners"] }

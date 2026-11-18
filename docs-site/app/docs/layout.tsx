@@ -1,18 +1,4 @@
-import { DocsLayout } from "fumadocs-ui/layouts/notebook"
-import { baseOptions } from "@/lib/layout.shared"
-import { source } from "@/lib/source"
-
-/** The docs: a top bar with the sections as tabs (Guide, Routes and fees, Bitcoin Cash, Build), a sidebar below. */
+/** Each docs page draws the frame itself (app/docs/[[...slug]]/page.tsx), with its own outline. */
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { nav, ...base } = baseOptions()
-  return (
-    <DocsLayout
-      tree={source.getPageTree()}
-      tabMode="navbar"
-      nav={{ ...nav, mode: "top" }}
-      {...base}
-    >
-      {children}
-    </DocsLayout>
-  )
+  return children
 }

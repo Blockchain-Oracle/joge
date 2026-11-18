@@ -1,15 +1,12 @@
 ---
-title: Run it yourself
-description: Clone it, point it at Postgres, and run the web app and the engine. Run your own keeper and you earn the 0.5% opener fee on every round you open.
-icon: Server
+title: Run your own keeper
+description: "The contracts don't care who opens, locks, settles or pays. Run the engine with a funded key and you earn the opener's fee."
 ---
 
 <Steps>
 <Step>
 
 ### Install
-
-Node 24 and pnpm 12.
 
 ```bash
 git clone https://github.com/Blockchain-Oracle/joge && cd joge && pnpm install
@@ -20,17 +17,7 @@ git clone https://github.com/Blockchain-Oracle/joge && cd joge && pnpm install
 
 ### Configure
 
-`services/engine/.env` and `apps/web/.env.local`:
-
-| Variable | For |
-|---|---|
-| `DATABASE_URL` | Both: a Postgres 17 database (the engine migrates it on start) |
-| `JOGE_NETWORK` | Engine: `chipnet` or `mainnet` |
-| `KEEPER_WIF` | Engine: the key that pays for opening lanes and receives the opener's budget back |
-| `KEEPER_LANES` · `KEEPER_DEMAND` | Engine: which lanes to keep open, and whether to open woken ones |
-| `AI_MODEL` + `OPENAI_API_KEY` | Sensei and agents (or `ANTHROPIC_API_KEY`, `AI_GATEWAY_API_KEY`, `AI_BASE_URL`) |
-| `AGENT_XPUB` · `AGENT_XPRV` | Agent keys: the web derives vaults from the public key, the engine signs with the private one |
-| `AUTH_SECRET` | Web: signs sign-in sessions |
+`DATABASE_URL` (Postgres 17), `JOGE_NETWORK`, `KEEPER_WIF` and `KEEPER_LANES` in `services/engine/.env`.
 
 </Step>
 <Step>
@@ -38,22 +25,12 @@ git clone https://github.com/Blockchain-Oracle/joge && cd joge && pnpm install
 ### Run
 
 ```bash
-pnpm --filter @joge/engine start
+ENGINE_COMPONENTS=oracle,indexer,keeper pnpm --filter @joge/engine start
 ```
-
-```bash
-pnpm --filter @joge/web dev
-```
-
-Or build the two Dockerfiles (`apps/web/Dockerfile`, `services/engine/Dockerfile`) as the live deployment does.
 
 </Step>
 </Steps>
 
-## Just a keeper
+Your keeper opens rounds on the lanes you choose and is paid 0.5% of every pot of 200,000 sats or more, plus its budget back, by the same contracts. Two keepers sending the same step is harmless.
 
-The contracts don't care who opens, locks, settles or pays. A keeper of your own with `ENGINE_COMPONENTS=oracle,indexer,keeper` and a funded `KEEPER_WIF` opens rounds on the lanes you choose and is paid the opener fee (0.5% of every pot of 200,000 sats or more) plus its budget back, by the same contracts. Two keepers sending the same step is harmless: the second one sees "already".
-
-<Callout title="One keeper per key">
-Two engines must never share a `KEEPER_WIF`: they would spend the same coins.
-</Callout>
+> Never run two engines with the same `KEEPER_WIF`: they would spend the same coins.

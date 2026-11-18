@@ -34,15 +34,8 @@ export const BLAZE = {
   cashtokens: process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9",
 } as const
 
-/** Where the docs start, and the first page of each section (the top tabs). */
-export const DOCS = {
-  base: "/docs",
-  start: "/docs/play",
-  rounds: "/docs/rounds",
-  agents: "/docs/agents",
-  mainnet: "/docs/mainnet",
-  build: "/docs/build",
-} as const
+/** Where the docs live. */
+export const DOCS = { base: "/docs" } as const
 
 /** Link previews: one size for every page. */
 export const OG = { width: 1200, height: 630 } as const

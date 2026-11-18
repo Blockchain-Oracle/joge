@@ -17,7 +17,6 @@ import { CheckCircle2, SearchX, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { cx, EmptyState, Skeleton } from "@/kit";
 import { AssetCube } from "@/marks/asset";
-import { markDeskStep } from "../judge/desk.ts";
 import { addressOf } from "../players/api.ts";
 import { roundQuery } from "../round/api.ts";
 import { RoundStamp } from "../round/verdict.tsx";
@@ -105,11 +104,9 @@ export function ProofView({ roundId }: { roundId: number }) {
   const key = (row: OracleRow) => `${row.feed}:${row.messageSequence}`;
 
   const verifyAll = async () => {
-    let everyValid = rows.length > 0;
     for (const { row, feed } of rows) {
       setChecks((current) => ({ ...current, [key(row)]: { signature: "checking", source: "checking" } }));
       const signature: Check = verifyMessageSignature(row, feed.publicKey) ? "valid" : "invalid";
-      everyValid &&= signature === "valid";
       let source: Match = "unavailable";
       try {
         const fromOracle = await fetchMessages({
@@ -125,8 +122,6 @@ export function ProofView({ roundId }: { roundId: number }) {
       }
       setChecks((current) => ({ ...current, [key(row)]: { signature, source } }));
     }
-    // A judge holding the desk has now checked a proof themselves (the third step of their path).
-    if (everyValid) markDeskStep("proof");
   };
 
   const allChecked = rows.length > 0 && rows.every(({ row }) => checks[key(row)]?.signature === "valid");

@@ -14,6 +14,7 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { createdAt, network, updatedAt } from "./columns.ts";
 
 /**
  * Jōge's read model. The chain is the truth: every row below is either a General Protocols message, a raw transaction
@@ -50,14 +51,7 @@ export type GateContract = "gate" | "eventGate" | "dollarGate";
 export type JobStatus = "running" | "sent" | "failed";
 
 const sats = () => bigint({ mode: "number" });
-const network = () => text().$type<Network>().notNull();
 const roundId = () => bigint({ mode: "number" });
-const createdAt = () => timestamp({ withTimezone: true }).notNull().defaultNow();
-const updatedAt = () =>
-  timestamp({ withTimezone: true })
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date());
 
 /** Every signed price message of the four feeds Jōge settles on (metadata messages are skipped). */
 export const oracleMessages = pgTable(
@@ -383,16 +377,4 @@ export const roundPaths = pgTable(
   (t) => [primaryKey({ columns: [t.network, t.roundId] })],
 );
 
-/**
- * Lanes woken on demand (S09): when the keeper runs with KEEPER_DEMAND=on, a lane outside its always-open set keeps
- * opening rounds until `until`, which a viewer's browser pushes forward while the lane is on screen.
- */
-export const laneDemand = pgTable(
-  "lane_demand",
-  {
-    network: network(),
-    thread: smallint().notNull(),
-    until: timestamp({ withTimezone: true }).notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.network, t.thread] })],
-);
+export * from "./schema-ops.ts";

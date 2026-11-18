@@ -4,6 +4,30 @@
   transition: transform 260ms var(--ease-out);
 }
 
+/* The guide's picture: 上 and 下 breathe away from the line and back, out of phase, like a price that keeps moving. */
+.jg-guide-mark .jg-mark-up {
+  animation: jg-mark-breathe-up 2.4s ease-in-out infinite;
+}
+.jg-guide-mark .jg-mark-down {
+  animation: jg-mark-breathe-down 2.4s ease-in-out infinite;
+}
+@keyframes jg-mark-breathe-up {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes jg-mark-breathe-down {
+  50% {
+    transform: translateY(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jg-guide-mark .jg-mark-up,
+  .jg-guide-mark .jg-mark-down {
+    animation: none;
+  }
+}
+
 /* Once as the landing opens: 上 rises into place, 下 falls into place. */
 .jg-mark-in .jg-mark-up {
   animation: jg-mark-rise 700ms var(--ease-out) both;

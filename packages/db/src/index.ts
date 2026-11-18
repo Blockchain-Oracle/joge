@@ -2,6 +2,7 @@ export * from "./agents.ts";
 export * from "./channels.ts";
 export * from "./client.ts";
 export * from "./constants.ts";
+export * from "./faucet.ts";
 export * from "./film.ts";
 export * from "./players.ts";
 export * from "./push.ts";

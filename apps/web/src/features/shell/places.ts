@@ -1,4 +1,4 @@
-import { Activity, Bot, CandlestickChart, type LucideIcon, Palette, Ticket, Trophy } from "lucide-react";
+import { Activity, Bot, CandlestickChart, Compass, type LucideIcon, Palette, Ticket, Trophy } from "lucide-react";
 import type { Route } from "next";
 
 export interface Place {
@@ -35,8 +35,13 @@ export interface Page {
 
 /** Everything else reachable from More and ⌘K. */
 export const PAGES: Page[] = [
+  // The first-run guide, reopened from here and ⌘K (the host opens it for `?guide=1`).
+  { label: "Guide", href: "/rounds?guide=1" as Route, icon: Compass, group: "joge" },
   { label: "Status", href: "/status", icon: Activity, group: "joge" },
-  { label: "Design system", href: "/dev", icon: Palette, group: "joge" },
+  // The design gallery is for building Jōge, not for players: it is listed only in development.
+  ...(process.env.NODE_ENV === "production"
+    ? []
+    : [{ label: "Design system", href: "/dev" as Route, icon: Palette, group: "joge" as const }]),
 ];
 
 export const placeFor = (path: string): Place | undefined =>

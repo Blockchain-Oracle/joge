@@ -9,32 +9,15 @@ import { useNow } from "../rounds/use-now.ts";
 import { BlazeBanner } from "../shell/banner.tsx";
 import { LiveSync } from "../shell/live-sync.tsx";
 import { PLACES } from "../shell/places.ts";
-import { useWorld } from "../shell/world.tsx";
 import { useLane } from "../terminal/use-lane.ts";
-import { BUILT_ON, FINAL, HERO, JUDGE_STRIP, WALLETS } from "./copy.ts";
+import { MAINNET_LIVE } from "../theme/theme.ts";
+import { BUILT_ON, FINAL, HERO, WALLETS } from "./copy.ts";
 import { HeroRound } from "./hero-round.tsx";
 import { Sections } from "./sections.tsx";
 
 const SECOND_MS = 1_000;
 const FINAL_RING = 120;
 const LOGO_H = 28;
-
-/** The judges' first line: their wallet is one link away (/judge explains and opens it). */
-function JudgeStrip() {
-  return (
-    <Link
-      href="/judge"
-      className="flex items-center justify-center gap-2.5 border-[var(--hairline)] border-b bg-[var(--stage)] px-4 py-2.5 text-[13px] hover:bg-[var(--surface-1)]"
-    >
-      <span className="nx-jp text-[15px] text-[var(--vermilion)]">審</span>
-      <span className="hidden font-semibold md:inline">{JUDGE_STRIP.wide}</span>
-      <span className="font-semibold md:hidden">{JUDGE_STRIP.short}</span>
-      <span className="inline-flex items-center gap-1 text-[var(--muted)]">
-        {JUDGE_STRIP.cta} <ArrowRight aria-hidden className="size-3.5" />
-      </span>
-    </Link>
-  );
-}
 
 function PlayButton({ label }: { label: string }) {
   return (
@@ -78,7 +61,6 @@ function Nav() {
 }
 
 function Hero() {
-  const world = useWorld();
   return (
     <header className="relative grid items-center gap-10 pt-6 pb-16 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-14 lg:pt-12">
       <span
@@ -91,7 +73,7 @@ function Hero() {
         <span className="flex items-center gap-2.5 rounded-full bg-[var(--surface-1)] py-1.5 pr-4 pl-2 shadow-[inset_0_0_0_1px_var(--hairline)]">
           <AssetMark asset="BCH" size={22} />
           <span className="lp-live" aria-hidden />
-          <span className="font-semibold text-[13px]">{HERO.live[world]}</span>
+          <span className="font-semibold text-[13px]">{HERO.live[MAINNET_LIVE ? "mainnet" : "chipnet"]}</span>
         </span>
         <h1 className="nx-display text-[clamp(48px,7.4vw,96px)] leading-[0.98] tracking-[-0.045em]">
           <span className="lp-title block">{HERO.title}</span>
@@ -199,7 +181,6 @@ export function Landing() {
   return (
     <div className="min-h-dvh bg-[var(--bg)]">
       <BlazeBanner />
-      <JudgeStrip />
       <div className="mx-auto max-w-[1240px] px-4 md:px-8">
         <Nav />
         <Hero />

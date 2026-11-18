@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { onToast, onToastOpen, primeFeedback, Toaster } from "@/kit";
 import { setStreamNetwork } from "@/live/stream";
+import { GuideHost } from "../guide/guide-host.tsx";
 import { registerWorker } from "../push/push.ts";
 import { ResultWatch } from "../round/result-watch.tsx";
 import { SenseiOrbMount } from "../sensei/orb-mount.tsx";
@@ -112,6 +113,7 @@ export function AppShell({ children, bleed = false }: { children: ReactNode; ble
         <RouteProgress />
         <OfflineStrip />
         <ConnectSheet />
+        <GuideHost />
       </div>
     </WalletProvider>
   );

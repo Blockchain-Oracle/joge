@@ -19,6 +19,7 @@ export { DottedQr } from "./qr.tsx";
 export { Ring, type RingPhase, ringPhase, ringTime } from "./ring.tsx";
 export { Segmented } from "./segmented.tsx";
 export { Sheet } from "./sheet.tsx";
+export { SlideToConfirm } from "./slide.tsx";
 export { EmptyState, LiveDot, Skeleton, Wait } from "./states.tsx";
 export { Switch } from "./switch.tsx";
 export { onToast, onToastOpen, type Seal, type Toast, Toaster, ToneDisc, toast } from "./toast.tsx";

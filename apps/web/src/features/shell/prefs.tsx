@@ -5,17 +5,12 @@ import { type ReactNode, useEffect, useState } from "react";
 import { feedbackPrefs, Segmented, Switch, setFeedbackPrefs } from "@/kit";
 import { type PushState, usePush } from "../push/push.ts";
 import { applyTheme, currentTheme, MAINNET_LIVE, type ThemeChoice } from "../theme/theme.ts";
-import { setWorld, useWorld } from "./world.tsx";
+import { WorldSwitch } from "./world-switch.tsx";
 
 const THEMES = [
   { value: "dark", label: <Moon size={14} aria-label="Night" /> },
   { value: "light", label: <Sun size={14} aria-label="Day" /> },
   { value: "system", label: <SunMoon size={14} aria-label="Match the device" /> },
-] as const;
-
-const WORLDS = [
-  { value: "chipnet", label: "試 Test" },
-  { value: "mainnet", label: "本番 Live" },
 ] as const;
 
 /** One setting: an icon, a word, its control (Abu's rule: settings at rest are an icon and a value). */
@@ -59,7 +54,6 @@ function PushRow() {
 
 /** Theme, network world, sound, haptics and alerts: the choices this browser keeps. */
 export function Preferences() {
-  const world = useWorld();
   const [theme, setTheme] = useState<ThemeChoice>("dark");
   const [sound, setSound] = useState(false);
   const [haptics, setHaptics] = useState(true);
@@ -72,7 +66,7 @@ export function Preferences() {
     <>
       {MAINNET_LIVE ? (
         <SettingRow icon={<Globe size={18} aria-hidden />} label="World">
-          <Segmented label="Network world" options={WORLDS} value={world} onChange={setWorld} size="sm" />
+          <WorldSwitch />
         </SettingRow>
       ) : null}
       <SettingRow icon={<Palette size={18} aria-hidden />} label="Theme">

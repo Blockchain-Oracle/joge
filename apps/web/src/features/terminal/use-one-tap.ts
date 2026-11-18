@@ -6,9 +6,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useSyncExternalStore } from "react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cue, toast } from "@/kit";
-import { copyText } from "@/lib/browser";
+import { useFaucet } from "../guide/faucet.ts";
+import { openGuide } from "../guide/store.ts";
 import { limitProblem, useLimits } from "../limits/limits.ts";
-import { sats, usd } from "../rounds/format.ts";
+import { usd } from "../rounds/format.ts";
 import { OPEN_MORE_EVENT } from "../shell/places.ts";
 import { useWorld } from "../shell/world.tsx";
 import { buildEntry, ENTRY_OVERHEAD, lostRace, sendEntry, txidOf } from "../ticket/entry.ts";
@@ -62,6 +63,7 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
   const network = useWorld();
   const wallet = useWallet();
   const coins = useWalletCoins();
+  const faucet = useFaucet();
   const client = useQueryClient();
   const limits = useLimits();
   const journal = useJournal();
@@ -112,12 +114,10 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
     blocker = { label: "Next round opening", onClick: () => undefined };
   } else if (wallet.state !== "connected") blocker = { label: "Pair a wallet", onClick: wallet.openConnect };
   else if (coins.data && coins.balance < stake + ENTRY_OVERHEAD) {
+    // The guide's funding step: test coins from the faucet on chipnet, the address and its code on mainnet.
     blocker = {
-      label: "Fund your wallet",
-      onClick: () => {
-        void copyText(wallet.payout?.address ?? "");
-        toast({ tone: "info", title: "Address copied", body: `Send at least ${sats(Number(stake + ENTRY_OVERHEAD))}` });
-      },
+      label: faucet.asking || faucet.view?.state === "pending" ? "Funding your wallet…" : "Fund your wallet",
+      onClick: () => openGuide("fund"),
     };
   }
 

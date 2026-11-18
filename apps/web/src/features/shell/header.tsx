@@ -5,10 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/brand/mark";
 import { cx } from "@/kit";
-import { JudgeChip } from "../judge/path.tsx";
+import { MAINNET_LIVE } from "../theme/theme.ts";
 import { HealthChip } from "./health-chip.tsx";
 import { backFor, PLACES, placeFor } from "./places.ts";
 import { WalletButton } from "./wallet-button.tsx";
+import { WorldSwitch } from "./world-switch.tsx";
 
 /**
  * The header (D21): the seal and the name, the places as pills (desktop), notices, the wallet and the menu. On a phone
@@ -53,8 +54,7 @@ export function Header({
           })}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <HealthChip />
-          <JudgeChip />
+          {MAINNET_LIVE ? <WorldSwitch words /> : <HealthChip />}
           <button
             type="button"
             onClick={onSearch}

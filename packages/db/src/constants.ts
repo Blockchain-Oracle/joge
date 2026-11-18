@@ -16,3 +16,19 @@ export const LEADERBOARD_ROWS = 50;
 export const PROFILE_DAYS = 84;
 /** How many decided tickets a profile reads to find its streaks. */
 export const STREAK_TICKETS = 500;
+
+// Chipnet faucet (S09R, Agari's rules): a wallet below the threshold is topped up to the target, never more.
+const FAUCET_HOUR_MS = 60 * 60 * 1_000;
+/** A wallet holding less than this gets topped up. */
+export const FAUCET_THRESHOLD_SATS = 200_000n;
+/** ...to this (enough for about twenty $0.10 calls on chipnet). */
+export const FAUCET_TARGET_SATS = 1_000_000n;
+/** One top-up per address per this long. */
+export const FAUCET_ADDRESS_COOLDOWN_MS = 12 * FAUCET_HOUR_MS;
+/** Claims per visitor (hashed IP) per day. */
+export const FAUCET_VISITOR_PER_DAY = 5;
+export const FAUCET_DAY_MS = 24 * FAUCET_HOUR_MS;
+/** Most the faucet pays out in a day, all visitors together. */
+export const FAUCET_DAILY_SATS = 60_000_000n;
+/** The faucet wallet keeps this much; below it, claims answer "dry" with outside faucets. */
+export const FAUCET_RESERVE_SATS = 2_000_000n;

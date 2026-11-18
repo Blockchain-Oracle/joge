@@ -61,3 +61,11 @@ export const MAX_FUNDING_INPUTS = 12;
 // Logs
 export const LOG_TIME_END = 19;
 export const LOG_COMPONENT_WIDTH = 8;
+
+// Faucet (chipnet only)
+/** How often the faucet looks for new claims. */
+export const FAUCET_TICK_MS = 3 * SECOND_MS;
+/** Claims served per pass. */
+export const FAUCET_BATCH = 10;
+/** Picked on top of a top-up for the fee (the change comes back). */
+export const FAUCET_FEE_MARGIN = 5_000n;

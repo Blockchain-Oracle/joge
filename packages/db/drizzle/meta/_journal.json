@@ -57,6 +57,13 @@
       "when": 1794998620086,
       "tag": "0007_lane_demand",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795002161738,
+      "tag": "0008_faucet_claims",
+      "breakpoints": true
     }
   ]
 }

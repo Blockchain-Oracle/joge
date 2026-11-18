@@ -5,6 +5,7 @@ import { AgentRunner } from "./agents/runner.ts";
 import { connectFulcrum, FULCRUM } from "./chain/electrum.ts";
 import { Indexer } from "./chain/indexer.ts";
 import { readEnv } from "./env.ts";
+import { runFaucet } from "./faucet.ts";
 import { Keeper } from "./keeper/keeper.ts";
 import { KeeperWallet } from "./keeper/wallet.ts";
 import { errorText, logger } from "./log.ts";
@@ -71,7 +72,7 @@ if (env.components.includes("push")) {
   run("push", () => runPush(database, env.JOGE_NETWORK, vapid, signal));
 }
 
-const needsChain = ["indexer", "keeper", "agents"].some((name) => env.components.includes(name as never));
+const needsChain = ["indexer", "keeper", "agents", "faucet"].some((name) => env.components.includes(name as never));
 const fulcrum = needsChain ? connectFulcrum(env.FULCRUM_URLS ?? FULCRUM[env.JOGE_NETWORK]) : undefined;
 if (fulcrum) {
   await fulcrum.connect();
@@ -110,6 +111,11 @@ if (fulcrum) {
       env.AGENT_MAX_CALLS_PER_HOUR,
     );
     run("agents", () => runner.run(signal));
+  }
+  // Test coins for first-time players: chipnet only, and only with its own key.
+  if (env.components.includes("faucet") && env.JOGE_NETWORK === "chipnet" && env.FAUCET_WIF) {
+    const wif = env.FAUCET_WIF;
+    run("faucet", () => runFaucet(database, fulcrum, env.JOGE_NETWORK, wif, signal));
   }
 }
 

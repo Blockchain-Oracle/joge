@@ -33,13 +33,15 @@ const envSchema = z.object({
   VAPID_PUBLIC_KEY: z.string().min(1).optional(),
   VAPID_PRIVATE_KEY: z.string().min(1).optional(),
   VAPID_SUBJECT: z.string().min(1).optional(),
+  /** The chipnet faucet's key (WIF): pays first-time players' test coins (S09R). Without it no faucet runs. */
+  FAUCET_WIF: z.string().min(1).optional(),
   /** House-wide model calls per hour across every agent. */
   AGENT_MAX_CALLS_PER_HOUR: z.coerce.number().int().positive().default(60),
 });
 
 export type EngineEnv = z.output<typeof envSchema>;
 
-export const COMPONENTS = ["oracle", "price", "indexer", "keeper", "agents", "push", "paths"] as const;
+export const COMPONENTS = ["oracle", "price", "indexer", "keeper", "agents", "push", "paths", "faucet"] as const;
 export type Component = (typeof COMPONENTS)[number];
 
 export function readEnv(source: Record<string, string | undefined> = process.env) {

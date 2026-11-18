@@ -4,7 +4,6 @@ import { stringify } from "@bitauth/libauth";
 import { useWizardConnect, type WizardConnectState } from "@wizardconnect/react";
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "@/kit";
-import { deskKey, leaveDesk, signAsDesk, useDeskSecret } from "../judge/desk.ts";
 import { useWorld } from "../shell/world.tsx";
 import { type PathName, type WalletKey, walletKeys } from "./keys.ts";
 
@@ -27,12 +26,12 @@ interface WalletApi {
   payout: WalletKey | null;
   connectOpen: boolean;
   openConnect: () => void;
+  /** Starts pairing without the sheet (the guide shows the code itself). */
+  pair: () => void;
   closeConnect: () => void;
   disconnect: () => Promise<void>;
   /** Asks the wallet to sign; resolves with the signed transaction (hex). The page broadcasts it. */
   sign: (transaction: unknown, inputPaths: InputPath[], signal?: AbortSignal) => Promise<string>;
-  /** True while this browser holds the judges' shared wallet (F14) instead of a paired one. */
-  desk: boolean;
 }
 
 const WalletContext = createContext<WalletApi | null>(null);
@@ -72,6 +71,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (state === "idle" || state === "disconnected") wizard.connect();
   }, [state, wizard]);
 
+  const pair = useCallback(() => {
+    if (state === "idle" || state === "disconnected") wizard.connect();
+  }, [state, wizard]);
+
   const closeConnect = useCallback(() => {
     setConnectOpen(false);
     if (state === "connecting") void wizard.disconnect();
@@ -92,51 +95,22 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [manager, state],
   );
 
-  const deskSecret = useDeskSecret();
-  const desk = useMemo(() => (deskSecret ? deskKey(deskSecret, network) : null), [deskSecret, network]);
-
-  const value: WalletApi = desk
-    ? {
-        // The judges' desk stands in for a paired wallet: one address, signed in this page (features/judge).
-        state: "connected",
-        walletName: "Judge wallet",
-        walletIcon: APP_ICON,
-        uri: null,
-        qrUri: null,
-        error: null,
-        keys: [desk],
-        payout: desk,
-        connectOpen,
-        openConnect: () => {
-          leaveDesk();
-          openConnect();
-        },
-        closeConnect,
-        disconnect: async () => leaveDesk(),
-        sign: async (transaction, inputPaths) =>
-          signAsDesk(
-            deskSecret ?? "",
-            transaction,
-            inputPaths.map(([inputIndex]) => inputIndex),
-          ),
-        desk: true,
-      }
-    : {
-        state,
-        walletName: wizard.walletName,
-        walletIcon: wizard.walletIcon,
-        uri: wizard.uri,
-        qrUri: wizard.qrUri,
-        error: wizard.error,
-        keys,
-        payout: keys.find((key) => key.path === "receive" && key.index === 0) ?? null,
-        connectOpen,
-        openConnect,
-        closeConnect,
-        disconnect: wizard.disconnect,
-        sign,
-        desk: false,
-      };
+  const value: WalletApi = {
+    state,
+    walletName: wizard.walletName,
+    walletIcon: wizard.walletIcon,
+    uri: wizard.uri,
+    qrUri: wizard.qrUri,
+    error: wizard.error,
+    keys,
+    payout: keys.find((key) => key.path === "receive" && key.index === 0) ?? null,
+    connectOpen,
+    openConnect,
+    pair,
+    closeConnect,
+    disconnect: wizard.disconnect,
+    sign,
+  };
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
 }
 

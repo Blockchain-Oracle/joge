@@ -51,3 +51,6 @@ export const PUSH_ENDPOINT_MAX = 1_000;
 export const LANE_WAKE_MS = 30 * MINUTE_MS;
 /** Wake requests per IP: one per lane switch, plus a repeat every few minutes. */
 export const WAKE_PER_IP = [{ count: 30, windowMs: MINUTE_MS }];
+
+/** Faucet asks per IP in a burst (the daily caps live in @joge/db's faucet policy). */
+export const FAUCET_PER_IP = [{ count: 5, windowMs: MINUTE_MS }];

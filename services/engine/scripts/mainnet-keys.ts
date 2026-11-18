@@ -1,7 +1,7 @@
 // Mainnet prep (S09): creates, once, the keys Jōge's mainnet world needs, written only to git-ignored files, and prints
 // the public addresses with what each needs. It sends nothing and funds nothing: funding is the owner's step.
 //   services/engine/.env.mainnet  GENESIS_WIF (pays the one genesis), KEEPER_WIF (opens lanes, pays their fees),
-//                                 AGENT_XPRV (signs agents' vault bets), JUDGE_SECRET_MAINNET (the judge link's secret)
+//                                 AGENT_XPRV (signs agents' vault bets)
 //   apps/web/.env.local           AGENT_XPUB_MAINNET (the web derives mainnet agents' vault keys)
 // Usage: node scripts/mainnet-keys.ts
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
@@ -18,10 +18,8 @@ import {
   hash160,
   secp256k1,
 } from "@bitauth/libauth";
-import { deskPrivateKey } from "../../../apps/web/src/lib/desk-key.ts";
 
 const SEED_BYTES = 32;
-const SECRET_BYTES = 32;
 const root = join(import.meta.dirname, "..", "..", "..");
 const engineFile = join(root, "services", "engine", ".env.mainnet");
 const webFile = join(root, "apps", "web", ".env.local");
@@ -33,7 +31,6 @@ const settingOf = (file: string, name: string) =>
     ?.slice(name.length + 1)
     .trim();
 
-const toHex = (bytes: Uint8Array) => Buffer.from(bytes).toString("hex");
 const lines: string[] = [];
 const ensure = (name: string, make: () => string) => {
   if (settingOf(engineFile, name)) return;
@@ -41,7 +38,6 @@ const ensure = (name: string, make: () => string) => {
 };
 ensure("GENESIS_WIF", () => encodePrivateKeyWif(generatePrivateKey(), "mainnet"));
 ensure("KEEPER_WIF", () => encodePrivateKeyWif(generatePrivateKey(), "mainnet"));
-ensure("JUDGE_SECRET_MAINNET", () => toHex(crypto.getRandomValues(new Uint8Array(SECRET_BYTES))));
 let xpub: string | null = null;
 if (!settingOf(engineFile, "AGENT_XPRV")) {
   const node = deriveHdPrivateNodeFromSeed(crypto.getRandomValues(new Uint8Array(SEED_BYTES)));
@@ -69,6 +65,3 @@ const keyOf = (name: string) => {
 console.log(lines.length > 0 ? `wrote ${lines.length} new key(s) (git-ignored files only)` : "keys already exist");
 console.log(`genesis  ${addressOf(keyOf("GENESIS_WIF"))}  needs one coin of ≥ 60,000 sats`);
 console.log(`keeper   ${addressOf(keyOf("KEEPER_WIF"))}  lane budget (see the lane cost table)`);
-console.log(
-  `judge    ${addressOf(deskPrivateKey(settingOf(engineFile, "JUDGE_SECRET_MAINNET") ?? ""))}  the judges' shared wallet`,
-);

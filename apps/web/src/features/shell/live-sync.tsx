@@ -13,7 +13,7 @@ export function LiveSync() {
     useCallback(
       (event: LiveEvents["round"]) => {
         void client.invalidateQueries({ queryKey: ["lobby", event.network] });
-        // Your tickets (portfolio, the judge's path) change when your rounds move.
+        // Your tickets (portfolio, profiles) change when your rounds move.
         void client.invalidateQueries({ queryKey: ["tickets", event.network] });
         if (event.kind === "sweep") void client.invalidateQueries({ queryKey: ["players", event.network] });
         void client.invalidateQueries({ queryKey: ["round", event.network, event.roundId] });

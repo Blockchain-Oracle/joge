@@ -3,7 +3,8 @@
  * (Agari's numbered sections); the figures around them are live.
  */
 export const HERO = {
-  live: { chipnet: "Live on Bitcoin Cash · test coins", mainnet: "Live on Bitcoin Cash" },
+  /** Mitoshi's hero chip: the promo says mainnet as soon as mainnet is live, whichever world the visitor is in. */
+  live: { chipnet: "Live on Bitcoin Cash chipnet", mainnet: "Live on Bitcoin Cash mainnet" },
   title: "Up or down,",
   accent: "in minutes.",
   line: "Cents on BTC, ETH, BCH or gold. No house: the pot pays the winners.",
@@ -21,13 +22,6 @@ export const STEPS = {
     line: "General Protocols signs. The contract checks. So can you.",
   },
   help: { n: "05", title: "Sensei and agents", line: "A straight read, or an agent inside your caps." },
-} as const;
-
-/** The first line of the landing for judges (Mitoshi's JudgeStrip): one sentence, the long form on wide screens. */
-export const JUDGE_STRIP = {
-  wide: "BCH BLAZE judges: a funded wallet is one link away.",
-  short: "Judges: a funded wallet is waiting",
-  cta: "How",
 } as const;
 
 /** The stake chip in section 02's art. */

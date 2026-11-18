@@ -18,7 +18,7 @@ import { LaneRail } from "./lane-rail.tsx";
 import { SidePlates } from "./side-plates.tsx";
 import { Stack } from "./stack.tsx";
 import { useCountdownCues } from "./use-countdown-cues.ts";
-import { useLane } from "./use-lane.ts";
+import { useLane, useWakeLane } from "./use-lane.ts";
 import { useOneTap } from "./use-one-tap.ts";
 
 const SECOND_MS = 1_000;
@@ -37,6 +37,7 @@ const NAMES = { BTC: "Bitcoin", ETH: "Ether", BCH: "Bitcoin Cash", GOLD: "Gold" 
 export function Terminal() {
   const now = useNow();
   const { lane, lanes, live, next, strike, loading } = useLane();
+  useWakeLane(lane?.thread);
   const [lanesOpen, setLanesOpen] = useState(false);
   const chart = useChartView();
   const [sharing, setSharing] = useState<number | null>(null);

@@ -11,7 +11,12 @@ import { PERCENT } from "./constants.ts";
 
 export const laneOf = (thread: number) => LANES.find((lane) => lane.thread === thread);
 
-const LABELS: Record<Posture, string> = { guarded: "Careful", balanced: "Balanced", active: "Bold" };
+const LABELS: Record<Posture, string> = {
+  guarded: "Careful",
+  balanced: "Balanced",
+  active: "Bold",
+  partner: "Partner",
+};
 
 /** Each posture in a few words, written from the numbers the runner's gate enforces. */
 export const POSTURE_COPY: Record<Posture, { label: string; line: string }> = Object.fromEntries(
@@ -21,7 +26,10 @@ export const POSTURE_COPY: Record<Posture, { label: string; line: string }> = Ob
       posture,
       {
         label: LABELS[posture],
-        line: `${Math.round(rules.minConfidence * PERCENT)}%+ sure · rests after ${rules.breakerLosses} losses`,
+        line:
+          posture === "partner"
+            ? "Takes the empty side, so a lone call still plays"
+            : `${Math.round(rules.minConfidence * PERCENT)}%+ sure · rests after ${rules.breakerLosses} losses`,
       },
     ];
   }),

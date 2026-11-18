@@ -62,6 +62,8 @@ const lengthLabel = (seconds: number) =>
 export class AgentRunner {
   readonly #round;
   #wake: (() => void) | undefined;
+  /** Rounds a partner has already taken this run: two partners never stack on the same lone call. */
+  readonly #partnered = new Set<number>();
 
   private readonly database: Database;
   private readonly fulcrum: Fulcrum;
@@ -153,6 +155,7 @@ export class AgentRunner {
   }
 
   private async consider(agent: AgentRow, largest: bigint, lane: LaneView, model: ResolvedModel | null, now: number) {
+    if (agent.posture === "partner") return this.partner(agent, largest, lane, now);
     const round = lane.next;
     if (!round) return;
     const left = round.lockTime - now;
@@ -247,6 +250,57 @@ export class AgentRunner {
       return finish({ ...asked, stake: Number(verdict.stake), txid, reason: verdict.reason }, "enter");
     } catch (error) {
       return finish({ ...asked, reason: `Could not enter: ${errorText(error).slice(0, REASON_MAX)}` }, "hold");
+    }
+  }
+
+  /**
+   * The partner (no model): in a round taking entries with money on one side only, take the empty side with a stake
+   * matching it (within the caps and the vault), so the lone call plays instead of being refunded. Each round gets at
+   * most one partner, and only a partner that acts writes a decision.
+   */
+  private async partner(agent: AgentRow, largest: bigint, lane: LaneView, now: number) {
+    const round = lane.next;
+    if (!round || round.lockTime - now < AGENT_READ_LEAD_SECONDS || this.#partnered.has(round.roundId)) return;
+    const up = round.totals[0] ?? 0;
+    const down = round.totals[1] ?? 0;
+    if (up > 0 === down > 0) return;
+    const empty = up > 0 ? 1 : 0;
+    const lonely = BigInt(up > 0 ? up : down);
+    const { db } = this.database;
+    const [claimed] = await db
+      .insert(agentReads)
+      .values({ network: this.network, agentId: agent.id, roundId: round.roundId, verdict: "reading" })
+      .onConflictDoNothing()
+      .returning({ id: agentReads.id });
+    if (!claimed) return;
+    this.#partnered.add(round.roundId);
+    const laneCap = MAX_STAKE[lane.seconds >= HOUR_SECONDS ? "hourly" : "short"];
+    const caps = [lonely, BigInt(agent.perBetCap), laneCap, largest - AGENT_BET_FEE - TICKET_DUST - VAULT_CHANGE_MIN];
+    const stake = caps.reduce((low, cap) => (cap < low ? cap : low));
+    const side = empty === 0 ? "up" : "down";
+    const asked = { side, confidence: 1, why: "Took the empty side so the round plays", model: null } as const;
+    const finish = async (values: Partial<typeof agentReads.$inferInsert>, verdict: "enter" | "hold") => {
+      await db
+        .update(agentReads)
+        .set({ ...asked, ...values, verdict })
+        .where(eq(agentReads.id, claimed.id));
+      await notify(this.database.sql, CHANNEL.agent, {
+        network: this.network,
+        agentId: agent.id,
+        roundId: round.roundId,
+        verdict,
+      });
+      log.info("partner", { agent: agent.id, round: round.roundId, verdict, stake: String(stake) });
+    };
+    if (stake < MIN_STAKE) return finish({ reason: "The vault is too small to match it." }, "hold");
+    if (agent.mode === "ask")
+      return finish({ stake: Number(stake), proposal: "open", reason: "Matches a lone call." }, "enter");
+    if (!this.xprv) return finish({ reason: "The engine holds no agent key, so it cannot sign." }, "hold");
+    try {
+      const txid = await this.bet(agent, round.roundId, empty, stake);
+      return finish({ stake: Number(stake), txid, reason: "Matched a lone call." }, "enter");
+    } catch (error) {
+      return finish({ reason: `Could not enter: ${errorText(error).slice(0, REASON_MAX)}` }, "hold");
     }
   }
 

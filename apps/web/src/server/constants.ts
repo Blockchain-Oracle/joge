@@ -47,8 +47,11 @@ export const PUSH_MAX_ADDRESSES = 20;
 /** Push service endpoints are URLs well under this. */
 export const PUSH_ENDPOINT_MAX = 1_000;
 
-/** A woken lane keeps opening rounds this long after the last viewer asked (S09 on-demand lanes). */
-export const LANE_WAKE_MS = 30 * MINUTE_MS;
+/**
+ * A woken lane keeps opening rounds this long after the last viewer asked (the mainnet "$4 plan": rounds only while
+ * someone is looking). Pages repeat the ask every 2 minutes, so a visitor leaving stops it within two rounds.
+ */
+export const LANE_WAKE_MS = 10 * MINUTE_MS;
 /** Wake requests per IP: one per lane switch, plus a repeat every few minutes. */
 export const WAKE_PER_IP = [{ count: 30, windowMs: MINUTE_MS }];
 

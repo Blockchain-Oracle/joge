@@ -24,7 +24,7 @@ import { setWorld, useWorld } from "../shell/world.tsx";
 import { ChartControls, useChartView } from "../terminal/chart-controls.tsx";
 import { SidePlates } from "../terminal/side-plates.tsx";
 import { Stack } from "../terminal/stack.tsx";
-import { pickLane } from "../terminal/use-lane.ts";
+import { pickLane, useWakeLane } from "../terminal/use-lane.ts";
 import { useOneTap } from "../terminal/use-one-tap.ts";
 import { useJournal } from "../ticket/journal.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
@@ -66,6 +66,12 @@ export function RoundView({
   const [finishing, setFinishing] = useState(false);
   const [sharing, setSharing] = useState(false);
   const chart = useChartView();
+  // A round still running keeps its market's rounds opening, so the next one is there when this one locks.
+  useWakeLane(
+    view.data?.round && view.data.round.state !== "settled" && view.data.round.state !== "void"
+      ? view.data.round.thread
+      : undefined,
+  );
   const round = view.data?.round;
   const priceNow = useSpot(round?.asset ?? "BTC") ?? undefined;
   const journal = useJournal();

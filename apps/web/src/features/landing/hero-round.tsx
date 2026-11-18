@@ -12,7 +12,7 @@ import { clockTime, laneLabel, usd } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
 import { useNow } from "../rounds/use-now.ts";
 import { STAKE_LADDER_USD } from "../terminal/constants.ts";
-import { useLane } from "../terminal/use-lane.ts";
+import { useLane, useWakeLane } from "../terminal/use-lane.ts";
 import { estimatePayout } from "../ticket/payout.ts";
 import { HeartbeatRing, HeartbeatStamp } from "./heartbeat.tsx";
 
@@ -31,6 +31,7 @@ const NAMES = { BTC: "Bitcoin", ETH: "Ether", BCH: "Bitcoin Cash", GOLD: "Gold" 
 export function HeroRound() {
   const now = useNow();
   const { lane, live, next, strike, loading } = useLane();
+  useWakeLane(lane?.thread);
   const spot = useSpot(lane?.asset);
   const money = useMoney();
   const window: ChartWindow = useMemo(

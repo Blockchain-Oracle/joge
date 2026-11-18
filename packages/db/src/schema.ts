@@ -262,7 +262,7 @@ export const heartbeats = pgTable("heartbeats", {
   at: updatedAt(),
 });
 
-export type AgentPosture = "guarded" | "balanced" | "active";
+export type AgentPosture = "guarded" | "balanced" | "active" | "partner";
 export type AgentMode = "ask" | "auto";
 export type AgentStatus = "active" | "paused";
 export type ReadVerdict = "reading" | "enter" | "hold";

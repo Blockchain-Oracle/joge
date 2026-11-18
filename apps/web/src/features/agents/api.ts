@@ -15,7 +15,7 @@ export type { ReadOutcome };
 export interface AgentDraft {
   name: string;
   persona: string;
-  posture: "guarded" | "balanced" | "active";
+  posture: "guarded" | "balanced" | "active" | "partner";
   lanes: number[];
   perBetCap: number;
   dailyCap: number;

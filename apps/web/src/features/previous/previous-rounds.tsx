@@ -33,7 +33,7 @@ const REFRESH_MS = 30_000;
 const nameOf = (asset: AssetId) => (asset === "GOLD" ? "Gold" : asset);
 
 /**
- * Previous rounds (his feedback, 2026-11-18). What a player wants from the past: how this market has been moving
+ * Previous rounds. What a player wants from the past: how this market has been moving
  * (every round as a candle, the empty ones faint but there, each one tappable for its proof) and the rounds people
  * actually played, to replay. One market at a time; no endless list.
  */

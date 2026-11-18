@@ -5,7 +5,7 @@ import { cue } from "@/kit";
 import { TICK_SECONDS } from "./constants.ts";
 
 /**
- * The countdown is heard (Senryo's countBeep, Kakure's Practice clock): one click a second over the last five, then GO
+ * The countdown is heard: one click a second over the last five, then GO
  * when the round turns over. Sound itself stays the player's choice (off until turned on); the clicks are also felt.
  */
 export function useCountdownCues(secondsLeft: number | null) {

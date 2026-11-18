@@ -3,7 +3,7 @@
 @import "fumadocs-ui/css/preset.css";
 
 /* Jōge's own look, the same tokens as the app (apps/web/src/styles/tokens.css): a near-black stage at night and
-   Mitoshi's cream by day, vermilion as the one brand colour (links, the active tab, the one filled action), lime for
+   cream by day, vermilion as the one brand colour (links, the active tab, the one filled action), lime for
    Up and coral for Down only where a side is meant, every figure in JetBrains Mono. Sora for titles, Inter for
    reading, Noto Serif JP for 上下. */
 
@@ -142,7 +142,7 @@ html {
 .prose code {
   font-family: var(--font-mono);
 }
-/* Figures line up (Mitoshi's numbers law). */
+/* Figures line up (numbers law). */
 .prose table td {
   font-variant-numeric: tabular-nums;
 }

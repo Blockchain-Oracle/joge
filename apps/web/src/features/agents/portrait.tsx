@@ -5,7 +5,7 @@ import * as notionists from "@dicebear/notionists";
 import type { CSSProperties } from "react";
 import { cx } from "@/kit";
 
-/** Owarine's persona: notionists on a paper tile, drawn here from the MIT library (no network call). */
+/** Faces: notionists on a paper tile, drawn here from the MIT library (no network call). */
 const DRAWN_CAP = 256;
 const drawn = new Map<string, string>();
 /** Each face breathes on its own beat: a phase from the seed, so a row of them never bobs in unison. */

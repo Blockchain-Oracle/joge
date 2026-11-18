@@ -7,10 +7,10 @@ const VIEW = 100;
 const CENTRE = 50;
 /** The arc's length in path units (pathLength), so the dash maths stays in 0–100. */
 const LENGTH = 100;
-/** Stroke width as a share of the box (Mitoshi's ring: radius 46, stroke 6 in a 100 box). */
+/** Stroke width as a share of the box (ring: radius 46, stroke 6 in a 100 box). */
 const STROKE = 6;
 const RADIUS = 46;
-/** The phases (Kakure's games ramp): near at a third left, last in the final tenth or ten seconds. */
+/** The phases: near at a third left, last in the final tenth or ten seconds. */
 const NEAR_SHARE = 0.33;
 const LAST_SHARE = 0.1;
 const LAST_FLOOR_MS = 10_000;
@@ -46,7 +46,7 @@ export function ringTime(leftMs: number, compact = false): string {
 }
 
 /**
- * Time as a draining ring (Abu's rule: "time is a draining ring, not text"; Mitoshi's CountdownRing). It drains toward
+ * Time as a draining ring. It drains toward
  * the end, turns lime when near and vermilion and pulsing in the last tenth. `children` replaces the time inside.
  */
 export function Ring({

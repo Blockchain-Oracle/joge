@@ -30,7 +30,7 @@ export const BLAZE = {
   event: "BCH BLAZE 2026",
   track: "Mainnet Track",
   deck: process.env.NEXT_PUBLIC_BLAZE_DECK_URL || "",
-  /** The team's CashTokens address (the same one Hashi uses: one team, one wallet). */
+  /** The team's CashTokens address (one team, one wallet). */
   cashtokens: process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9",
 } as const
 

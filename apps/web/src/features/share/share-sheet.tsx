@@ -10,7 +10,7 @@ import { useShare } from "./use-share.ts";
 const COIN_PX = 96;
 
 /**
- * Share a decided round of yours (his feedback: receipts with a QR, the replay as a video, "I made this trade"): the
+ * Share a decided round of yours: the
  * dark receipt or the replay video, both carrying a QR to the round.
  */
 export function ShareSheet({

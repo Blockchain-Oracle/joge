@@ -3,7 +3,7 @@ import { PROTOCOL_FEE_BPS, TICKET_DUST, toDollars } from "@joge/sdk";
 import type { Cue } from "@/kit";
 
 /**
- * A round's film (after Senryo's replay film, `packages/calls/src/film.ts`): a decided round laid out once as a
+ * A round's film: a decided round laid out once as a
  * timeline, so every frame is a pure function of film time and seeking is exact.
  *   0 → ENTRIES_MS            the entry window, entries dropping in as they were made
  *   → + LOCK_MS               the lock: the line to beat draws across
@@ -147,7 +147,7 @@ export function filmOf(data: RoundFilm, focus: Set<string>, bchUsd: number): Fil
   if (path.length < 2) return null;
   const strike = round.strikePrice === null ? null : toDollars(round.asset, round.strikePrice);
   const close = round.closePrice === null ? null : toDollars(round.asset, round.closePrice);
-  // The path ends on the settling price (Senryo: the head stops where OUT lands).
+  // The path ends on the settling price (the head stops where OUT lands).
   const times = path.map(([ms]) => ms).filter((ms) => ms <= closeMs);
   const prices = path.slice(0, times.length).map(([, price]) => price);
   if (close !== null) {

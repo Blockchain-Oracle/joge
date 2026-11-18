@@ -1,6 +1,6 @@
 /*
- * The app shell's geometry (D21): a header across the top, one centred column on the stage; on phones the places live
- * in a floating dock at the bottom (Mitoshi), with Sensei's seal in its centre.
+ * The app shell's geometry: a header across the top, one centred column on the stage; on phones the places live
+ * in a floating dock at the bottom, with Sensei's seal in its centre.
  */
 :root {
   --inset: 16px;
@@ -39,7 +39,7 @@
 }
 
 /*
- * The chipnet world (test coins) wears a gold rule along the top of every page (F25), set before first paint by the
+ * The chipnet world (test coins) wears a gold rule along the top of every page, set before first paint by the
  * theme script's data-network, so a test page is never mistaken for mainnet. Mainnet has no rule.
  */
 :root[data-network="chipnet"] .jg-shell {
@@ -47,7 +47,7 @@
 }
 
 /*
- * The world switch (Kakure's glow toggle, 21st cinematic-glow-toggle reskinned): `--on` is 0 on chipnet and 1 on
+ * The world switch (a glow toggle): `--on` is 0 on chipnet and 1 on
  * mainnet, read from <html data-network> so the prerendered page is never in the wrong state. The on side glows
  * vermilion; the thumb springs.
  */
@@ -135,7 +135,7 @@
 }
 
 /*
- * The flood between worlds (Kakure, after Mitoshi's environment.css): the new world is revealed by a circle spreading
+ * The flood between worlds: the new world is revealed by a circle spreading
  * from the switch, 520 ms. `--flood-x/y` and `data-flooding` are set by switchWorld().
  */
 :root[data-flooding]::view-transition-old(root),

@@ -108,7 +108,7 @@ function Hero() {
   );
 }
 
-/** The last call (Kakure's FinalCall): the real time left on the next round, and the button. */
+/** The last call: the real time left on the next round, and the button. */
 function FinalCall() {
   const now = useNow();
   const { lane, next } = useLane();
@@ -190,7 +190,7 @@ function Footer() {
 }
 
 /**
- * The landing (F16, D21): it opens on the product working (Agari, Kakure): the live round on the right with the
+ * The landing: it opens on the product working: the live round on the right with the
  * oracle's heartbeat, five words and one sentence on the left, then five numbered sections with one sentence each and
  * live art, the real time left on the next round, and what Jōge is built on.
  */

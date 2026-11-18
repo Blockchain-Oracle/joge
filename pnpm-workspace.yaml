@@ -28,7 +28,7 @@ catalog:
   typescript: ~6.0.3
   "@types/node": ^24
   zod: 4.6.5
-  # AI (S07): the Vercel AI SDK and the providers the model resolver can reach directly.
+  # AI: the Vercel AI SDK and the providers the model resolver can reach directly.
   ai: 7.0.162
   "@ai-sdk/openai": 4.0.108
   "@dicebear/core": 9.4.3
@@ -56,7 +56,7 @@ catalog:
   "@rpckit/fallback": 2.2.0
   "@rpckit/websocket": 2.2.0
   eventsource-parser: 4.1.3
-  # Web Push (S08): 4.0.0 is inside the two-week window; 3.6.7 is the long-standing release.
+  # Web Push: 4.0.0 is inside the two-week window; 3.6.7 is the long-standing release.
   web-push: 3.6.7
   "@types/web-push": 3.6.4
   next: 16.4.5

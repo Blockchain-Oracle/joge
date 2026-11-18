@@ -43,7 +43,7 @@ function AgentCall({ agent, roundIds }: { agent: Agent; roundIds: number[] }) {
   );
 }
 
-/** The agents playing this lane, as characters with their call on the round in front of you (Owarine's faces). */
+/** The agents playing this lane, as characters with their call on the round in front of you. */
 export function LaneAgents({ lane }: { lane: LaneView }) {
   const network = useWorld();
   const agents = useQuery(agentsQuery(network));

@@ -15,7 +15,8 @@
       "!**/public/wallets",
       "!**/drizzle/meta",
       "!**/public/tokens",
-      "!docs-site"
+      "!docs-site",
+      "!.github/assets/banner"
     ]
   },
   "formatter": {

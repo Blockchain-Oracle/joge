@@ -11,7 +11,7 @@ import { agentsQuery } from "./api.ts";
 import { DecisionFeed } from "./decision-feed.tsx";
 
 /**
- * Agents (F13, D21): characters, not a form. Yours first, then everyone's, ranked by the money their owners entrusted
+ * Agents: characters, not a form. Yours first, then everyone's, ranked by the money their owners entrusted
  * (never by wins). Building one is one pill away.
  */
 export function AgentsPage() {

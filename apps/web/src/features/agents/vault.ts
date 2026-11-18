@@ -15,7 +15,7 @@ import { requestWithdraw } from "./api.ts";
 import { DUST, FUND_FEE_BASE, FUND_FEE_PER_INPUT } from "./constants.ts";
 
 /**
- * An agent's vault read straight from the chain (D17), kept live by Fulcrum's notifications on its address: what the
+ * An agent's vault read straight from the chain, kept live by Fulcrum's notifications on its address: what the
  * owner has entrusted right now, not what our database last saw.
  */
 export function useVault(network: Network, lockingBytecode: string | undefined) {

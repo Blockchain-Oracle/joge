@@ -22,7 +22,7 @@ const pill = (selected: boolean) =>
   );
 
 /**
- * Play limits (F26) as two settings: a daily stake limit and a break. A looser limit waits a day and a break can't be
+ * Play limits as two settings: a daily stake limit and a break. A looser limit waits a day and a break can't be
  * ended early; the one-tap plates wear either as their blocker.
  */
 export function LimitsPanel() {

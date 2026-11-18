@@ -22,7 +22,7 @@ export interface FeedbackPrefs {
 }
 
 const PREF_KEY = "joge:feedback";
-/** Sound is opt-in (F22); haptics are on. */
+/** Sound is opt-in; haptics are on. */
 const DEFAULTS: FeedbackPrefs = { sound: false, haptics: true };
 
 let prefs: FeedbackPrefs | null = null;
@@ -136,7 +136,7 @@ export function cue(name: Cue, step = 0) {
 }
 
 /**
- * A replay's soundtrack (Senryo's films): heard whatever the Sound setting says, because the viewer pressed play, and
+ * A replay's soundtrack: heard whatever the Sound setting says, because the viewer pressed play, and
  * muted only by the player's own switch. No haptics: a film is watched, not felt.
  */
 export function filmCue(name: Cue, step = 0) {
@@ -151,7 +151,7 @@ const RENDER_RATE = 44_100;
 const RENDER_CHANNELS = 2;
 
 /**
- * A replay's soundtrack rendered offline for a saved video (Senryo's `soundtrack`): every cue through the same voices
+ * A replay's soundtrack rendered offline for a saved video: every cue through the same voices
  * the app plays, at its film time. Ignores the Sound setting; the person asked for the file.
  */
 export async function renderCues(cues: Array<{ at: number; cue: Cue; step: number }>, totalMs: number) {

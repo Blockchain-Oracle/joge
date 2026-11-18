@@ -25,7 +25,7 @@ function toggleSound() {
 }
 
 /**
- * Kakure's glass stack on the chart's left edge: each setting is an icon and its value, nothing else. The stake opens
+ * The glass stack on the chart's left edge: each setting is an icon and its value, nothing else. The stake opens
  * the amount sheet: type any stake (or tap one of the usual ones), and every Up/Down tap after uses it.
  */
 export function Stack({ tap }: { tap: ReturnType<typeof useOneTap> }) {

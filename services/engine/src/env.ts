@@ -27,13 +27,13 @@ const envSchema = z.object({
   KEEPER_DEMAND: z.enum(["on", "off"]).default("off"),
   /** Which parts run in this process. */
   ENGINE_COMPONENTS: list,
-  /** The agents' master private key: signs each agent's vault bets (S07). Without it agents only make proposals. */
+  /** The agents' master private key: signs each agent's vault bets. Without it agents only make proposals. */
   AGENT_XPRV: z.string().min(1).optional(),
-  /** Web Push (S08): the VAPID key pair and a contact URL (mailto: or https:). Without them no alerts are sent. */
+  /** Web Push: the VAPID key pair and a contact URL (mailto: or https:). Without them no alerts are sent. */
   VAPID_PUBLIC_KEY: z.string().min(1).optional(),
   VAPID_PRIVATE_KEY: z.string().min(1).optional(),
   VAPID_SUBJECT: z.string().min(1).optional(),
-  /** The chipnet faucet's key (WIF): pays first-time players' test coins (S09R). Without it no faucet runs. */
+  /** The chipnet faucet's key (WIF): pays first-time players' test coins. Without it no faucet runs. */
   FAUCET_WIF: z.string().min(1).optional(),
   /** House-wide model calls per hour across every agent. */
   AGENT_MAX_CALLS_PER_HOUR: z.coerce.number().int().positive().default(60),

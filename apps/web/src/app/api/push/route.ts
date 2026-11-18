@@ -22,7 +22,7 @@ const subscribeSchema = z.object({
 const unsubscribeSchema = z.object({ endpoint: z.url().max(PUSH_ENDPOINT_MAX) });
 
 /**
- * Web Push sign-up (F20): this browser wants to hear about rounds paid to these addresses (results are public on
+ * Web Push sign-up: this browser wants to hear about rounds paid to these addresses (results are public on
  * chain, so no signature is asked). The engine sends; this route only stores the subscription.
  */
 export async function POST(request: Request) {

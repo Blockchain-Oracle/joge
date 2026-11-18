@@ -29,9 +29,9 @@ const HERO_RING = 92;
 const NAMES = { BTC: "Bitcoin", ETH: "Ether", BCH: "Bitcoin Cash", GOLD: "Gold" } as const;
 
 /**
- * The round screen (D21), rebuilt from Abu's products: the chart is the stage (Kakure), the question is five words
- * (Masayume's hero question), time is a ring that ticks its last five seconds (Senryo, Kakure's games), the stake is a
- * standing setting in a glass stack (Kakure), and Up/Down are flooded plates that call in one tap (Senryo, Owarine).
+ * The round screen: the chart is the stage, the question is five words
+ * (one question), time is a ring that ticks its last five seconds, the stake is a
+ * standing setting in a glass stack, and Up/Down are flooded plates that call in one tap.
  * The four markets sit in a narrow rail beside the round; on a phone they open from the asset chip.
  */
 export function Terminal() {

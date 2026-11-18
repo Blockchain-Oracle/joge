@@ -93,7 +93,7 @@ function chartInto(
 }
 
 /**
- * The run card (FOMO's and Binance's PnL snapshot, in the receipt's dark ticket): the period, the net as one big
+ * The run card (a PnL snapshot in the receipt's dark ticket): the period, the net as one big
  * figure in its colour, the return on what was staked, rounds · right · best, the running net round by round, and a
  * stub with a QR to the player's record. `t` draws the chart part-way (the video); the image passes the end.
  */

@@ -46,7 +46,7 @@ export interface NoticeOf {
   [CHANNEL.agent]: AgentNotice;
 }
 
-/** An agent read a round (S07): its page and the agents list refetch. */
+/** An agent read a round: its page and the agents list refetch. */
 export interface AgentNotice {
   network: Network;
   agentId: number;

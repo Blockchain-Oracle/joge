@@ -23,7 +23,7 @@ const FACE = 112;
 const NEXT_RING = 64;
 
 /**
- * One agent (F13, D21): its face and name, the money in its vault (read live from the chain) as the one big figure, a
+ * One agent: its face and name, the money in its vault (read live from the chain) as the one big figure, a
  * ring to its next call, the owner's four buttons, its brief, open proposals and every call it made.
  */
 export function AgentView({ id }: { id: number }) {

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Kakure's win confetti: two emitters near the bottom corners (18 % and 82 % of the width), 34 pieces each, gravity
+ * Win confetti: two emitters near the bottom corners (18 % and 82 % of the width), 34 pieces each, gravity
  * 0.14 px/frame², gone in 1.1 s, fading over the second half of their life. Colours are the plates and the brand.
  */
 const LEFT_EMITTER = 0.18;

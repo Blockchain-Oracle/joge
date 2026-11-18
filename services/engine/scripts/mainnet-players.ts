@@ -1,5 +1,5 @@
-// Mainnet: four team wallets play a few real rounds against each other (his ask: the leaderboard should not be empty
-// on a judge's first look). Each is derived from the keeper's key, funded once from the keeper with a few cents, and
+// Mainnet: four team wallets play a few real rounds against each other so the leaderboard is not empty
+// on a first look. Each is derived from the keeper's key, funded once from the keeper with a few cents, and
 // enters opposite sides of the same round (one Up, one Down) with stakes of one to three cents; every payout goes back
 // to its own wallet. It keeps the markets it plays awake through the live app, like a visitor's page does.
 // Usage: WEB_URL=https://… ROUNDS=2 node --env-file=.env.mainnet scripts/mainnet-players.ts   (CONFIRM_MAINNET=yes)

@@ -1,4 +1,4 @@
-/** Shared by the page that builds a sign-in proof and the server that checks it (D11). */
+/** Shared by the page that builds a sign-in proof and the server that checks it. */
 
 /** 2100-01-01T00:00:00Z: a transaction with this locktime can never be mined. */
 export const SIGN_IN_LOCKTIME = 4_102_444_800;

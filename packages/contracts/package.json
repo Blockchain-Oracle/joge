@@ -2,7 +2,7 @@
   "name": "@joge/contracts",
   "private": true,
   "type": "module",
-  "description": "J\u014dge's covenants: lane threads, factory, gates, tickets and the round master, written for the S00 language bake-off in CashScript and SolidCash.",
+  "description": "Jōge's covenants: CashScript round contracts (gates, tickets, the round master) and SolidCash lane threads, factory and agent vault, with their builders and tests.",
   "exports": {
     ".": "./src/index.ts",
     "./browser": "./src/browser.ts"

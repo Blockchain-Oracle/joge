@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 /**
- * The installable app (F24): it opens on the rounds, night first, with the vermilion hanko as its icon (Next's
+ * The installable app: it opens on the rounds, night first, with the vermilion hanko as its icon (Next's
  * manifest file convention; icons drawn by scripts/icons.ts).
  */
 export default function manifest(): MetadataRoute.Manifest {

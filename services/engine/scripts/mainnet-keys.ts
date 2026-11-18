@@ -1,4 +1,4 @@
-// Mainnet prep (S09): creates, once, the keys Jōge's mainnet world needs, written only to git-ignored files, and prints
+// Mainnet prep: creates, once, the keys Jōge's mainnet world needs, written only to git-ignored files, and prints
 // the public addresses with what each needs. It sends nothing and funds nothing: funding is the owner's step.
 //   services/engine/.env.mainnet  GENESIS_WIF (pays the one genesis), KEEPER_WIF (opens lanes, pays their fees),
 //                                 AGENT_XPRV (signs agents' vault bets)
@@ -47,7 +47,7 @@ if (!settingOf(engineFile, "AGENT_XPRV")) {
 if (lines.length > 0) {
   appendFileSync(
     engineFile,
-    `${read(engineFile) ? "\n" : "# Jōge mainnet keys (S09). Real money once funded: never commit, never print.\n"}${lines.join("\n")}\n`,
+    `${read(engineFile) ? "\n" : "# Jōge mainnet keys. Real money once funded: never commit, never print.\n"}${lines.join("\n")}\n`,
   );
 }
 if (xpub && !settingOf(webFile, "AGENT_XPUB_MAINNET")) appendFileSync(webFile, `\nAGENT_XPUB_MAINNET=${xpub}\n`);

@@ -1,9 +1,8 @@
 /*
- * Jōge's design tokens (D21, 2026-11-18): the look rebuilt from the strongest move of each of Abu's own prediction
- * products (context/build-research/fidelity/), approved on the /concept page.
- *   Masayume → Mitoshi → Kakure: a near-black stage, vermilion as the ONE brand colour, every figure in mono.
- *   Senryo: Up and Down as flooded plates (acid lime / coral) with a darker bottom edge.
- *   Mitoshi: the cream day world.
+ * Jōge's design tokens:
+ * a near-black stage, vermilion as the ONE brand colour, every figure in mono.
+ * Up and Down as flooded plates (acid lime / coral) with a darker bottom edge.
+ * a cream day world.
  * Night is the default world; [data-theme="light"] is day.
  */
 :root {
@@ -32,7 +31,7 @@
   --mark-up: var(--up);
   --mark-down: var(--down);
 
-  /* The two sides (Senryo's plates): a flood with ink on it and a darker edge underneath. */
+  /* The two sides (plates): a flood with ink on it and a darker edge underneath. */
   --up: #b5f543;
   --up-deep: #7fb224;
   --up-edge: #7fb224;
@@ -75,11 +74,11 @@
   --dark-mute: #7a7a7a;
   --dark-line: rgb(255 255 255 / 0.08);
 
-  /* Glass floats on the chart (Kakure: card at 78 %, 14 px blur, 140 % saturation). */
+  /* Glass floats on the chart (card at 78 %, 14 px blur, 140 % saturation). */
   --float: rgb(20 20 20 / 0.78);
   --float-ring: rgb(255 255 255 / 0.1);
   --sticker-edge: #ffffff;
-  /* Paper (receipts, agent faces, the pairing code): Mitoshi's cream in both worlds. */
+  /* Paper (receipts, agent faces, the pairing code): cream in both worlds. */
   --paper: #f4eee3;
   --paper-ink: #141210;
   --cream: #f4eee3;
@@ -140,7 +139,7 @@
   color-scheme: dark;
 }
 
-/* Day: Mitoshi's cream world; the plates stay, their text inks darken to read on cream. */
+/* Day: cream world; the plates stay, their text inks darken to read on cream. */
 :root[data-theme="light"] {
   --mark-up: var(--up-text);
   --mark-down: var(--down-text);

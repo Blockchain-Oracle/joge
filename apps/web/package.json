@@ -2,7 +2,7 @@
   "name": "@joge/web",
   "private": true,
   "type": "module",
-  "description": "J\u014dge's app: the lobby, rounds, events, agents and judge mode, plus the read API and live stream it is built on.",
+  "description": "Jōge's app: the rounds, the round pages and proofs, agents and Sensei, portfolio and leaders, plus the read API and live stream it is built on.",
   "scripts": {
     "dev": "next dev --port 3300",
     "build": "next build",

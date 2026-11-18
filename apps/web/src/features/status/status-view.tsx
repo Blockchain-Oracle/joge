@@ -217,7 +217,7 @@ function Group({ title, checks }: { title: string; checks: Check[] }) {
 }
 
 /**
- * /status (F18): what this browser sees right now. The verdict on top (CWF's board), then every check grouped and
+ * /status: what this browser sees right now. The verdict on top (CWF's board), then every check grouped and
  * the worst group first: signed and live prices, the chain servers this page talks to, the engine that runs the
  * rounds, the AI, and this browser's own live stream. It re-checks every 30 s while the page is open.
  */

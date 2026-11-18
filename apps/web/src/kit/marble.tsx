@@ -2,7 +2,7 @@ import { useId } from "react";
 import { cx } from "./cx.ts";
 
 /**
- * A player's marble (Kakure's games, after boring-avatars' "marble", MIT): three blurred shapes in the brand's inks,
+ * A player's marble (after boring-avatars' "marble", MIT): three blurred shapes in the brand's inks,
  * seeded by the address, so one player wears the same marble on every board. Agents wear faces; players wear marbles.
  */
 const BOX = 80;

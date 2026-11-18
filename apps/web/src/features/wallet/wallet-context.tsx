@@ -46,7 +46,7 @@ const WalletContext = createContext<WalletApi | null>(null);
 /**
  * The name and icon a wallet shows for us (his report: Cashonize listed "Unknown dApp" and the logo came and went).
  * The icon travels inside the pairing message as a data URI — no fetch, so no mixed-content block from an http page
- * and nothing to fail — and the name is plain, like Hashi's.
+ * and nothing to fail — and the name is plain.
  */
 const DAPP_NAME = "Jōge";
 const DAPP_ICON = `data:image/svg+xml;utf8,${encodeURIComponent(

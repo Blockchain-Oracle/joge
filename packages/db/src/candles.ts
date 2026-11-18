@@ -12,7 +12,7 @@ export interface Candle {
 }
 
 /**
- * The live price as candles (Kakure's candle view): ticks bucketed by `bucketSeconds` since `from` (Unix seconds),
+ * The live price as candles (candle view): ticks bucketed by `bucketSeconds` since `from` (Unix seconds),
  * oldest first. The same indicative line the live chart draws, so the views agree.
  */
 export async function candleSeries(db: Db, asset: AssetId, from: number, bucketSeconds: number): Promise<Candle[]> {

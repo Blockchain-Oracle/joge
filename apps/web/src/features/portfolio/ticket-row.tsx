@@ -84,7 +84,7 @@ export function TicketLine({ ticket, round, onShare }: TicketRow & { onShare?: (
     </Link>
   );
   if (!onShare || !decided) return row;
-  // Your own decided tickets carry their receipt and video one tap away (his feedback: from the portfolio too).
+  // Your own decided tickets carry their receipt and video one tap away.
   return (
     <div className="flex items-center gap-1.5">
       {row}

@@ -1,4 +1,4 @@
-/** Agents as characters (Owarine's `names.ts`): a face seed and a person's name to remember, both stable per seed. */
+/** Agents as characters: a face seed and a person's name to remember, both stable per seed. */
 const FIRST = [
   "Kai",
   "Mara",

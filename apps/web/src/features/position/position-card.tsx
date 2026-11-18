@@ -16,7 +16,7 @@ const TONE = {
 } as const;
 
 /**
- * Your call, on the stage (his feedback, 2026-11-18): which side you took and for how much, whether it is winning
+ * Your call, on the stage: which side you took and for how much, whether it is winning
  * right now and by how much, what it pays, and the time to the next moment that matters. Once the round is decided it
  * says what came back. One glance, no scrolling; tapping it opens the round.
  */

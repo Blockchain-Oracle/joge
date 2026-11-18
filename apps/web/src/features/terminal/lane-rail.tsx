@@ -44,7 +44,7 @@ function LaneTile({ lane, active, onPick }: { lane: LaneView; active: boolean; o
 }
 
 /**
- * The markets (Kakure's rail, narrowed): each a live tile (coin, length, price, a ring to its next round), then the agents
+ * The markets (rail, narrowed): each a live tile (coin, length, price, a ring to its next round), then the agents
  * playing the one on screen with their call. Nothing here needs a caption to be understood.
  */
 export function LaneRail({

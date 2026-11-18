@@ -21,7 +21,7 @@ const PERCENT = 100;
 const RANK_DIGITS = 2;
 const ADDRESS_HEAD = 6;
 const ADDRESS_TAIL = 4;
-/** Podium order (Owarine, Kakure): second, first, third; the first stands tallest. */
+/** Podium order: second, first, third; the first stands tallest. */
 const PODIUM_ORDER = [1, 0, 2];
 const PLINTH = ["h-24", "h-16", "h-12"];
 const FIRST_MARBLE = 72;
@@ -30,7 +30,7 @@ const OTHER_MARBLE = 60;
 const rightShare = (player: PlayerTotals) =>
   player.won + player.lost > 0 ? `${Math.round((player.won / (player.won + player.lost)) * PERCENT)}%` : "—";
 
-/** "qz3f8k…k2m" with the tail in vermilion (Owarine's short form). */
+/** "qz3f8k…k2m" with the tail in vermilion (short form). */
 export function ShortAddress({ address, className }: { address: string; className?: string }) {
   const bare = bareAddress(address);
   return (
@@ -62,7 +62,7 @@ function YouPill() {
 
 /**
  * Leaders (F9): players ranked by what they won (paid back minus paid in), never by how often they were right; a
- * player is a payout address. A podium for the first three (Owarine, Kakure), then the field, your rows marked.
+ * player is a payout address. A podium for the first three, then the field, your rows marked.
  */
 export function Leaderboard() {
   const network = useWorld();

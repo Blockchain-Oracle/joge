@@ -1,6 +1,5 @@
 /**
- * The round chart's numbers: the Window chart of Abu's own products (Mitoshi's window chart and Owarine's terminal, as
- * Kakure carried them in `packages/chart/src/{constants,window-chart}.ts`), tuned for Jōge's lock → close rounds.
+ * The round chart's numbers, tuned for Jōge's lock → close rounds.
  */
 
 export const MS_PER_SECOND = 1_000;
@@ -16,7 +15,7 @@ export const DEFAULT_ROLLING_MS = 5 * MS_PER_MINUTE;
 export const ROLLING_FUTURE_SHARE = 0.08;
 
 /**
- * The shown price glides toward the latest tick with a time constant that follows the feed (Senryo): half the
+ * The shown price glides toward the latest tick with a time constant that follows the feed: half the
  * measured gap between ticks, never under 84 ms. A one-second feed glides; a sparse one (BCH ticks every ~2.4 s) no
  * longer jumps and then sits flat like a staircase.
  */

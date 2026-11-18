@@ -9,7 +9,7 @@ import { useNow } from "../rounds/use-now.ts";
 import { Hanko } from "../shell/seal.tsx";
 import { useLane } from "../terminal/use-lane.ts";
 
-/** Owarine's typewriter: one word every 24 ms, split on whitespace so lines never reflow. */
+/** Typewriter: one word every 24 ms, split on whitespace so lines never reflow. */
 const WORD_MS = 24;
 /** A word and the space after it. */
 const PARTS_PER_STEP = 2;
@@ -17,7 +17,7 @@ const AVATAR = 27;
 const METER_RING = 44;
 const SECOND_MS = 1_000;
 
-/** A reply that talked the player out of a bet gets these; any other read gets the second set (Owarine `copy.ts`). */
+/** A reply that talked the player out of a bet gets these; any other read gets the second set. */
 const SAT_OUT = /sit (?:it |this one |the next one )?out|skip (?:it|this)|pass on|not this one|stay out|no bet/i;
 const AFTER_PASS = ["Good call, skip it", "Show me another", "Why sit out?"];
 const AFTER_CALL = ["Why that side?", "What's the risk?", "What would flip it?"];
@@ -65,7 +65,7 @@ export function ReadingDots() {
 }
 
 /**
- * The strip pinned at the top of the panel (Owarine's meter): the lane on screen, its price now against the line to
+ * The strip pinned at the top of the panel: the lane on screen, its price now against the line to
  * beat, and the ring to the next close of entries.
  */
 export function SenseiMeter() {

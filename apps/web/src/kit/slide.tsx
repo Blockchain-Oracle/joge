@@ -9,7 +9,7 @@ const COMMIT_AT = 0.9;
 const THUMB = 48;
 const INSET = 4;
 
-/** Slide to confirm (Kakure's mainnet step): for moves that are hard to undo. Enter on the thumb also confirms. */
+/** Slide to confirm (mainnet step): for moves that are hard to undo. Enter on the thumb also confirms. */
 export function SlideToConfirm({
   label,
   onConfirm,

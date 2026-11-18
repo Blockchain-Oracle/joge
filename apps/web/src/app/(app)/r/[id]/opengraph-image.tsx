@@ -7,7 +7,7 @@ import { markSvg } from "@/brand/geometry";
 import { database } from "@/server/db";
 import { serverEnv } from "@/server/env";
 
-/** The share card a round's link unfurls into (F21), in the redo's look (D21): the night stage, the seal, the plates. */
+/** The share card a round's link unfurls into, in the redo's look: the night stage, the seal, the plates. */
 export const alt = "A Jōge round: up or down";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

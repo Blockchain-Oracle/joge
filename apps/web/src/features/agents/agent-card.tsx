@@ -39,7 +39,7 @@ export function LaneCubes({ lanes, size = 22 }: { lanes: number[]; size?: number
 }
 
 /**
- * An agent as a character (Owarine, Mitoshi): its face breathing on its own beat, its name, the money its owner
+ * An agent as a character: its face breathing on its own beat, its name, the money its owner
  * entrusted (the ranking), its lanes, and a ring to its next call. Nothing else.
  */
 export function AgentTile({ agent, rank }: { agent: Agent; rank?: number }) {

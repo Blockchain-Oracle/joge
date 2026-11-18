@@ -1,9 +1,9 @@
 /**
- * Every word on the landing (Mitoshi's rule: every line says only what the product does). One sentence per section
- * (Agari's numbered sections); the figures around them are live.
+ * Every word on the landing (every line says only what the product does). One sentence per section
+ * (numbered sections); the figures around them are live.
  */
 export const HERO = {
-  /** Mitoshi's hero chip: the promo says mainnet as soon as mainnet is live, whichever world the visitor is in. */
+  /** The hero chip: the promo says mainnet as soon as mainnet is live, whichever world the visitor is in. */
   live: { chipnet: "Live on Bitcoin Cash chipnet", mainnet: "Live on Bitcoin Cash mainnet" },
   title: "Up or down,",
   accent: "in minutes.",

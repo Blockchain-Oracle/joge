@@ -36,7 +36,7 @@ const bodySchema = z.object({
 const textOf = (message: UIMessage) => message.parts.map((part) => (part.type === "text" ? part.text : "")).join(" ");
 
 /**
- * Sensei (F12): streams a reply over this turn's market notes. Its one tool, `ticket`, names a round taking entries and
+ * Sensei: streams a reply over this turn's market notes. Its one tool, `ticket`, names a round taking entries and
  * a side; the server checks the round is real and open and returns what the page needs to draw a ticket card.
  * Nothing here signs or sends.
  */

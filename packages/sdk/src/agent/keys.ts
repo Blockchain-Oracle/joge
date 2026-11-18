@@ -7,7 +7,7 @@ import {
 } from "@bitauth/libauth";
 
 /**
- * Agents' keys (F13): one master key, one child per agent, at the agent's id (non-hardened, so the public half can
+ * Agents' keys: one master key, one child per agent, at the agent's id (non-hardened, so the public half can
  * derive it). The web server holds only the public half (AGENT_XPUB) and derives each agent's public key for its vault
  * address; only the engine holds the private half (AGENT_XPRV) and signs vault bets. A leaked child key can still only
  * do what the vault covenant allows: enter lane rounds for the vault's owner within the per-bet cap.

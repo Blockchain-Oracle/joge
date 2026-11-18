@@ -54,7 +54,7 @@ const lengthLabel = (seconds: number) =>
   seconds >= HOUR_SECONDS ? `${seconds / HOUR_SECONDS} h` : `${seconds / MINUTE_SECONDS} min`;
 
 /**
- * Runs every active agent (F13). For each round it should read (its lanes' next rounds, after a quarter of the entry
+ * Runs every active agent. For each round it should read (its lanes' next rounds, after a quarter of the entry
  * window and at least a minute before the lock) it claims the read once, asks the model within the house budget, and
  * lets the deterministic gate decide. On its own, a vault bet signed with the agent's key; ask me first, a proposal
  * the owner signs in the app. Every read is the agent's memory.

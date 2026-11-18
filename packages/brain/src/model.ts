@@ -5,7 +5,7 @@ import { APICallError, createGateway, type LanguageModel } from "ai";
 /**
  * Which model answers, as Sensei and for the agents. Server only; a setting, not code:
  *
- *   AI_MODEL="openai/gpt-5.4-mini"   (the default: a short read every round, so a small fast model — Masayume's lesson)
+ * AI_MODEL="openai/gpt-5.4-mini" (the default: a short read every round, so a small fast model)
  *   AI_MODEL="openai/gpt-5.4"        (a bigger model, if ever wanted)
  *
  * The credential decides the route, first match wins:

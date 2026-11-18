@@ -21,7 +21,7 @@ export interface RoundLevels {
   lockAt?: number | null;
   closeAt?: number | null;
   /**
-   * Your call in the round on screen (Kakure's Entry level and PnL band, for a shared pot): a "YOU" tag where your
+   * Your call in the round on screen (Entry level and PnL band, for a shared pot): a "YOU" tag where your
    * line to beat starts, your side's half washed stronger, and the price pill saying whether you are winning.
    */
   position?: { side: 0 | 1 } | null;

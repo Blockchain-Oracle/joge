@@ -19,7 +19,7 @@ export const shortAddress = (address: string) => {
 };
 
 /**
- * The wallet (D21): one balance in dollars (BCH under it), the paired wallet's own logo and the payout address to copy,
+ * The wallet: one balance in dollars (BCH under it), the paired wallet's own logo and the payout address to copy,
  * and a 試 sticker while the coins are test coins. Unpaired, it is one button.
  */
 export function WalletPlate({ className }: { className?: string }) {

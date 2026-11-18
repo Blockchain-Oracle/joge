@@ -32,9 +32,9 @@ function errorText(error: Error): string {
 const textOf = (message: UIMessage) => message.parts.map((part) => (part.type === "text" ? part.text : "")).join("");
 
 /**
- * Sensei (F12): a straight call on the live rounds, one reason and one risk, with ticket cards that open the normal
+ * Sensei: a straight call on the live rounds, one reason and one risk, with ticket cards that open the normal
  * ticket. It hears this browser's record (results, stakes, limits, tilt) but never the address, and it can say "not
- * this one". Owarine's panel: a 400 px side panel (a sheet on a phone), the live strip on top, replies that type
+ * this one". The panel: a 400 px side panel (a sheet on a phone), the live strip on top, replies that type
  * themselves beside the seal, follow-up chips read from the answer.
  */
 export function SenseiPanel() {

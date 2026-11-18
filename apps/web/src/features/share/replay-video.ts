@@ -4,7 +4,7 @@ import { drawMark, drawQr, drawSeal, type Fonts, fit, HALF, NIGHT, shortUrl, WEI
 import type { ShareWords } from "./receipt.ts";
 
 /**
- * The replay as a video (Senryo's `exportFilm`, its layout measured from Fomo's clip): every frame drawn from the
+ * The replay as a video: every frame drawn from the
  * round film at t = i / 30 — the preview and the file are the same drawing, never a screen recording — and encoded
  * with Mediabunny (WebCodecs): H.264 about 6 Mbps at 1080 × 1350 with the film's own sounds as AAC. Where the browser
  * cannot encode H.264 it says so instead of handing over a file other apps refuse.
@@ -42,7 +42,7 @@ const SIGNED = new Intl.NumberFormat("en-US", { style: "currency", currency: "US
 const PRICE = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 const PERCENT = 100;
 const PLOT_SCALE = 2;
-/** The seal lands slightly large and settles (Kakure's stamp press). */
+/** The seal lands slightly large and settles (stamp press). */
 const TWO_POP = 1.25;
 
 /** The film's chart in the night colours, whatever the page's world. */

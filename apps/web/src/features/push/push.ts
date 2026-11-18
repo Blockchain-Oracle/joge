@@ -6,7 +6,7 @@ import { useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
 
 /**
- * Round alerts by Web Push (F20, Next's PWA guide): the page registers /sw.js, asks permission only from a tap, and
+ * Round alerts by Web Push (Next's PWA guide): the page registers /sw.js, asks permission only from a tap, and
  * hands the browser's subscription and the wallet's payout addresses to /api/push; the engine sends. On iPhone, web push
  * works only from the app added to the Home Screen.
  */

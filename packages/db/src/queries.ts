@@ -90,7 +90,7 @@ export interface LaneView {
   recent: Array<Pick<RoundCard, "roundId" | "state" | "winner" | "voidReason" | "closeTime">>;
 }
 
-/** Every lane's Next, Live and last finished round, PancakeSwap-style. */
+/** Every lane's Next, Live and last finished round. */
 export async function lobby(db: Db, network: Network, now: number): Promise<LaneView[]> {
   const recent = await db
     .select()

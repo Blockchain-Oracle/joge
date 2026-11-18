@@ -51,7 +51,7 @@ export interface CandlePoint {
 export type CandleStyle = "candles" | "line";
 
 /**
- * Price history on a canvas (Kakure's candle view, Mitoshi-ZEC's line mode): candles or a line of closes over the same
+ * Price history on a canvas (candle view, line mode): candles or a line of closes over the same
  * dot grid, axis and pill as the live round chart. The last candle keeps moving with the live price; hovering shows a
  * crosshair and that bucket's open, high, low and close. Switching style crossfades.
  */

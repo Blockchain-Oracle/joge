@@ -7,7 +7,7 @@ import type { Side, useOneTap } from "./use-one-tap.ts";
 const MULTIPLE_DIGITS = 2;
 
 /**
- * Up and Down (Senryo's plates, Kakure's "pays N×" under each side): one tap is the call. Whatever stands in the way
+ * Up and Down (plates, "pays N×" under each side): one tap is the call. Whatever stands in the way
  * (no wallet, entries closing, your own limit) is said once, as a sticker above the plates, and the tap runs its fix.
  */
 export function SidePlates({ tap, compact = false }: { tap: ReturnType<typeof useOneTap>; compact?: boolean }) {

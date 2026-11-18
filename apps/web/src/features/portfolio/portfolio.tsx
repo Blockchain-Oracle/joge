@@ -25,7 +25,7 @@ const SECOND_MS = 1_000;
 const SETTLED = new Set(["won", "lost", "refunded"]);
 
 /**
- * Your tickets (D21): one big number (what you are up or down), three small ones, what is still in play, then every
+ * Your tickets: one big number (what you are up or down), three small ones, what is still in play, then every
  * ticket as a row of four facts: the side, the round, the stake and how it ended. All of it read from the chain.
  */
 export function Portfolio() {

@@ -241,7 +241,7 @@ function clear(ctx: CanvasRenderingContext2D, color: string): string {
 }
 
 /**
- * While you hold a side (Kakure's PnL band, for a shared pot): from where your round started to the head, your side's
+ * While you hold a side (PnL band, for a shared pot): from where your round started to the head, your side's
  * half of the plot washes in its colour, strongest at the line to beat; a "YOU" tag marks where your line begins.
  */
 export function paintHolding(

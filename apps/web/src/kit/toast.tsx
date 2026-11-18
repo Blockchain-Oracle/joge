@@ -12,7 +12,7 @@ export interface Toast {
   body?: string;
   /** Where a tap goes (a round, a receipt). */
   href?: string;
-  /** A round's verdict: the toast wears the hanko instead of the disc and thuds in (Senryo's receipt). */
+  /** A round's verdict: the toast wears the hanko instead of the disc and thuds in (receipt). */
   seal?: Seal;
 }
 
@@ -27,7 +27,7 @@ const SEAL_TTL_MS = 6_000;
 const SEAL_SIZE = 40;
 const DISC_SIZE = 34;
 
-/** Kakure's toasts: good news and notes stay 3.5 s, trouble 5 s. */
+/** Toasts: good news and notes stay 3.5 s, trouble 5 s. */
 const TTL_MS = { up: 3_500, info: 3_500, down: 5_000 } as const;
 const SWIPE_DISMISS_PX = 24;
 const SOUNDS = { up: "arrive", info: "tap", down: "error" } as const;

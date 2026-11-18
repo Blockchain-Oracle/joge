@@ -6,7 +6,7 @@ import { CHALLENGE_PATTERN, CHALLENGE_TTL_MS, OP_RETURN, SECOND_MS, SESSION_TTL_
 import { serverEnv } from "./env";
 
 /**
- * Sign-in (D11): WizardConnect cannot sign messages, so an address proves itself by signing a transaction that can
+ * Sign-in: WizardConnect cannot sign messages, so an address proves itself by signing a transaction that can
  * never be mined (locktime in 2100) and carries a challenge this server issued. The server checks the signature with
  * the BCH virtual machine and answers with a session cookie for that address. Only agent edits need it: everything
  * else in Jōge is a transaction the wallet signs anyway.

@@ -47,7 +47,7 @@ const laneOf = (asset: keyof typeof NAMES, seconds: number | null) =>
   `${NAMES[asset]}${seconds ? ` ${seconds >= HOUR_SECONDS ? `${seconds / HOUR_SECONDS} h` : `${seconds / MINUTE_SECONDS} min`}` : ""}`;
 
 /**
- * Web Push (F20): the engine tells the browsers that signed up (apps/web /api/push) about their own rounds, the moment
+ * Web Push: the engine tells the browsers that signed up (apps/web /api/push) about their own rounds, the moment
  * a round pays out, and tells an agent's owner when it proposes a bet. One notice per browser per item (push_sent),
  * nothing from before the browser signed up, and subscriptions a push service has forgotten are dropped.
  */

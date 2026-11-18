@@ -2,7 +2,7 @@ import { bigint, bigserial, index, pgTable, primaryKey, smallint, text, timestam
 import { createdAt, network, updatedAt } from "./columns.ts";
 
 /**
- * Lanes woken on demand (S09): when the keeper runs with KEEPER_DEMAND=on, a lane outside its always-open set keeps
+ * Lanes woken on demand: when the keeper runs with KEEPER_DEMAND=on, a lane outside its always-open set keeps
  * opening rounds until `until`, which a viewer's browser pushes forward while the lane is on screen.
  */
 export const laneDemand = pgTable(
@@ -17,7 +17,7 @@ export const laneDemand = pgTable(
 
 export type FaucetState = "pending" | "sent" | "full" | "dry" | "failed";
 
-/** Chipnet test coins on request (S09R): the engine's faucet tops a paired wallet up to a target. Never on mainnet. */
+/** Chipnet test coins on request: the engine's faucet tops a paired wallet up to a target. Never on mainnet. */
 export const faucetClaims = pgTable(
   "faucet_claims",
   {

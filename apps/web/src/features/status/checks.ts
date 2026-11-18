@@ -51,7 +51,7 @@ export const LIMITS = {
 } as const;
 /** The keeper wallet pays each lane round's fees (~4,600 sats): this much is comfortable, this much is low. */
 export const KEEPER_SATS = { good: 100_000, warn: 20_000 } as const;
-/** A Fulcrum server slower than this is "slow" (Mitoshi's probe rule). */
+/** A Fulcrum server slower than this is "slow". */
 export const SLOW_MS = 2_500;
 export const PROBE_TIMEOUT_MS = 8_000;
 

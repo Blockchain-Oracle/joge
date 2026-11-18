@@ -47,7 +47,7 @@ function Action({
 
 /**
  * What only the owner does, as four buttons (an icon and a few characters each): put money in, take it all back,
- * pause or resume, and switch between asking first and playing alone. Settings changes need a sign-in proof (D11);
+ * pause or resume, and switch between asking first and playing alone. Settings changes need a sign-in proof;
  * money moves are proven by the owner's own signature.
  */
 export function OwnerPanel({ agent, vaultSats }: { agent: Agent; vaultSats: bigint }) {

@@ -41,7 +41,7 @@ function proofCoin(coins: WalletCoin[], wanted: Array<string | undefined>): Wall
 }
 
 /**
- * Signing in (D11): WizardConnect wallets cannot sign messages, so the wallet signs a transaction that can never be
+ * Signing in: WizardConnect wallets cannot sign messages, so the wallet signs a transaction that can never be
  * mined (locktime in 2100) holding a challenge from the server. The server checks the signature with the BCH VM and
  * sets a 24-hour session cookie for that address. Nothing is broadcast and nothing is spent.
  */

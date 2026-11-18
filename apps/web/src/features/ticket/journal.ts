@@ -5,7 +5,7 @@ import { useSyncExternalStore } from "react";
 import { randomId } from "@/lib/browser";
 
 /**
- * The entry journal (Owarine's pattern): an entry is recorded before the wallet is asked to sign, its txid is kept the
+ * The entry journal: an entry is recorded before the wallet is asked to sign, its txid is kept the
  * moment it is signed (before broadcast), and it is never sent twice. States move recorded → signed → sent →
  * confirmed, or end failed / lost (someone took the same gate first; the player signs a fresh entry).
  */

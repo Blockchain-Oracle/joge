@@ -45,7 +45,7 @@ const SEALS: Record<Verdict, { glyph: string; label: string; tone: string }> = {
   void: { glyph: "無効", label: "Refunded", tone: "text-[var(--gold-text)]" },
 };
 
-/** Your own result as a hanko pressed into the receipt at −4° (Senryo's seal): 的中 hit, 外れ miss, 無効 refunded. */
+/** Your own result as a hanko pressed into the receipt at −4° (seal): 的中 hit, 外れ miss, 無効 refunded. */
 export function SealStamp({ verdict, size = 84 }: { verdict: Verdict; size?: number }) {
   const seal = SEALS[verdict];
   return (

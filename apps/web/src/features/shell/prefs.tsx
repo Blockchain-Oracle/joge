@@ -12,7 +12,7 @@ const THEMES = [
   { value: "system", label: <SunMoon size={14} aria-label="Match the device" /> },
 ] as const;
 
-/** One setting: an icon, a word, its control (Abu's rule: settings at rest are an icon and a value). */
+/** One setting: an icon, a word, its control. */
 export function SettingRow({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
   return (
     <div className="flex items-center gap-3 py-3">

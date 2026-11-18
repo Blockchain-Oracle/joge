@@ -1,5 +1,5 @@
 /**
- * Jōge's mark, drawn once (D22): the line to beat in vermilion; 上 rises above it in Up's lime and 下 hangs below it in
+ * Jōge's mark, drawn once: the line to beat in vermilion; 上 rises above it in Up's lime and 下 hangs below it in
  * Down's coral, the two characters sharing that one line (上's base stroke is 下's top stroke). Read left to right it
  * says 上下; read as a chart it is a price above the line and a price below it, 下's dot the live price head.
  * Coordinates are in a 64-unit box. The app, the icon script and the share image all draw from here.

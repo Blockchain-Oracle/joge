@@ -9,7 +9,7 @@ import { centreOf, switchWorld, useWorld } from "./world.tsx";
 const SHEET_EXIT_MS = 260;
 
 /**
- * The world switch (Kakure's glow toggle): off is chipnet (試, test coins), on is mainnet (本, real BCH) and glows
+ * The world switch (glow toggle): off is chipnet (試, test coins), on is mainnet (本, real BCH) and glows
  * vermilion. One tap goes back to chipnet; mainnet first asks for "Slide to use real money". Either way the new world
  * floods out from the switch. Its position follows <html data-network> in CSS, so the first paint is never wrong.
  */

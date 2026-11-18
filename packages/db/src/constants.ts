@@ -17,7 +17,7 @@ export const PROFILE_DAYS = 84;
 /** How many decided tickets a profile reads to find its streaks. */
 export const STREAK_TICKETS = 500;
 
-// Chipnet faucet (S09R, Agari's rules): a wallet below the threshold is topped up to the target, never more.
+// Chipnet faucet: a wallet below the threshold is topped up to the target, never more.
 const FAUCET_HOUR_MS = 60 * 60 * 1_000;
 /** A wallet holding less than this (about $1) gets topped up; the guide calls a wallet funded from here. */
 export const FAUCET_THRESHOLD_SATS = 500_000n;

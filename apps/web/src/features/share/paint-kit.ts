@@ -4,7 +4,7 @@ import { MARK, MARK_BOX, MARK_NIGHT, MARK_STROKE } from "@/brand/geometry";
 import { ASSET_MARKUP, ASSET_TONE } from "@/marks/asset";
 
 /**
- * What the share images draw with (Senryo's slip and replay renderers, Kakure's card): fixed colours, the page's own
+ * What the share images draw with: fixed colours, the page's own
  * fonts, the mark, the asset logos and a QR code — all on a plain 2D canvas, so the preview and the saved file match.
  */
 
@@ -44,7 +44,7 @@ export const NIGHT = {
 } as const;
 
 /**
- * The receipt's card: the app's own night (his feedback: "it should be dark mode"), the bright Up and Down, the
+ * The receipt's card: the app's own night, the bright Up and Down, the
  * vermilion seal. One look in either world.
  */
 export const PAPER = {

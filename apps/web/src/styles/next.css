@@ -1,11 +1,10 @@
 /*
- * The redo's pieces (D21); the tokens live in tokens.css.
- * Built from the strongest move of each of Abu's prediction products (context/build-research/fidelity/):
- *   Mitoshi/Kakure: the near-black stage, vermilion as the ONE brand colour, every figure in mono, glass floats on the chart.
- *   Senryo: Up and Down as flooded plates (acid lime / coral) with a darker bottom edge you press into.
- *   Owarine: die-cut tilted stickers for claims, the Sensei orb, the seal that stamps in.
- *   Masayume: the NEXT CLOSE marquee, the kanji verdict stamp; Agari: the kanji as moving art.
- * Day is Mitoshi's cream world; night is the default.
+ * The app's pieces; the tokens live in tokens.css.
+ * the near-black stage, vermilion as the ONE brand colour, every figure in mono, glass floats on the chart.
+ * Up and Down as flooded plates (acid lime / coral) with a darker bottom edge you press into.
+ * Die-cut tilted stickers for claims, the Sensei orb, the seal that stamps in.
+ * The NEXT CLOSE marquee, the kanji verdict stamp; the kanji as moving art.
+ * Day is the cream world; night is the default.
  */
 .nx-display {
   font-family: var(--font-sora), system-ui, sans-serif;
@@ -30,7 +29,7 @@
   font-weight: 700;
 }
 
-/* A glass float on the chart (Kakure's chips, stack and pills). */
+/* A glass float on the chart (chips, stack and pills). */
 .nx-glass {
   background: var(--float);
   backdrop-filter: blur(14px) saturate(140%);
@@ -38,7 +37,7 @@
   box-shadow: inset 0 0 0 1px var(--float-ring);
 }
 
-/* Up / Down plates (Senryo): flooded, ink on top, a 4 px darker edge you press into. */
+/* Up / Down plates: flooded, ink on top, a 4 px darker edge you press into. */
 .nx-plate {
   position: relative;
   display: flex;
@@ -81,7 +80,7 @@
   pointer-events: none;
 }
 
-/* A die-cut sticker (Owarine): white edge, a tilt, a soft shadow. Claims are stickers, not sentences. */
+/* A die-cut sticker: white edge, a tilt, a soft shadow. Claims are stickers, not sentences. */
 .nx-sticker {
   display: inline-flex;
   align-items: center;
@@ -96,7 +95,7 @@
   transform: rotate(var(--tilt, -4deg));
 }
 
-/* The seal: a vermilion hanko with 上 over 下 (Owarine's 終値 seal, Mitoshi's centre seal). */
+/* The seal: a vermilion hanko with 上 over 下 (終値 seal, centre seal). */
 .nx-seal {
   display: inline-flex;
   flex-direction: column;
@@ -112,7 +111,7 @@
   box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.22);
 }
 
-/* A verdict stamp (Senryo's receipt seal, Masayume's kanji verdicts): presses in at −4° over 220 ms. */
+/* A verdict stamp (receipt seal, kanji verdicts): presses in at −4° over 220 ms. */
 .nx-stamp {
   display: inline-grid;
   place-items: center;
@@ -134,7 +133,7 @@
   }
 }
 
-/* The NEXT CLOSE marquee (Masayume). */
+/* The NEXT CLOSE marquee. */
 .nx-marquee {
   display: flex;
   width: max-content;
@@ -146,7 +145,7 @@
   }
 }
 
-/* The countdown ring (Mitoshi's CountdownRing; Kakure's games: vermilion in the last 10 %, a pulse at ≤ 30 s). */
+/* The countdown ring: vermilion in the last 10 %, a pulse at ≤ 30 s. */
 .nx-ring-track {
   fill: none;
   stroke: var(--hairline);

@@ -58,8 +58,7 @@ import {
 } from "./paint.ts";
 
 /**
- * A round on a canvas, drawn every frame from data held outside React (Abu's Window chart: Mitoshi → Owarine →
- * Kakure). The axis runs from a lead-in before the lock to the close; the time still to come is shaded; the line is up
+ * A round on a canvas, drawn every frame from data held outside React. The axis runs from a lead-in before the lock to the close; the time still to come is shaded; the line is up
  * above the price to beat and down below it, filled toward it; signed oracle prices sit on the line as small squares;
  * the head pulses and the price pill's digits roll in the direction of the move. Same API as `PriceChart`.
  */
@@ -328,7 +327,7 @@ export class RoundChart {
     ctx.restore();
   }
 
-  /** The time still to come, shaded (Mitoshi): what the round hasn't decided yet. */
+  /** The time still to come, shaded: what the round hasn't decided yet. */
   private paintFuture(headX: number, right: number, bottom: number) {
     if (headX >= right) return;
     const { ctx, palette } = this;

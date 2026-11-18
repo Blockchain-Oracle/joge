@@ -42,7 +42,7 @@ const GAP_MS = 20_000;
 
 /**
  * The live ticks across a round's film window, with any gap (the relay restarting, a quiet exchange) filled from the
- * signed prices, as Senryo fills a replay's gaps from 1-minute candles; then thinned.
+ * signed prices; then thinned.
  */
 export async function livePath(db: Db, round: RoundRow): Promise<Array<[number, number]>> {
   const { from, to } = filmWindow(round);

@@ -3,8 +3,7 @@
 #
 #   docker build -f apps/web/Dockerfile -t joge-web .
 #
-# Next's standalone output keeps the runtime image to the traced server files, one `node` process as PID 1 (Hashi's
-# pattern on the same Coolify box).
+# Next's standalone output keeps the runtime image to the traced server files, one `node` process as PID 1.
 FROM node:24.11.1-bookworm-slim AS build
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1 NEXT_TELEMETRY_DISABLED=1
 # SolidCash's SDK takes libauth from its author's fork by git commit (see pnpm-workspace.yaml), so the install needs git.

@@ -6,9 +6,9 @@ import { DottedQr, Sheet } from "@/kit";
 import { copyText } from "@/lib/browser";
 
 /**
- * The BCH BLAZE banner every Mainnet Track entry carries at the top of its home page (F15): the Widget Factory deck,
+ * The BCH BLAZE banner every Mainnet Track entry carries at the top of its home page: the Widget Factory deck,
  * the source repository and the team's CashTokens address (BLAZE sends prizes there; EMBER2026 holders vote by sending
- * their tokens there). The address is the one Hashi uses (one team, one wallet); a tap opens it as a QR code.
+ * their tokens there). The address is the team's (one team, one wallet); a tap opens it as a QR code.
  */
 const DECK = process.env.NEXT_PUBLIC_BLAZE_DECK_URL;
 const REPO = process.env.NEXT_PUBLIC_REPO_URL || "https://github.com/Blockchain-Oracle/joge";

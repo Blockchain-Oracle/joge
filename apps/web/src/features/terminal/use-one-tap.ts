@@ -25,7 +25,7 @@ const SECOND_MS = 1_000;
 const STAKE_KEY = "joge:stake-usd";
 const LIMIT_WHEN = new Intl.DateTimeFormat("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
 
-/* The stake is a standing setting (Kakure, Owarine, Mitoshi): chosen once in the stack, used by every tap. */
+/* The stake is a standing setting: chosen once in the stack, used by every tap. */
 const listeners = new Set<() => void>();
 function chosenStake(): number | null {
   try {
@@ -56,7 +56,7 @@ const useChosenStake = () =>
 export type Side = 0 | 1;
 
 /**
- * One tap from intent to the wallet (Abu's products: Kakure's preset stake, Owarine's one-tap terminal): the stake is
+ * One tap from intent to the wallet: the stake is
  * a standing choice (5 % of the balance snapped to a ladder until the player picks one), Up or Down builds the entry
  * from live chain reads and asks the wallet to sign it. Whatever blocks the tap is named on the button itself.
  */

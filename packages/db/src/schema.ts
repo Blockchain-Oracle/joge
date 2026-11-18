@@ -269,7 +269,7 @@ export type ReadVerdict = "reading" | "enter" | "hold";
 export type ProposalState = "open" | "taken" | "passed" | "expired";
 
 /**
- * Agents (F13): a persona, a posture, the lanes it plays and its caps, owned by an address. Its id is also the index
+ * Agents: a persona, a posture, the lanes it plays and its caps, owned by an address. Its id is also the index
  * of its key under the agent master key (the web server derives public keys only; the engine signs), and its vault is
  * the AgentVault covenant for (owner, that key, the per-bet cap, the lane gate).
  */
@@ -331,7 +331,7 @@ export const agentReads = pgTable(
 );
 
 /**
- * Web Push (F20): one row per browser that asked to be told about its rounds, with the payout addresses it plays from.
+ * Web Push: one row per browser that asked to be told about its rounds, with the payout addresses it plays from.
  * Results are public on chain, so no signature is needed to listen; `since` keeps anything older from being announced.
  */
 export const pushSubscriptions = pgTable(
@@ -349,7 +349,7 @@ export const pushSubscriptions = pgTable(
   (t) => [index("push_network").on(t.network)],
 );
 
-/** What each browser was already told, so a notice goes out exactly once (Owarine's push_sent). */
+/** What each browser was already told, so a notice goes out exactly once (push_sent). */
 export const pushSent = pgTable(
   "push_sent",
   {

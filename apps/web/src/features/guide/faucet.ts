@@ -26,7 +26,7 @@ const url = (address?: string) =>
   `/api/faucet?network=chipnet${address ? `&address=${encodeURIComponent(address)}` : ""}`;
 
 /**
- * Chipnet test coins for the paired wallet (S09R): one tap asks, the engine pays within seconds; while it is on its
+ * Chipnet test coins for the paired wallet: one tap asks, the engine pays within seconds; while it is on its
  * way the claim is polled. Only on chipnet (the route does not exist on mainnet).
  */
 export function useFaucet() {

@@ -20,7 +20,7 @@ export const PAIR_WINDOW_SECONDS = 15 * MINUTE_SECONDS;
 // Price relay
 /** At most one stored and announced tick per asset per this interval (the chart eases between them at 60 Hz). */
 export const PRICE_COALESCE_MS = SECOND_MS;
-/** A day and a bit of live prices: the terminal's 1H and 1D candle views are drawn from them (S09F). */
+/** A day and a bit of live prices: the terminal's 1H and 1D candle views are drawn from them. */
 export const PRICE_KEEP_MS = 26 * HOUR_MS;
 export const PRICE_PRUNE_EVERY_MS = 10 * MINUTE_MS;
 /**

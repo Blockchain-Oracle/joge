@@ -27,7 +27,7 @@ const REJECTED = /missing|conflict|mandatory|non-?standard|insufficient|dust|bad
 const ALREADY = /already|known|txn-already/i;
 
 /**
- * Chipnet test coins (S09R, Agari's faucet rules): each waiting claim is checked against the address's balance and
+ * Chipnet test coins: each waiting claim is checked against the address's balance and
  * topped up to the target, never more; the signed transaction is written down before it is broadcast, so a retry
  * re-sends the same bytes and a claim is never paid twice; a daily total and a reserve keep the wallet from draining.
  */

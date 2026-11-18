@@ -39,7 +39,7 @@ const HERO_RING = 76;
 /** Lane round ids step by this per round (id = thread + counter × 256). */
 
 /**
- * One round (D21): who it is (asset, length, number), its state as a ring while it runs or its result as a stamp once
+ * One round: who it is (asset, length, number), its state as a ring while it runs or its result as a stamp once
  * decided, one big figure, the chart, one row of four facts, the one-tap plates while it takes entries, your receipt,
  * and the entries. Every transaction lives on the proof page, one link away. Anyone can finish a stuck round here (F6).
  */

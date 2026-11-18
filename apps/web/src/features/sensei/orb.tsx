@@ -5,18 +5,18 @@ import { cue } from "@/kit";
 import { Hanko } from "../shell/seal.tsx";
 import { openSensei, useSensei } from "./store.ts";
 
-/** The ring's geometry (Owarine's dock: R = 30 on a 72-unit view box). */
+/** The ring's geometry (dock: R = 30 on a 72-unit view box). */
 const VIEW = 72;
 const CENTRE = 36;
 const R = 30;
 const LENGTH = 2 * Math.PI * R;
-/** Teaser cadence (Owarine `SenseiDock.tsx` L15-23): three pops, then it rests. */
+/** Teaser cadence: three pops, then it rests. */
 const TEASERS = ["Up or down?", "Coin-flip?", "Want a read?"];
 const FIRST_MS = 3_500;
 const HOLD_MS = 4_800;
 const GAP_MS = 4_500;
 const POPS = 3;
-/** Under this share of the round left, the orb pulses faster (Owarine: 3.4 s → 1.4 s). */
+/** Under this share of the round left, the orb pulses faster (3.4 s → 1.4 s). */
 export const URGENT_SHARE = 0.15;
 const RING_STROKE = 4;
 /** The seal fills this share of the mark. */
@@ -87,7 +87,7 @@ export const leftShare = (leftMs: number | null, spanMs: number) =>
   leftMs === null ? 1 : Math.min(1, Math.max(0, leftMs / Math.max(1, spanMs)));
 
 /**
- * Sensei's front door (Masayume → Agari → Owarine → Mitoshi kept it the same): a seal in the corner whose ring drains
+ * Sensei's front door: a seal in the corner whose ring drains
  * to the next round, a pulse that quickens near the end, a name that slides out on hover, three springy questions that
  * pop and then rest. Tapping it opens Sensei.
  */

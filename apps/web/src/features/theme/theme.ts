@@ -15,7 +15,7 @@ export const DEFAULT_NETWORK: Network = MAINNET_LIVE ? "mainnet" : "chipnet";
 
 /**
  * Runs before first paint (inline in <head>): sets the theme and the network world from what this browser chose last,
- * so neither the colours nor the chipnet tint ever flash. No choice saved means night (D21: the stage Abu's products
+ * so neither the colours nor the chipnet tint ever flash. No choice saved means night (the stage
  * share) and the default network.
  */
 export const THEME_INIT = `(function(){var d=document.documentElement;try{var t=localStorage.getItem("${THEME_KEY}");d.dataset.theme=t==="light"||(t==="system"&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";var n=localStorage.getItem("${NETWORK_KEY}");d.dataset.network=${MAINNET_LIVE ? `n==="mainnet"||n==="chipnet"?n:"${DEFAULT_NETWORK}"` : '"chipnet"'};}catch(e){d.dataset.theme="dark";d.dataset.network="${DEFAULT_NETWORK}";}})();`;

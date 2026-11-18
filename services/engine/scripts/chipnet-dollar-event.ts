@@ -1,4 +1,4 @@
-// Chipnet only: a dollar event (F11) made the way the app makes one, played by three wallets in the test dollar. It
+// Chipnet only: a dollar event made the way the app makes one, played by three wallets in the test dollar. It
 //   1. sends the two derived test wallets satoshis and test dollars from the player key when they run low;
 //   2. asks the running web app's /api/create to build a three-range BTC dollar event (entries close in ~6 minutes,
 //      decided an hour later, needs 3 entries), signs the creator's coins the way a paired wallet does, broadcasts it;

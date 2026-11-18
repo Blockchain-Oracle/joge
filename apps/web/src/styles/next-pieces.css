@@ -1,5 +1,5 @@
-/* The redo's moving pieces (D21), scoped by the classes themselves: Sensei's orb, agent faces, the kanji band. */
-/* Sensei's orb (Owarine/Masayume SenseiDock): 46 px, the ring drains to the next close, an idle pulse, teaser bubbles. */
+/* The moving pieces, scoped by the classes themselves: Sensei's orb, agent faces, the kanji band. */
+/* Sensei's orb (SenseiDock): 46 px, the ring drains to the next close, an idle pulse, teaser bubbles. */
 .nx-orb-wrap {
   position: fixed;
   right: 22px;
@@ -126,7 +126,7 @@
   }
 }
 
-/* Agent faces (Owarine/Masayume AgentPortrait): a paper tile, a breath on the agent's own beat, a nod on hover. */
+/* Agent faces: a paper tile, a breath on the agent's own beat, a nod on hover. */
 .nx-face {
   display: inline-grid;
   place-items: center;
@@ -158,7 +158,7 @@
   }
 }
 
-/* The kanji as moving art (Agari's vertical 上がり): a vermilion band rises through 上 and falls through 下. */
+/* The kanji as moving art (vertical 上がり): a vermilion band rises through 上 and falls through 下. */
 .nx-kanji-band {
   background: linear-gradient(180deg, var(--ink) 0 40%, var(--vermilion) 50%, var(--ink) 60% 100%);
   background-size: 100% 300%;

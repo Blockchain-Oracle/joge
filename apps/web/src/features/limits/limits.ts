@@ -7,7 +7,7 @@ import type { JournalEntry } from "../ticket/journal.ts";
 const HALF_CENT_USD = 0.005;
 
 /**
- * Play limits you set for yourself (F26, decision D18): a daily stake limit in dollars and a cool-off. They live in
+ * Play limits you set for yourself (decision D18): a daily stake limit in dollars and a cool-off. They live in
  * this browser and the ticket wears them as its blocker. Lowering a limit or starting a cool-off takes effect at once;
  * raising or removing a limit waits a day, and a cool-off cannot be lifted early, so neither can be undone in the
  * heat of a losing streak.

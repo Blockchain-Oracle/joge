@@ -37,7 +37,7 @@ function download(blob: Blob, name: string) {
   setTimeout(() => URL.revokeObjectURL(url), COPIED_MS);
 }
 
-/** Native share with the file only on phones that can (Senryo's rule); elsewhere the caller saves it. */
+/** Native share with the file only on phones that can; elsewhere the caller saves it. */
 async function shareFile(blob: Blob, name: string, title: string): Promise<boolean> {
   const file = new File([blob], name, { type: blob.type });
   if (!navigator.canShare?.({ files: [file] })) return false;
@@ -51,7 +51,7 @@ async function shareFile(blob: Blob, name: string, title: string): Promise<boole
 }
 
 /**
- * The share sheet (FOMO's "pick a look", Senryo's share flow): the image or the video, previewed exactly as it will
+ * The share sheet ("pick a look", share flow): the image or the video, previewed exactly as it will
  * leave (the preview is the export's own drawing), amounts hideable, then Save, Share, Post on X or Copy link.
  */
 export function ShareFrame({
@@ -258,7 +258,7 @@ export function ShareFrame({
         <div className="flex gap-2">
           <button
             type="button"
-            // Opened before any wait so popup blockers let it through (Senryo's rule).
+            // Opened before any wait so popup blockers let it through.
             onClick={() =>
               window.open(
                 `${X_INTENT}?${new URLSearchParams({ text: subject.post, url: subject.url })}`,

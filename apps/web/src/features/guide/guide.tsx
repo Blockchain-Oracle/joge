@@ -31,7 +31,7 @@ const OUTSIDE_FAUCETS = [
   { name: "tbch.googol.cash", href: "https://tbch.googol.cash/" },
 ] as const;
 
-/** Each step's words (≤ 25 with the world note, Senryo's budget). */
+/** Each step's words (≤ 25 with the world note). */
 const COPY: Record<GuideStep, { title: string; line: { chipnet: string; mainnet: string } }> = {
   intro: {
     title: "Up or down, in minutes.",
@@ -59,8 +59,8 @@ const COPY: Record<GuideStep, { title: string; line: { chipnet: string; mainnet:
 };
 
 /**
- * The first-run guide (S09R): Senryo's five short steps with a picture each and the world named on every one, and
- * Tempo's self-advancing funding: pairing moves it on, and so do the coins landing. Opens once per device; reopens
+ * The first-run guide: five short steps with a picture each and the world named on every one, and
+ * self-advancing funding: pairing moves it on, and so do the coins landing. Opens once per device; reopens
  * from More, ⌘K and any "Fund your wallet" blocker.
  */
 export function Guide() {
@@ -147,7 +147,7 @@ export function Guide() {
   );
 }
 
-/** The world on every step (Senryo's network note): test coins or real money. */
+/** The world on every step (network note): test coins or real money. */
 function WorldNote() {
   const world = useWorld();
   return world === "chipnet" ? (

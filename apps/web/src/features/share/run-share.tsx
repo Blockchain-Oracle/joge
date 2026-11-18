@@ -22,7 +22,7 @@ const MS_PER_SECOND = 1_000;
 const netOf = (row: TicketRow) => (row.ticket.payoutSats ?? 0) - row.ticket.stake - Number(TICKET_DUST);
 
 /**
- * Share your run (his ask: "I made this trade and profit", a PnL card like FOMO's): pick the period, see the card or
+ * Share your run: pick the period, see the card or
  * the video of your running net round by round, hide amounts if you like, then save, share, post or copy. The QR opens
  * your record on Jōge.
  */

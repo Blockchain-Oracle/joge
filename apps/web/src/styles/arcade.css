@@ -1,5 +1,5 @@
 /*
- * The kit's shared surfaces in the redo's look (D21). The class names stay (the kit, the proof page and the wallet
+ * The kit's shared surfaces in the redo's look. The class names stay (the kit, the proof page and the wallet
  * sheets use them); the retired pieces (split-flap board, candy cubes, colour blocks, the cream ticket) are gone.
  */
 
@@ -21,7 +21,7 @@
   box-shadow: inset 0 0 0 1px var(--hairline);
 }
 
-/* A button: a pill. Tones up / down are Senryo's plates (a darker edge to press into); accent is the ink pill. */
+/* A button: a pill. Tones up / down are plates (a darker edge to press into); accent is the ink pill. */
 .jg-key {
   --face: var(--surface-2);
   --label: var(--ink);

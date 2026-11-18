@@ -42,7 +42,7 @@ export function useWakeLane(thread: number | undefined) {
   }, [thread, network]);
 }
 
-/** The lane on screen survives a reload (Agari's pinned ticker). */
+/** The lane on screen survives a reload (pinned ticker). */
 export function pickLane(thread: number) {
   try {
     localStorage.setItem(LANE_KEY, String(thread));

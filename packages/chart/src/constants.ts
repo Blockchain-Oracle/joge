@@ -1,4 +1,4 @@
-/** The chart's numbers (values from Mitoshi's engine where they carry over). */
+/** The chart's numbers. */
 
 /** Per frame, the shown price closes this share of the gap to the latest tick. */
 export const EASE_PRICE = 0.18;

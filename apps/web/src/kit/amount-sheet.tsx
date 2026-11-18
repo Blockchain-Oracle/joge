@@ -28,8 +28,7 @@ const asText = (dollars: number) => (Number.isInteger(dollars) ? String(dollars)
 const round = (dollars: number) => Math.floor(dollars * CENTS) / CENTS;
 
 /**
- * Any amount, typed (his feedback: "I cannot edit the amount… that's crazy"). Kakure's size sheet and Masayume's
- * amount block: one big figure you type into on a computer or tap out on a phone's keypad, the usual amounts as quick
+ * Any amount, typed: one big figure you type into on a computer or tap out on a phone's keypad, the usual amounts as quick
  * picks, Max when there is one, the bounds said in words, and one button that says what it will do.
  */
 export function AmountSheet({

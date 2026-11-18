@@ -32,7 +32,7 @@ const subscribe = (listener: () => void) => {
   return () => listeners.delete(listener);
 };
 
-/** Which chart the stage shows and how history is drawn; both survive a reload (Kakure keeps its interval). */
+/** Which chart the stage shows and how history is drawn; both survive a reload. */
 export function useChartView() {
   const view = useSyncExternalStore(
     subscribe,
@@ -53,7 +53,7 @@ export function useChartView() {
 }
 
 /**
- * Kakure's chart controls: the live round, or the last hour or day as history; history draws as candles or a line.
+ * Chart controls: the live round, or the last hour or day as history; history draws as candles or a line.
  * One small glass pill; the candle/line switch shows only for history.
  */
 export function ChartControls({ className }: { className?: string }) {

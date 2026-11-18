@@ -18,7 +18,7 @@ const CALL = { up: "Up", down: "Down", hold: "Sat out" } as const;
 const isBet = (entry: Memory) => entry.outcome !== "skipped";
 
 /**
- * Every decision an agent made, as tiles (his feedback: the rows were too much text): one line of figures, a filter,
+ * Every decision an agent made, as tiles: one line of figures, a filter,
  * then a grid — coin, arrow, time, its ground how it ended. Tap a tile and one panel says it in words: the market and
  * time, the call and how sure, the agent's reason in a few words, and the replay.
  */

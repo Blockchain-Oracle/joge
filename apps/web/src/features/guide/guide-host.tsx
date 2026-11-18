@@ -8,7 +8,7 @@ import { guideSeen, openGuide, useGuide } from "./store.ts";
 const Guide = dynamic(() => import("./guide.tsx").then((module) => module.Guide), { ssr: false });
 
 /**
- * Hosts the first-run guide (S09R): it opens by itself the first time this device visits the app, whenever a link
+ * Hosts the first-run guide: it opens by itself the first time this device visits the app, whenever a link
  * carries `?guide=1` (More and ⌘K use it), and when a blocker asks for it. Its code loads only once it opens.
  */
 export function GuideHost() {

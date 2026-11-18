@@ -12,7 +12,7 @@ const X_MARK =
   "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z";
 
 /**
- * Sharing a round (F21): copy its link, hand it to the phone's own share sheet (Web Share, where the browser has it),
+ * Sharing a round: copy its link, hand it to the phone's own share sheet (Web Share, where the browser has it),
  * or post it on X. The link unfurls into the round's share card (its Open Graph image).
  */
 export function ShareActions({ path, text, className }: { path: string; text: string; className?: string }) {

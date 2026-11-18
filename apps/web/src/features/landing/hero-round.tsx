@@ -25,7 +25,7 @@ const FIRST_STAKE_USD = STAKE_LADDER_USD[1] ?? 0;
 const NAMES = { BTC: "Bitcoin", ETH: "Ether", BCH: "Bitcoin Cash", GOLD: "Gold" } as const;
 
 /**
- * The landing's right column (Kakure's live Window card, Agari's live previews): the round on screen right now, its
+ * The landing's right column: the round on screen right now, its
  * price against the line, the chart, and Up / Down with what a first stake pays. Either side opens the terminal.
  */
 export function HeroRound() {

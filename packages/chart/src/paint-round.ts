@@ -2,7 +2,7 @@ import { alpha, type Colors } from "./colors.ts";
 import { chipWidth, paintChip } from "./paint.ts";
 
 /**
- * The round's own layers, drawn the way real markets draw a price against a target (Polymarket's "price to beat"):
+ * The round's own layers, drawn the way real markets draw a price against a target ("price to beat"):
  * one 2 px line, grey until the round has its opening price, then green above it and red below. A soft wash between
  * the line and the target shows who is ahead. Signed oracle prices (what settles the round) are small hollow dots. The
  * lock and the close are hairlines with their times. Nothing glows.

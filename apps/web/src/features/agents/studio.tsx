@@ -38,7 +38,7 @@ const ceilingOf = (lanes: number[]) =>
   }, MAX_STAKE.hourly);
 
 /**
- * The agent studio (F13, D21): four steps, one decision each (Mitoshi's builder) — a face (which names itself), how
+ * The agent studio: four steps, one decision each — a face (which names itself), how
  * it plays, where, and what it may risk — then an optional dry read with the real model and Create (a sign-in proof
  * first, D11). `copyFrom` starts from another agent.
  */

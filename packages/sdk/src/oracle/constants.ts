@@ -1,5 +1,5 @@
 /**
- * General Protocols price oracle: the only price source a BCH contract can verify itself (context/build-research/05).
+ * General Protocols price oracle: the only price source a BCH contract can verify itself.
  * Keys and end dates are the oracle's own metadata (`/api/v1/oracleMetadata`, read 2026-11-16).
  */
 

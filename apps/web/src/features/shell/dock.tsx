@@ -17,7 +17,7 @@ const STROKE_HERE = 2.4;
 const LEFT_COUNT = 2;
 
 /**
- * The phone dock (Mitoshi's floating dock with a seal in the centre): places either side, More at the end, and in the
+ * The phone dock (floating dock with a seal in the centre): places either side, More at the end, and in the
  * middle Sensei's seal with its ring draining to the next round. It replaces the corner orb on a phone, so nothing ever
  * covers the Up and Down plates.
  */

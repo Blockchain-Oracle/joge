@@ -70,7 +70,7 @@
 }
 
 /*
- * The type scale (D21). Headlines are Sora, words are Inter, every figure, clock and label is JetBrains Mono with
+ * The type scale. Headlines are Sora, words are Inter, every figure, clock and label is JetBrains Mono with
  * tabular numbers; the kanji are Noto Serif JP.
  */
 @utility type-label {

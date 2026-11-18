@@ -1,5 +1,5 @@
 /**
- * The history chart's numbers (Kakure's candle view and Mitoshi-ZEC's `line` mode, carried onto Jōge's round chart
+ * The history chart's numbers (candle view and `line` mode, carried onto Jōge's round chart
  * look): same dot grid, watermark, axis and pill as the live round chart, so switching views reads as one chart.
  */
 
@@ -45,7 +45,7 @@ export const CROSS_ALPHA = 0.5;
 /** Headroom above and below the candles, as a share of their span (a flat hour still spans 0.05 % of the price). */
 export const RANGE_PAD = 0.08;
 export const MIN_SPAN_SHARE = 0.0005;
-/** Switching between candles and line crossfades over this long (Kakure). */
+/** Switching between candles and line crossfades over this long. */
 export const FADE_MS = 220;
 export const COLOR_POLL_MS = 1_500;
 export const MAX_DPR = 2;

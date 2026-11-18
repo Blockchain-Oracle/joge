@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-/** The guide's steps, in order (S09R, Senryo's five-step tour). */
+/** The guide's steps, in order (five-step tour). */
 export const GUIDE_STEPS = ["intro", "wallet", "pair", "fund", "play"] as const;
 export type GuideStep = (typeof GUIDE_STEPS)[number];
 

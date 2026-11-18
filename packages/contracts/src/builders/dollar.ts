@@ -39,7 +39,7 @@ import {
   timeout,
 } from "./shared.ts";
 
-/** Dollar events' lifecycle (F11): lock, settle and sweep with the round's dollars in its sidecars. */
+/** Dollar events' lifecycle: lock, settle and sweep with the round's dollars in its sidecars. */
 
 const GOLD_FACTOR_BIG = BigInt(GOLD_FACTOR);
 const goldPrice = (usd: number, xau: number): bigint => (BigInt(usd) * GOLD_FACTOR_BIG) / BigInt(xau);

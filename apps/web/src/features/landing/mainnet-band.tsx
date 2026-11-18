@@ -18,7 +18,7 @@ function mainnet() {
   }
 }
 
-/** The hero's badge (his ask: "make it big"): the 本 stamp, a live pulse and the words, in vermilion. */
+/** The hero's badge: the 本 stamp, a live pulse and the words, in vermilion. */
 export function MainnetBadge() {
   return (
     <span className="lp-mainnet-badge inline-flex items-center gap-3 rounded-full bg-[var(--vermilion)] py-2 pr-5 pl-2 text-white shadow-[0_18px_40px_-18px_var(--vermilion)]">

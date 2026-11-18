@@ -46,7 +46,7 @@ export const NOTES: Record<Cue, Note[]> = {
     { f: 990, at: 0, len: 0.06, type: "triangle", gain: 0.7 },
     { f: 660, at: 0.05, len: 0.07, type: "triangle", gain: 0.7 },
   ],
-  /** Money leaves for a ticket: Kakure's C–E–G chord. */
+  /** Money leaves for a ticket: C–E–G chord. */
   send: [
     { f: 523.25, at: 0, len: 0.42, type: "triangle", gain: 0.5 },
     { f: 659.25, at: 0.07, len: 0.4, type: "triangle", gain: 0.45 },
@@ -74,7 +74,7 @@ export const NOTES: Record<Cue, Note[]> = {
     { f: 220, at: 0, len: 0.09, type: "square", gain: 0.25 },
     { f: 196, at: 0.1, len: 0.14, type: "square", gain: 0.25 },
   ],
-  /** One click a second over the last five (Senryo's countBeep, Kakure's Practice clock). */
+  /** One click a second over the last five. */
   tick: [
     { f: 880, at: 0, len: 0.06, type: "sine", gain: 0.7 },
     { f: 4200, at: 0, len: 0.01, noise: 1.4, gain: 0.5 },
@@ -89,16 +89,16 @@ export const NOTES: Record<Cue, Note[]> = {
     { f: 523.25, at: 0, len: 0.16, type: "sine", gain: 0.55 },
     { f: 1046.5, at: 0, len: 0.09, type: "triangle", gain: 0.15 },
   ],
-  /** One step against you (Senryo: 262 → 196 Hz, quiet). */
+  /** One step against you (262 → 196 Hz, quiet). */
   adverse: [{ f: 261.63, to: 196, at: 0, len: 0.11, type: "sine", gain: 0.35 }],
-  /** A verdict stamp pressing in (Senryo's receipt thud). */
+  /** A verdict stamp pressing in (receipt thud). */
   stamp: [
     { f: 90, to: 48, at: 0, len: 0.18, type: "sine", gain: 1 },
     { f: 1800, at: 0, len: 0.02, noise: 0.8, gain: 0.5 },
   ],
 };
 
-/** The profit ladder: major pentatonic over two octaves (Kakure / Senryo). */
+/** The profit ladder: major pentatonic over two octaves. */
 export const LADDER_SEMITONES = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
 export const SEMITONES_PER_OCTAVE = 12;
 

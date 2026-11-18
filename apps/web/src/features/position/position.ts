@@ -10,7 +10,7 @@ export interface Holding {
   paid?: number | null;
 }
 
-/** Where your call stands, in the words a player needs (his feedback: "am I winning or losing right now?"). */
+/** Where your call stands, in the words a player needs. */
 export type PositionStatus =
   /** Taking entries. `alone`: nobody is on the other side yet, so it refunds unless someone joins. */
   | { kind: "open"; alone: boolean }

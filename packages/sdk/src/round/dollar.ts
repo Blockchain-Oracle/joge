@@ -3,7 +3,7 @@ import type { LockedRound, SweepRound, TicketState } from "./layout.ts";
 import { type Settlement, winningOutcome } from "./payout.ts";
 
 /**
- * Dollar events (F11): stakes and payouts in a dollar token, held in sidecars beside a round's gates and master.
+ * Dollar events: stakes and payouts in a dollar token, held in sidecars beside a round's gates and master.
  * Mirrors packages/contracts/cashscript/dollar.cash; change both together. Amounts are token units (cents).
  */
 export const DOLLAR_MIN_STAKE = 10n;

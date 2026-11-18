@@ -81,7 +81,7 @@ const GROUND_STEP = 36;
 const DOT_ALPHA = 0.08;
 
 /**
- * The receipt (Senryo's slip, Kakure's stub, Mitoshi's ticket, in the app's night): a fixed object in either world — the brand and the
+ * The receipt (in the app's night): a fixed object in either world — the brand and the
  * round's folio, the market, the result as one big figure with its seal pressed in, the round's line against the price
  * to beat, three facts, a perforation, and a stub that says where it settled with a QR to the round.
  */

@@ -24,7 +24,7 @@ export function setWorld(network: Network) {
 }
 
 /**
- * Switches the world with Kakure's flood: a view transition whose new state is revealed by a circle spreading from the
+ * Switches the world with a flood: a view transition whose new state is revealed by a circle spreading from the
  * control that made the change (520 ms, `html[data-flooding]` in shell.css). Reduced motion, or a browser without view
  * transitions, switches at once.
  */

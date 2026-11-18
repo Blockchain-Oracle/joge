@@ -11,7 +11,7 @@ import { Preferences, SettingRow } from "./prefs.tsx";
 import { WorldSwitch } from "./world-switch.tsx";
 
 /**
- * More (D21): the wallet, search and notices, then every setting as an icon, a word and its control. Places live in
+ * More: the wallet, search and notices, then every setting as an icon, a word and its control. Places live in
  * the header and the dock, Sensei in its orb, so neither is repeated here.
  */
 export function More({

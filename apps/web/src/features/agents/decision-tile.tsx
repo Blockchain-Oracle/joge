@@ -40,7 +40,7 @@ export const tileLabel = (decision: TileDecision) =>
   `${decision.asset ?? ""} ${decision.laneSeconds ? laneLabel(decision.laneSeconds) : ""} · ${clockTime(Date.parse(decision.createdAt) / MS_PER_SECOND)} · ${CALL[decision.side ?? "hold"]} · ${ENDING_WORD[decision.outcome]}`;
 
 /**
- * One decision as a tile (his feedback: too much text): the market's coin, the call as an arrow, the time; the ground
+ * One decision as a tile: the market's coin, the call as an arrow, the time; the ground
  * says how it ended. The words live in its label and in the panel a tap opens.
  */
 export function DecisionTile({

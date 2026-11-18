@@ -38,7 +38,7 @@ function soundOn() {
 }
 
 /**
- * A round's replay (Senryo's film, Kakure's replay sheet): the whole round in ~9–17 s with its own sounds. It rests on
+ * A round's replay (film, replay sheet): the whole round in ~9–17 s with its own sounds. It rests on
  * its last frame (the result) with a play button; play runs the entries, the lock, the price against the line to beat
  * and the verdict, with "your" tickets ringed and your result counting as it goes. Scrub to any moment.
  */

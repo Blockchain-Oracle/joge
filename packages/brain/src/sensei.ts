@@ -2,7 +2,7 @@ import { z } from "zod";
 import { MAX_SESSION_STAKE_USD, NOTE_RESULTS, PERCENT, SESSION_RESULTS, SESSION_STAKES } from "./constants.ts";
 
 /**
- * Sensei (F12): the coach. It gives a straight call on a live round (Up, Down or sit it out) with one reason and one
+ * Sensei: the coach. It gives a straight call on a live round (Up, Down or sit it out) with one reason and one
  * risk, names the round through the `ticket` tool so the player gets a ticket card, and is the one voice in the app
  * allowed to say "not this one". It never signs or sends; the player decides in their own wallet.
  *

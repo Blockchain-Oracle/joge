@@ -16,7 +16,7 @@ const UTC_TIME = new Intl.DateTimeFormat("en-GB", {
 });
 
 /**
- * The product's own heartbeat (Kakure's signed-bundle stamp): every minute General Protocols signs a price. Gold is
+ * The product's own heartbeat: every minute General Protocols signs a price. Gold is
  * priced from two feeds, so its lane shows the Bitcoin Cash feed it is built on.
  */
 function useHeartbeat(asset: AssetId) {

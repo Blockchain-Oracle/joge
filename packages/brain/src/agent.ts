@@ -6,7 +6,7 @@ import { describeModelError, type ResolvedModel } from "./model.ts";
 import { PERSONA_MAX, POSTURES, type Posture, WHY_MAX } from "./postures.ts";
 
 /**
- * An agent (F13): a persona the owner writes, a posture, the lanes it plays and its caps. For each round it reads,
+ * An agent: a persona the owner writes, a posture, the lanes it plays and its caps. For each round it reads,
  * the model proposes Up, Down or hold with a confidence and one sentence why; then a deterministic gate decides, and
  * only the gate's answer can ever reach the vault. The model never signs: the engine signs with the agent's key, and
  * the vault covenant lets that key enter lane rounds for the owner within the per-bet cap and nothing else.

@@ -1,7 +1,7 @@
 import { type Cue, renderCues } from "@/kit";
 
 /**
- * Turns a drawing into an MP4 (Senryo's `exportFilm`): every frame drawn at t = i / 30 by the same function the preview
+ * Turns a drawing into an MP4: every frame drawn at t = i / 30 by the same function the preview
  * runs — never a screen recording — and encoded with Mediabunny (WebCodecs), H.264 about 6 Mbps with the drawing's own
  * sounds as AAC. Where the browser cannot encode H.264 (a plain-http page, or no WebCodecs) it says so instead of
  * handing over a file other apps refuse.

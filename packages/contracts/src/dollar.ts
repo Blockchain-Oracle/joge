@@ -25,7 +25,7 @@ export interface DollarContractsOptions {
 }
 
 /**
- * The covenants of dollar events (F11) for one category K and one dollar token: the sidecar that holds a round's
+ * The covenants of dollar events for one category K and one dollar token: the sidecar that holds a round's
  * dollars beside its gate or master, the dollar gate, and the three dollar masters. The ticket contract is the satoshi
  * rounds' own. Built in dependency order like `roundContracts`.
  */

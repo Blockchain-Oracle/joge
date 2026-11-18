@@ -30,7 +30,7 @@ const SIGNED_ASSETS: AssetId[] = ["BTC", "ETH", "BCH"];
 /** A landing visitor has no tickets: the film plays from Up's side. */
 const NO_FOCUS = new Set<string>();
 
-/** A numbered section (Agari): its number, a title, one sentence, and live art beside it. */
+/** A numbered section: its number, a title, one sentence, and live art beside it. */
 function Section({ step, children }: { step: { n: string; title: string; line: string }; children: ReactNode }) {
   return (
     <section className="grid items-center gap-6 border-[var(--hairline)] border-t py-12 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-12 md:py-16">

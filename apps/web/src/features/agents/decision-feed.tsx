@@ -15,7 +15,7 @@ const AGENTS_SHOWN = 6;
 const TILES_SHOWN = 10;
 
 /**
- * What the agents are deciding (his feedback: one row of words per decision was too much): one row per agent — its
+ * What the agents are deciding: one row per agent — its
  * face and name, then its latest calls as small tiles, newest on the right. The words are on each tile's label and on
  * the agent's own page.
  */

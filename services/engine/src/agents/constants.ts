@@ -1,4 +1,4 @@
-/** The agent runner's pacing (S07). */
+/** The agent runner's pacing. */
 const SECOND_MS = 1_000;
 const MINUTE_MS = 60 * SECOND_MS;
 export const HOUR_MS = 60 * MINUTE_MS;

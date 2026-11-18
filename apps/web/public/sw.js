@@ -1,6 +1,6 @@
 /*
- * Jōge's service worker (F20, F24). It shows round results and agent proposals the engine pushes, opens the right page
- * when one is tapped, and keeps the app shell available offline (Kakure's rules: built assets cache-first, pages
+ * Jōge's service worker. It shows round results and agent proposals the engine pushes, opens the right page
+ * when one is tapped, and keeps the app shell available offline (rules: built assets cache-first, pages
  * network-first with the last copy as a fallback, live data and APIs never cached). On localhost it caches nothing,
  * so development reloads stay fresh.
  */

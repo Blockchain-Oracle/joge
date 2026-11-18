@@ -14,7 +14,7 @@ import type { RoundViewResponse } from "./api.ts";
 const AFTER_STAMP_MS = 240;
 
 /**
- * The money moment (Kakure's verdict toast, Senryo's seal): when a round this browser entered settles, the toast wears
+ * The money moment (verdict toast, seal): when a round this browser entered settles, the toast wears
  * its hanko (的中 / 外れ / 無効), thuds in, plays the win or loss chord and, on a win, throws confetti from both corners;
  * the payout follows as its own toast. Everything lands in the notices bell; a tap opens the round. Nobody has to keep
  * the round open.

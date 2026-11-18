@@ -37,7 +37,7 @@ function chipnetAddress(value: unknown): string | null {
   return typeof decoded === "string" || decoded.prefix !== "bchtest" ? null : value;
 }
 
-/** There are no test coins on mainnet (Tempo's guard): the route does not exist there. */
+/** There are no test coins on mainnet: the route does not exist there. */
 const noFaucet = () => Response.json({ error: "No test coins on mainnet." }, { status: NOT_FOUND, headers: NO_STORE });
 
 /** The latest claim for an address: the page polls this while the engine pays. */
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 }
 
 /**
- * Asks for test coins for a paired wallet (Agari's rules): one top-up per address per 12 hours, five asks a day per
+ * Asks for test coins for a paired wallet: one top-up per address per 12 hours, five asks a day per
  * visitor (by a one-way hash of the IP), and the engine pays only up to the target balance. Nothing is signed here.
  */
 export async function POST(request: Request) {

@@ -2,7 +2,7 @@ pragma cashscript ^0.14.0;
 
 import "./rules.cash";
 
-// Dollar events (F11): stakes and payouts in a dollar token (ParyonUSD on mainnet, 2 decimals) instead of satoshis.
+// Dollar events: stakes and payouts in a dollar token (ParyonUSD on mainnet, 2 decimals) instead of satoshis.
 // A coin carries one token category, and gates and masters are NFTs of category K, so a round's dollars sit beside
 // them in sidecars (TokenSide.cash): one per gate, merged into one beside the master at the lock. Every number here is
 // mirrored in packages/sdk/src/round/dollar.ts; change both together.

@@ -11,7 +11,7 @@ import { WalletButton } from "./wallet-button.tsx";
 import { WorldSwitch } from "./world-switch.tsx";
 
 /**
- * The header (D21): the seal and the name, the places as pills (desktop), notices, the wallet and the menu. On a phone
+ * The header: the seal and the name, the places as pills (desktop), notices, the wallet and the menu. On a phone
  * the places live in the dock at the bottom instead; between phone and desktop, search and notices move into the menu
  * so the header never runs wider than the window (his screenshot at ~800 px).
  */

@@ -7,7 +7,7 @@ const FALL = "M0 132 L60 118 L104 126 L150 96 L196 108 L240 84 L282 98 L318 90 L
 const LINE_Y = 120;
 
 /**
- * When a page is not there or breaks (his ask for a custom 404): the app's own chart and words — the price ran above
+ * When a page is not there or breaks: the app's own chart and words — the price ran above
  * the line, then went down and off the chart — with the way back to the rounds one tap away.
  */
 export function LostPage({

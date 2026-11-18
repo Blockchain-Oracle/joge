@@ -1,6 +1,6 @@
 /*
- * The landing (D21): Agari's vertical kanji and numbered sections, Kakure's live hero card and its heartbeat (a ring and
- * a stamp each time the oracle signs), Mitoshi's silver title with one vermilion phrase.
+ * The landing: vertical kanji and numbered sections, live hero card and its heartbeat (a ring and
+ * a stamp each time the oracle signs), silver title with one vermilion phrase.
  */
 
 .lp-title {
@@ -39,7 +39,7 @@
   }
 }
 
-/* 上下 down the right edge, a vermilion band running through it (Agari's 上がり). */
+/* 上下 down the right edge, a vermilion band running through it (上がり). */
 .lp-kanji {
   writing-mode: vertical-rl;
   font-family: var(--font-serif-jp), serif;
@@ -81,7 +81,7 @@
   }
 }
 
-/* Content rises in once (Kakure, 700 ms on the drawer curve). */
+/* Content rises in once (700 ms on the drawer curve). */
 .lp-rise {
   animation: lp-rise 700ms var(--ease-drawer) both;
 }

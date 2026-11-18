@@ -22,7 +22,7 @@ export const SENSEI_HOUSE = [{ count: 600, windowMs: HOUR_MS }];
 export const DRY_READ_PER_IP = [{ count: 1, windowMs: 10 * SECOND_MS }];
 export const DRY_READ_HOUSE = [{ count: 60, windowMs: HOUR_MS }];
 
-/** Sign-in (D11): a challenge lives 5 minutes, a session a day. */
+/** Sign-in: a challenge lives 5 minutes, a session a day. */
 export const CHALLENGE_TTL_MS = 5 * MINUTE_MS;
 export const SESSION_TTL_MS = 24 * HOUR_MS;
 /** A challenge's form: 13-digit expiry, 32 hex nonce, 64 hex MAC. */

@@ -1,0 +1,12 @@
+flowchart TB
+  open["<b>1 · Open</b><br/>the lane thread mints<br/>a master and 2 gates"]
+  enter["<b>2 · Enter</b><br/>your wallet signs:<br/>stake in, ticket out"]
+  lock["<b>3 · Lock</b><br/>first signed price ≥ start:<br/>gates merge into the master"]
+  settle["<b>4 · Settle</b><br/>line to beat and close checked:<br/>winner and payouts written"]
+  pay["<b>5 · Pay</b><br/>each ticket paid to its owner,<br/>budget back to the opener"]
+  gp(["General Protocols<br/>signed prices"])
+  open ==> enter ==> lock ==> settle ==> pay
+  gp -.-> lock
+  gp -.-> settle
+  classDef signed fill:#e04d26,stroke:#e04d26,color:#ffffff
+  class enter signed

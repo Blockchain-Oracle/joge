@@ -1,0 +1,9 @@
+# The docs site is its own pnpm project (own lockfile), apart from the app's workspace.
+# Native builds are opt-in; esbuild is the only one the docs need (fumadocs-mdx).
+allowBuilds:
+  esbuild: true
+  sharp: false
+
+# Supply-chain rule, as in the app's workspace: only releases at least two weeks old (minutes).
+minimumReleaseAge: 20160
+saveExact: true

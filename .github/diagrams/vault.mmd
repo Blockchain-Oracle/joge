@@ -1,0 +1,10 @@
+flowchart TB
+  owner(["Owner's wallet"])
+  vault["<b>Agent vault</b><br/>owner · agent key · per-bet cap<br/>baked into its address"]
+  ticket(["A lane entry whose ticket<br/>pays the owner · stake ≤ cap<br/>change back to the vault"])
+  back(["Owner's wallet"])
+  owner ==>|"add: a normal payment"| vault
+  vault ==>|"bet: signed by the agent key"| ticket
+  vault ==>|"withdraw everything:<br/>the owner co-signs with their own coin"| back
+  classDef brand fill:#e04d26,stroke:#e04d26,color:#ffffff
+  class vault brand

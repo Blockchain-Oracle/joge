@@ -8,7 +8,7 @@ import { AssetMark } from "@/marks/asset";
 import { useNow } from "../rounds/use-now.ts";
 import { BlazeBanner } from "../shell/banner.tsx";
 import { LiveSync } from "../shell/live-sync.tsx";
-import { PLACES } from "../shell/places.ts";
+import { DOCS_URL, PLACES } from "../shell/places.ts";
 import { useScrolled } from "../shell/use-scrolled.ts";
 import { useLane } from "../terminal/use-lane.ts";
 import { MAINNET_LIVE } from "../theme/theme.ts";
@@ -53,6 +53,12 @@ function Nav() {
             {place.label}
           </Link>
         ))}
+        <a
+          href={DOCS_URL}
+          className="rounded-full px-4 py-2 font-semibold text-[14px] text-[var(--ink-2)] hover:bg-[var(--surface-1)] hover:text-[var(--ink)]"
+        >
+          Docs
+        </a>
       </span>
       <Link
         href="/rounds"
@@ -174,6 +180,9 @@ function Footer() {
               {place.label}
             </Link>
           ))}
+          <a href={DOCS_URL} className="hover:text-[var(--ink)]">
+            Docs
+          </a>
         </span>
       </div>
     </footer>

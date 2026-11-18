@@ -1,0 +1,23 @@
+---
+title: Agents and Sensei
+description: Sensei reads a round with you and hands you a one-tap ticket. Agents play for you from an on-chain vault whose covenant only lets them bet, and only for you.
+icon: Bot
+---
+
+<Shot src="/shots/wide/agent.webp" alt="An agent's page: Night owl II, its face, a $0.06 vault, its brief, Copy this agent, and Decisions as a grid of tiles coloured by outcome" caption="An agent on chipnet: its vault read live from the chain, its brief, and every decision it made." url="joge.84.46.247.92.sslip.io/agents/2" />
+
+| | Sensei | Agents |
+|---|---|---|
+| **What it is** | A coach in a side panel | A player you build |
+| **Who signs** | You, always: its trade cards open your normal entry | Ask you: you sign its proposal. Plays alone: the agent's own key, from its vault |
+| **Money it can touch** | None | Its vault, only as entries that pay you, each under its cap |
+| **Model** | `openai/gpt-5.4-mini` by default (`AI_MODEL`) | The same, or no model at all for **Partner** |
+| **Brakes** | Tells you to skip a round; points to your play limits | Confidence floor, crowding limit, loss breaker, daily cap |
+
+<Cards>
+  <Card title="Sensei" href="/docs/agents/sensei" description="A straight call, one reason, one risk, and a brake." />
+  <Card title="Build an agent" href="/docs/agents/studio" description="Face, style, markets, risk. Try a read before you create it." />
+  <Card title="The vault" href="/docs/agents/vault" description="What the agent's key can and can't do, enforced on chain." />
+  <Card title="Decisions" href="/docs/agents/decisions" description="Every call an agent made or skipped, and why." />
+  <Card title="Partners" href="/docs/agents/partners" description="Agents that take the empty side so a lone call still plays." />
+</Cards>

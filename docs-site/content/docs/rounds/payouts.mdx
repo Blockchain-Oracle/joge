@@ -1,0 +1,49 @@
+---
+title: Payouts and fees
+description: The winning side splits the whole pot by stake. The figures are frozen at settlement and paid by the contract, to the sat.
+icon: Coins
+---
+
+<Diagram name="payout" alt="Money flow of a round: stakes go from players into the gates; the lock moves them into the master; the settle takes the 2% protocol fee and the 0.5% opener fee when each is at least 1,000 sats; the sweep pays winners stake × pot ÷ winning total plus their deposit less 250, losers their deposit less 250, and returns the rest of the budget to the opener" caption="Where every satoshi of a round goes." />
+
+## The formula
+
+| Ticket | Paid |
+|---|---|
+| On the winning side | ⌊ stake × net pot ÷ winning side's total ⌋ + 1,200 − 250 |
+| On the losing side | 1,200 − 250 = 950 sats |
+| Refunded round | stake + 1,200 − 250 |
+
+**Net pot** is the pot minus the fees actually paid. **1,200** is the deposit every ticket carries (enough to exist as its own coin); **250** is that ticket's share of the payout transaction. Figures are written into the master at settlement, so the order tickets are paid in never changes what anyone gets, and winners can never be paid more than the pot.
+
+## Fees
+
+| Fee | Rate | Goes to | Taken when |
+|---|---|---|---|
+| Protocol | 2% of the pot | The protocol address | The round is decided and 2% is at least 1,000 sats (pots of 50,000 sats or more) |
+| Opener | 0.5% of the pot | Whoever opened the round | The round is decided and 0.5% is at least 1,000 sats (pots of 200,000 sats or more) |
+
+A fee too small to pay stays in the pot for the winners. Refunded rounds pay no fee.
+
+## Round 785, worked through
+
+Up: one ticket, 13,655 sats. Down: one ticket, 11,845 sats. Pot 25,500 sats. 2% would be 510 sats, under the 1,000-sat minimum, so no fee: the net pot is all 25,500.
+
+| Ticket | Sum | Paid |
+|---|---|---|
+| ▲ Up, won | 13,655 × 25,500 ÷ 13,655 + 1,200 − 250 | **26,450 sats** |
+| ▼ Down, lost | 1,200 − 250 | **950 sats** |
+
+Both in one payout transaction, [`1474ff08…`](https://explorer.bch.ninja/tx/1474ff082d7a3e70f56b580bbf3cb107374b3c5e30215462aae1a803ae666acf). The [docs home](/) lets you drag this round's close and watch the payouts change.
+
+## Who pays the network fees
+
+| Step | Fee | Paid from |
+|---|---|---|
+| Open | The opener's own coins | The opener |
+| Enter | About 1 sat per byte | The player's change |
+| Lock | 1,600 + 700 per gate (3,000 for a lane round) | The master's budget |
+| Settle | 2,200 | The master's budget |
+| Pay | 1,000 per batch + 250 per ticket | The budget, and each ticket's deposit |
+
+Lifecycle fees are fixed numbers in the contracts, not rates, so every client builds identical transactions. After the last payout the master returns what's left of its 20,000-sat budget, plus any opener fee, to the opener.

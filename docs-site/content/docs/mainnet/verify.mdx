@@ -1,0 +1,19 @@
+---
+title: Check it yourself
+description: Everything on these pages can be checked without trusting Jōge. Here is where to look.
+icon: SearchCheck
+---
+
+| Claim | How to check |
+|---|---|
+| The token category and its genesis | Open the [genesis transaction](https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92): its first input's txid is the category, and it mints 16 thread NFTs |
+| A round's every step | Any round page → **Proof ↗** → **On chain**, or the explorer links on [How a round works](/docs/rounds) |
+| The prices | **Verify** on any proof page re-checks each signature in your browser and compares it with General Protocols' own copy |
+| The payouts | The proof page recomputes each payout from the settled figures; [Payouts](/docs/rounds/payouts) has the formula |
+| The contract rules | `packages/contracts/cashscript/*.cash` and `packages/contracts/solidcash/*.scash` in the [source](https://github.com/Blockchain-Oracle/joge) |
+| The attacks refused | `pnpm --filter @joge/contracts test` (77 tests) |
+| The leaderboard | Every row is tickets read from chain; open a player and their tickets link to their transactions |
+
+<Callout title="Who's on the board">
+The first names on the mainnet board are team wallets that played real rounds against each other with real BCH. Every player after them is ranked the same way, from the same tickets on chain.
+</Callout>

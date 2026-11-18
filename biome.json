@@ -14,7 +14,8 @@
       "!**/*.generated.ts",
       "!**/public/wallets",
       "!**/drizzle/meta",
-      "!**/public/tokens"
+      "!**/public/tokens",
+      "!docs-site"
     ]
   },
   "formatter": {

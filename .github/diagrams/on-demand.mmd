@@ -1,0 +1,11 @@
+flowchart TB
+  page(["A page shows a market"])
+  wake["/api/lanes/…/wake<br/>every 2 min while visible"]
+  awake["Market awake<br/>10 min after the last wake"]
+  keeper["Keeper<br/>opens the next slot"]
+  round["Round takes entries"]
+  played(["Played: lock · settle · pay"])
+  empty(["Nobody came: void at lock<br/>budget back to the keeper"])
+  page --> wake --> awake --> keeper --> round
+  round == "entries on both sides" ==> played
+  round -. "no entries" .-> empty

@@ -1,0 +1,32 @@
+---
+title: The signed price
+description: General Protocols signs each market's price about once a minute. The contracts check those signatures themselves, and the line to beat is a price nobody could know when entries closed.
+icon: BadgeCheck
+---
+
+<Logo name="general-protocols.png" size={28} /> **General Protocols** runs the price oracles Bitcoin Cash contracts already settle on. Each oracle signs a 16-byte message about once a minute: a timestamp, two sequence numbers and the price. Jōge's contracts verify the signature on chain with `checkDataSig`, against the oracle's public key built into the contract.
+
+| Market | Feed | Signed until |
+|---|---|---|
+| Bitcoin | USD/BTC | 15 Jan 2027 |
+| Ether | USD/ETH | 15 Jan 2027 |
+| Bitcoin Cash | USD/BCH | 15 Apr 2028 |
+| Gold | USD/BCH × 10⁷ ÷ XAU/BCH, both feeds | 15 Jan 2027 |
+
+## Three prices per round
+
+| Price | Which message | Why |
+|---|---|---|
+| **Lock** | The first message signed at or after the round's start, proven with the message just before it | Entries close only once the oracle has passed the start time |
+| **Line to beat** | The **next** message after the lock message (by sequence, about a minute later) | Whoever sends the lock can't yet know it, so racing the lock gains nothing |
+| **Close** | The first message at or after the close time | The round's result |
+
+Picking messages by sequence number, not by timestamp, keeps that gap even when the oracle's minutes drift. Every client finds the same pair of messages for a boundary, so every client builds the same transaction.
+
+<Callout title="The moving line is not the price that settles">
+Between signatures the chart moves with an exchange ticker (Kraken), re-based to the oracle's level at every signed price, so the line you watch and the price that settles start from the same place. Settlement only ever uses General Protocols' signed messages.
+</Callout>
+
+## Check it yourself
+
+Every round has a [proof page](/docs/rounds/proof) that re-verifies each signature in your browser and fetches the same messages from General Protocols to compare.

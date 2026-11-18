@@ -1,0 +1,44 @@
+---
+title: Architecture
+description: The chain is the referee. Your browser builds every transaction from the chain itself; the engine indexes, relays prices and keeps rounds moving, and anyone could do its job.
+icon: Blocks
+---
+
+<Diagram name="system" alt="Jōge's system: your browser and wallet pair over WizardConnect, read coins from Fulcrum and build every entry; round contracts on Bitcoin Cash hold every pot; General Protocols signs prices; the engine relays prices, indexes the chain into Postgres, runs the keeper and the agents; the web app serves pages, the API and a live stream" caption="Money moves only between your wallet and the contracts. Everything else is a read model or a helper." />
+
+| Part | What it is | Where |
+|---|---|---|
+| **Contracts** | CashScript and SolidCash covenants holding every round, gate, ticket and vault | `packages/contracts` |
+| **SDK** | Oracle message codec and pair finder, commitment layouts, payout maths, lanes; shared by the browser and the engine | `packages/sdk` |
+| **Web app** | Next.js 16: every page, the read API, a live stream (SSE), Sensei | `apps/web` |
+| **Engine** | One Node process: oracle relay, price line, indexer, keeper, agents, push, paths, faucet | `services/engine` |
+| **Database** | Postgres with Drizzle: a read model rebuilt from raw transactions, plus NOTIFY channels | `packages/db` |
+| **Chart** | A zero-dependency canvas chart: the 60 Hz round chart and candles | `packages/chart` |
+| **Brain** | The model layer: which model answers, Sensei's prompt, the agents' read and gate | `packages/brain` |
+
+## Three rules the design keeps
+
+| Rule | How |
+|---|---|
+| **Your browser trusts the chain, not us** | Entries are built in the browser from live coins read off public Fulcrum servers and broadcast there. Our database feeds lists, history and leaderboards, never a signature |
+| **Nobody has to be online** | Lock, settle and pay have exactly one valid form, need no key, and are paid from the round. The keeper sends them; any browser can ([Anyone can finish](/docs/rounds/anyone-can-finish)) |
+| **AI never holds your money** | Sensei only suggests. Agents sign from a vault whose covenant allows only entries that pay you ([Vault](/docs/agents/vault)) |
+
+## Live data
+
+The engine writes to Postgres and sends a tiny `NOTIFY` (`joge_oracle`, `joge_price`, `joge_round`, `joge_agent`). The web app holds one `LISTEN` per process and fans it out over one Server-Sent Events stream per tab, `/api/stream`; pages refetch through TanStack Query. The chart eases each new price at 60 Hz, at a pace that follows how often the feed actually ticks.
+
+## Stack
+
+| | |
+|---|---|
+| Chain | Bitcoin Cash, CashTokens, CashScript 0.14, SolidCash 0.51, `@bitauth/libauth` |
+| Wallets | WizardConnect (`@wizardconnect/react` 0.2.6) |
+| Chain access | Fulcrum over WebSocket (`@rpckit`), five public servers |
+| Prices | General Protocols oracle (SSE + REST), Kraken WebSocket v2 for the live line |
+| App | Next.js 16, React 19, TanStack Query, Tailwind 4 |
+| AI | AI SDK 7, `openai/gpt-5.4-mini` by default |
+| Video | Mediabunny (H.264 + AAC in the browser, WebCodecs) |
+| Data | Postgres 17, Drizzle |
+| Monorepo | pnpm, Turbo, Biome, TypeScript |
+| Hosting | Docker on Coolify |

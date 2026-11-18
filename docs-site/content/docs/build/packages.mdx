@@ -1,0 +1,43 @@
+---
+title: Packages
+description: The monorepo, package by package, and what each one gives the others.
+icon: Package
+---
+
+<Files>
+  <Folder name="apps" defaultOpen>
+    <Folder name="web">
+      <File name="src/app — pages and the /api routes" />
+      <File name="src/features — terminal, round, proof, agents, sensei, share, replay…" />
+    </Folder>
+  </Folder>
+  <Folder name="packages" defaultOpen>
+    <File name="contracts — .cash and .scash sources, builders, deployments, tests" />
+    <File name="sdk — oracle, commitments, payout maths, lanes, agent keys" />
+    <File name="db — Drizzle schema, migrations, queries, NOTIFY channels" />
+    <File name="chart — canvas round chart and candles, no dependencies" />
+    <File name="brain — model resolver, Sensei, agent read, postures" />
+  </Folder>
+  <Folder name="services" defaultOpen>
+    <File name="engine — oracle, price, indexer, keeper, agents, push, paths, faucet" />
+  </Folder>
+</Files>
+
+## `@joge/contracts`
+
+| | |
+|---|---|
+| `cashscript/*.cash` | Gate, EventGate, Ticket, MasterOpen, MasterLocked, MasterSweep, the dollar contracts, shared `rules.cash`, `oracle.cash`, `entry.cash` |
+| `solidcash/*.scash` | LaneThread, Factory, AgentVault, shared `opening.scash` |
+| `src/builders/*` | One builder per step: open, create, enter, exit, lock, settle, sweep, vault bet and withdraw, dollar variants |
+| `@joge/contracts/browser` | The CashScript side only, for the browser (the SolidCash contracts are signed server-side) |
+| `deployments/*.json` | Chipnet and mainnet: category, genesis, every locking bytecode, the lanes |
+| `test/*` | 77 tests: lifecycle, attacks, determinism, oracle, timeouts, vault, dollar events |
+
+## `@joge/sdk`
+
+The code the browser and the engine must agree on, byte for byte: the 16-byte oracle message codec and Schnorr check, the pair finder that picks the same lock and close messages for everyone, every commitment layout, payout maths that mirrors the contracts, the 13 lanes and their grid, and agent key derivation.
+
+## `@joge/brain`
+
+`AI_MODEL` (default `openai/gpt-5.4-mini`) resolved by whichever credential is set: an OpenAI-compatible `AI_BASE_URL` + `AI_API_KEY`, then `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`, then the Vercel AI Gateway. Sensei's prompt (with the brake as its last rule), the agent read with structured output, and the posture table the gate enforces.

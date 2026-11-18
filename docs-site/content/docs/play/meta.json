@@ -1,0 +1,7 @@
+{
+  "title": "Play",
+  "description": "Pair a wallet, call a round, get paid. Receipts, replays, your record.",
+  "icon": "Gamepad2",
+  "root": true,
+  "pages": ["index", "quickstart", "the-round", "results", "portfolio", "worlds", "limits", "alerts"]
+}

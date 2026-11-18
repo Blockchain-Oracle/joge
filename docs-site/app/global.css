@@ -1,0 +1,183 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* Jōge's own look, the same tokens as the app (apps/web/src/styles/tokens.css): a near-black stage at night and
+   Mitoshi's cream by day, vermilion as the one brand colour (links, the active tab, the one filled action), lime for
+   Up and coral for Down only where a side is meant, every figure in JetBrains Mono. Sora for titles, Inter for
+   reading, Noto Serif JP for 上下. */
+
+@source "../components/**/*.tsx";
+@source "../lib/**/*.tsx";
+@source "../content/**/*.mdx";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Day: the cream world. */
+:root {
+  --bg: #f4eee3;
+  --surface-1: #fffdf8;
+  --surface-2: #ebe3d4;
+  --ink: #141210;
+  --ink-2: #4f4a43;
+  --muted: #8a8378;
+  --hairline: rgb(20 18 16 / 0.1);
+  --vermilion: #d93e1f;
+  --vermilion-text: #c23519;
+  --up: #b5f543;
+  --up-ink: #0b0f02;
+  --up-text: #2f7a00;
+  --down: #ff647c;
+  --down-ink: #1a0307;
+  --down-text: #c8283f;
+  --gold: #8e6418;
+  --warning: #b8770f;
+}
+
+/* Night: the stage (the app's default world). */
+.dark {
+  --bg: #050505;
+  --surface-1: #121212;
+  --surface-2: #1c1c1c;
+  --ink: #ffffff;
+  --ink-2: #b5b5b5;
+  --muted: #7a7a7a;
+  --hairline: rgb(255 255 255 / 0.09);
+  --vermilion: #e04d26;
+  --vermilion-text: #ff6a45;
+  --up-text: #b5f543;
+  --down-text: #ff647c;
+  --gold: #e3b45a;
+  --warning: #f2994a;
+}
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-inter), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+  --font-jp: var(--font-serif-jp), "Hiragino Mincho ProN", serif;
+
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted-ink: var(--muted);
+  --color-surface: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-hairline: var(--hairline);
+  --color-vermilion: var(--vermilion);
+  --color-up: var(--up);
+  --color-up-ink: var(--up-ink);
+  --color-up-text: var(--up-text);
+  --color-down: var(--down);
+  --color-down-ink: var(--down-ink);
+  --color-down-text: var(--down-text);
+  --color-gold: var(--gold);
+}
+
+/* Fumadocs' palette on Jōge's tokens (they switch with the .dark class). */
+:root,
+.dark {
+  --color-fd-background: var(--bg);
+  --color-fd-foreground: var(--ink);
+  --color-fd-muted: var(--surface-2);
+  --color-fd-muted-foreground: var(--ink-2);
+  --color-fd-popover: var(--surface-1);
+  --color-fd-popover-foreground: var(--ink);
+  --color-fd-card: var(--surface-1);
+  --color-fd-card-foreground: var(--ink);
+  --color-fd-border: var(--hairline);
+  --color-fd-primary: var(--vermilion);
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-secondary: var(--surface-2);
+  --color-fd-secondary-foreground: var(--ink);
+  --color-fd-accent: var(--surface-2);
+  --color-fd-accent-foreground: var(--ink);
+  --color-fd-ring: var(--vermilion);
+  /* Callouts: info stays neutral (no second accent), the rest by meaning. */
+  --color-fd-info: var(--ink-2);
+  --color-fd-warning: var(--warning);
+  --color-fd-error: var(--down-text);
+  --color-fd-success: var(--up-text);
+  --color-fd-idea: var(--vermilion);
+}
+
+body {
+  background: var(--color-fd-background);
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Titles as the app sets them: Sora, heavy and tight. */
+#nd-page h1,
+.font-display {
+  font-family: var(--font-display);
+}
+#nd-page h1 {
+  font-weight: 700;
+  font-size: clamp(2.1rem, 4.2vw, 2.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+.prose h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.prose h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.prose a:not([data-card]) {
+  color: var(--vermilion-text);
+  text-decoration-color: color-mix(in oklab, var(--vermilion-text) 40%, transparent);
+}
+.prose code {
+  font-family: var(--font-mono);
+}
+/* Figures line up (Mitoshi's numbers law). */
+.prose table td {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The app's mono label: "/ ROUNDS". */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Up and Down words, in their own colours, wherever a page names a side. */
+@utility up {
+  color: var(--up-text);
+  font-weight: 600;
+}
+@utility down {
+  color: var(--down-text);
+  font-weight: 600;
+}
+
+/* The live dot (the app's lp-live). */
+@keyframes live-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  80%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* The logo row's endless drift (components/logo-cloud.tsx). */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}

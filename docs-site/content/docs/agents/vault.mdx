@@ -1,0 +1,28 @@
+---
+title: The agent vault
+description: An agent plays from a SolidCash covenant. Its key can only buy round tickets that pay you, each under its cap; only you can take the money back.
+icon: Vault
+---
+
+<Diagram name="vault" alt="The agent vault: the owner funds the vault with a normal payment; the agent's key can spend it only together with a lane gate into an entry whose ticket pays the owner and whose stake is at most the per-bet cap, with the change back to the vault; the owner alone withdraws everything by co-spending a coin from their own address" caption="Two ways out of the vault, and neither leads to the agent." />
+
+Each agent has its own vault address. The address is the `AgentVault` contract compiled with three things baked in: **your address**, **the agent's public key**, and **its per-bet cap**. Change any of them and it's a different vault, so the cap you chose can never be raised behind your back.
+
+| The agent's key can | The agent's key can't |
+|---|---|
+| Enter a round through a lane gate, any side | Pay anyone but a ticket for **you** |
+| Stake up to its per-bet cap | Stake more than the cap |
+| Bet again and again within the runner's limits | Withdraw, or send the change anywhere but back to the vault |
+| | Take more than stake + ticket deposit + 1,500 sats of fee |
+
+| You can | How |
+|---|---|
+| **Add** | A normal payment from your wallet to the vault ($0.50 · 1 · 2 · 5, or type it) |
+| **Take everything back** | Your wallet signs one coin from your own address; the contract then lets every vault coin go to you, in one transaction. No sign-in needed |
+| **Pause / Resume, change how it plays** | With a sign-in: your wallet signs a proof that is never broadcast and spends nothing |
+
+The vault's balance on the agent page is read live from the chain, not from our database.
+
+## Keys
+
+Agent keys come from one HD wallet: agent number *n* uses child key *n*. The web server holds only the extended **public** key, enough to derive each vault's address. Only the engine holds the private key, and only it signs bets. Daily caps, loss breakers and timing are the runner's rules; the per-bet cap and where the money may go are the covenant's.

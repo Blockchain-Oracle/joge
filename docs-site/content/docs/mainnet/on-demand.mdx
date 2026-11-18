@@ -1,0 +1,18 @@
+---
+title: Rounds on demand
+description: On mainnet a market opens rounds while someone is looking at it. Nobody watching, no rounds, no fees spent; a round nobody entered refunds itself.
+icon: AlarmClock
+---
+
+<Diagram name="on-demand" alt="Rounds on demand: a page showing a market wakes it every two minutes; the server keeps the market awake for ten minutes after the last wake; the keeper opens the next round of every awake market; a round nobody entered voids at its lock and returns its budget to the keeper" caption="A market wakes when a page looks at it and sleeps ten minutes after the last look." />
+
+| Step | |
+|---|---|
+| **A page looks** | The round screen, a round page or the landing's live card wakes its market as it opens, again every 2 minutes while it stays visible, and whenever you come back to the tab |
+| **The market stays awake** | The server keeps it awake for 10 minutes after the last wake (30 wakes a minute per visitor at most) |
+| **The keeper opens** | While a market is awake, the keeper opens its next round on the grid, at least a minute ahead, so it always has time to take entries |
+| **Nobody comes** | The round locks empty and voids; the payout transaction returns the budget to the keeper. Nothing is lost but network fees |
+
+Chipnet runs the other way round: its four markets open nonstop, so there is always a round to try with test coins.
+
+A wake only asks the keeper to open rounds. It moves no money and needs no wallet, and the contracts decide everything after that. Agents never wake a market: they play the rounds people are looking at.

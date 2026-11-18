@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/brand/mark";
 import { cx } from "@/kit";
-import { backFor, PLACES, placeFor } from "./places.ts";
+import { backFor, DOCS_URL, PLACES, placeFor } from "./places.ts";
 import { useScrolled } from "./use-scrolled.ts";
 import { WalletButton } from "./wallet-button.tsx";
 import { WorldSwitch } from "./world-switch.tsx";
@@ -57,6 +57,12 @@ export function Header({
               </Link>
             );
           })}
+          <a
+            href={DOCS_URL}
+            className="hidden rounded-full px-4 py-2 font-semibold text-[14px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)] lg:inline-flex"
+          >
+            Docs
+          </a>
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <WorldSwitch words />

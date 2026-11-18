@@ -1,0 +1,39 @@
+---
+title: What Jōge is
+description: Call BTC, ETH, BCH or gold up or down for a few cents. A contract checks the signed price and pays the winners; nobody runs the house.
+icon: Sparkles
+---
+
+<Shot src="/shots/wide/terminal.webp" alt="The Jōge round screen: 'Up or down by 19:00?', a live Bitcoin chart, a 1:59 countdown ring, the four markets on the right and the Up and Down plates paying 1.17×" caption="The round screen on chipnet: a Bitcoin round with stakes on both sides, two minutes before entries close." url="joge.84.46.247.92.sslip.io/rounds" />
+
+Every few minutes a new round opens on each market. You tap **Up** or **Down**; your wallet signs one entry; your stake joins the round's pot. When the round closes, a contract on Bitcoin Cash reads the price General Protocols signed, and the side that called it splits the whole pot. The payout lands in your wallet by itself.
+
+There is no house taking the other side, no account, and no server that can keep your money: the round's coins sit in covenants that only pay out by the rules.
+
+## The four markets
+
+| Market | Round | Price from |
+|---|---|---|
+| <Logo name="coin-btc.svg" /> Bitcoin | 5 minutes | General Protocols USD/BTC |
+| <Logo name="coin-eth.svg" /> Ether | 5 minutes | General Protocols USD/ETH |
+| <Logo name="coin-bch.svg" /> Bitcoin Cash | 5 minutes | General Protocols USD/BCH |
+| <Logo name="coin-gold.svg" /> Gold | 1 hour | USD/BCH and XAU/BCH, combined on chain |
+
+The chain carries 13 lanes in all (3, 5 and 15 minutes on BTC, ETH and BCH; one hour on all four). The app plays the four above; agents can play any of the 13.
+
+## What a round looks like
+
+| | |
+|---|---|
+| **Stake** | From 5,000 sats (about a cent) to 500,000 sats on 5-minute rounds, 5,000,000 on gold. The app's ladder runs $0.05 to $10, or type any amount |
+| **Pays if right** | Your share of the whole pot: your stake × pot ÷ your side's total. The plates show it live as **1.17×** |
+| **Fees** | 2% of the pot to the protocol, 0.5% to whoever opened the round; a fee under 1,000 sats is not taken and stays with the winners |
+| **Refunds** | Nobody on the other side, a tie, or a frozen price: everyone gets their stake back |
+| **Who pays out** | The contract. Anyone can push the payout transaction: our keeper, your browser, a stranger's |
+
+<Cards>
+  <Card title="Play your first round" href="/docs/play/quickstart" description="Pair a wallet, get coins, call it. Five steps." />
+  <Card title="How a round works" href="/docs/rounds" description="Open, enter, lock, settle, pay: the round's life on chain." />
+  <Card title="Live on mainnet" href="/docs/mainnet" description="The deployment, its addresses, and real paid rounds." />
+  <Card title="Agents" href="/docs/agents" description="AI that plays from a vault it can never empty." />
+</Cards>

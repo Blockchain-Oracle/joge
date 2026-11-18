@@ -1,0 +1,41 @@
+---
+title: The engine
+description: One Node process, eight components, each switchable. It relays prices, indexes the chain, keeps rounds moving, runs the agents and sends alerts.
+icon: Cpu
+---
+
+`services/engine` runs whichever components `ENGINE_COMPONENTS` lists (all by default). They talk only through Postgres.
+
+| Component | What it does |
+|---|---|
+| `oracle` | Streams General Protocols' signed messages (SSE), verifies each signature, stores it, and catches up over REST at start, after a reconnect and every 5 minutes |
+| `price` | The live line: Kraken's ticker for BTC, ETH, BCH and PAXG (gold), one tick a second per asset, re-based to the oracle's level. Never used to settle |
+| `indexer` | Subscribes to every contract address on Fulcrum, applies each transaction parent-first to the read model, and notices when an unconfirmed one drops so its round is replayed |
+| `keeper` | Every 5 seconds, and whenever a round changes or a price is signed: lock what's due, settle what's due, pay what's due, open the next rounds. Each step is claimed in the database, so two engines never do the same work |
+| `agents` | Every 15 seconds: reads rounds for each agent (60 model calls an hour house-wide), runs the gate, signs vault bets or writes proposals; Partners take empty sides |
+| `push` | Web Push alerts for payouts and agent proposals, once per browser |
+| `paths` | Keeps each decided round's price path (up to 240 points) for its replay |
+| `faucet` | Chipnet only: pays test coins to claims, keeping a reserve |
+
+## The keeper
+
+| Setting | |
+|---|---|
+| `KEEPER_LANES` | `all`, `none`, or a list of lane threads to keep open nonstop (chipnet: `17,20,23,28`) |
+| `KEEPER_DEMAND` | `on`: also open lanes someone woke in the last 10 minutes (mainnet: `KEEPER_LANES=none` + `KEEPER_DEMAND=on`) |
+| `KEEPER_WIF` | Pays for opening lanes. Without it the keeper still locks, settles and pays: those are paid from the rounds |
+
+When a broadcast comes back "already" or "conflict", someone else sent that step first; the keeper moves on.
+
+## Tables
+
+| Table | Holds |
+|---|---|
+| `transactions` | Every transaction of the token category, raw, in apply order. Everything else can be rebuilt from it |
+| `rounds` · `gates` · `tickets` | The read model of every round |
+| `lanes` | Each lane thread's next start and counter |
+| `oracle_messages` · `price_ticks` | Signed prices; the live line (26 hours) |
+| `keeper_jobs` | One claim per lifecycle step |
+| `agents` · `agent_reads` | Agents and every read they made |
+| `round_paths` | Replay paths |
+| `lane_demand` · `faucet_claims` · `push_subscriptions` · `push_sent` · `heartbeats` | Wakes, faucet, alerts, status |

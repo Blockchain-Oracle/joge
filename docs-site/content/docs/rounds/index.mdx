@@ -1,0 +1,55 @@
+---
+title: A round's life on chain
+description: Open, enter, lock, settle, pay. Five kinds of transaction, each the only one the contracts accept, so anyone can send it and nobody has to be trusted.
+icon: Workflow
+---
+
+<Diagram name="lifecycle" alt="A round's life: a lane thread opens a master and two gates; players' entries add stakes to the gates and mint tickets; the lock merges the gates into the master once General Protocols has signed a price past the lock time; the settle reads the strike and close prices and records the winner; the sweep pays every ticket to its owner" caption="One round, five steps. Players sign only their entry; every other step is free for anyone to send." />
+
+A round is a handful of CashTokens NFTs of Jōge's own token category, each sitting in a covenant that knows exactly how it may move:
+
+| Token | Lives in | Holds |
+|---|---|---|
+| **Lane thread** | `LaneThread` (SolidCash) | The lane's next start time and a counter. Only one round per slot can ever open |
+| **Master** | `MasterOpen` → `MasterLocked` → `MasterSweep` (CashScript) | The round's record: market, times, fees, then the pot, the line and the winner |
+| **Gate** (2 per lane round) | `Gate` (CashScript) | The stakes so far, per side. Entries spread over gates so players rarely race for one coin |
+| **Ticket** (1 per entry) | `Ticket` (CashScript, bare script) | Round, side, stake, and the address to pay |
+
+## The five steps, with a real round
+
+Mainnet round 785, BTC 5 minutes, 18 Nov 2026, 17:30 → 17:35 UTC. Two players, Up won.
+
+| Step | Who sends it | What it does | Round 785 |
+|---|---|---|---|
+| **Open** | Anyone (the keeper, in practice) | The lane thread mints a master with a 20,000-sat budget and two empty gates, for the next slot on the lane's grid | [`332051cd…`](https://explorer.bch.ninja/tx/332051cda19f58d5a0dbad1b9d2379c5aa531091d27b44fac92f14ce8b5db850) |
+| **Enter** | A player's wallet | Adds the stake to a gate and mints a ticket paying the player | [▲ `1761f0bb…`](https://explorer.bch.ninja/tx/1761f0bb236ff2d89a147d2edfacb95d4de679efa786c945a73a0d98ff9bd3a9) [▼ `9563d49d…`](https://explorer.bch.ninja/tx/9563d49d83394cfb9ff29eeb7b3bbb3c30b31abd0d6e7d3aba467d46152ba45a) |
+| **Lock** | Anyone, once General Protocols has signed a price at or after the start | Merges every gate into the master and closes entries. One-sided or empty → refund | [`267afed9…`](https://explorer.bch.ninja/tx/267afed9a754ea8c8e530bb730080cc10d934c478b969990001647a823b9b492) |
+| **Settle** | Anyone, once the oracle has signed past the close | Checks the line and the close against their signatures and writes the winner and the payout figures | [`1c2ccd64…`](https://explorer.bch.ninja/tx/1c2ccd6449ede751a93ecaff9d0a621b10530eadbc3cfe906bb7cee858c3c58f) |
+| **Pay** | Anyone | Pays every ticket to its owner (up to 200 per transaction), then returns the budget to the opener | [`1474ff08…`](https://explorer.bch.ninja/tx/1474ff082d7a3e70f56b580bbf3cb107374b3c5e30215462aae1a803ae666acf) |
+
+The Up ticket staked 13,655 sats and was paid 26,450; the Down ticket got its 950-sat deposit back. [Why those numbers](/docs/rounds/payouts).
+
+## Lanes keep time
+
+Each market and length is a **lane** with its own thread. A lane's rounds start on a fixed grid (every multiple of five minutes for a 5-minute lane), and the thread only opens the next slot it hasn't opened yet. Two rounds for the same slot can't exist, so nobody has to decide which one is real. While one round runs, the next one takes entries.
+
+| Lanes on chain | 3 min | 5 min | 15 min | 1 hour |
+|---|---|---|---|---|
+| BTC · ETH · BCH | ✓ | ✓ | ✓ | ✓ |
+| Gold | | | | ✓ |
+
+## When everyone is refunded
+
+| Refund | Decided at |
+|---|---|
+| Nobody entered, or only one side has money | Lock |
+| The close equals the line (a tie, or a frozen feed) | Settle |
+| The oracle never signed past the start or the close | Anyone, 6 hours after the close |
+
+A refund pays each ticket its stake plus its deposit, less 250 sats for the payout transaction. No fee is taken.
+
+<Cards>
+  <Card title="The signed price" href="/docs/rounds/oracle" description="How the line to beat is chosen so nobody can race it." />
+  <Card title="Payouts and fees" href="/docs/rounds/payouts" description="The formula, to the sat." />
+  <Card title="Anyone can finish" href="/docs/rounds/anyone-can-finish" description="Why there's only one valid version of each step." />
+</Cards>

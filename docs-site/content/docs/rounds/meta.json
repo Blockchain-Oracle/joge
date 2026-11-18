@@ -1,0 +1,7 @@
+{
+  "title": "How rounds work",
+  "description": "A round's life on chain: the signed price, the pot, the payout, and why nobody has to be trusted.",
+  "icon": "Workflow",
+  "root": true,
+  "pages": ["index", "oracle", "payouts", "anyone-can-finish", "proof", "contracts", "safety"]
+}

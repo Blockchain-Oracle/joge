@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- The README banner and demo cover, drawn from Jōge's own tokens and a real capture.
+     Render: ?theme=dark|light&kind=banner|cover at 2560x1280 (see .github/assets/banner/render.py). -->
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050505;--ink:#fff;--ink2:#b5b5b5;--line:#e04d26;--up:#b5f543;--down:#ff647c;--card:#141414;--hair:rgba(255,255,255,.09)}
+.light{--bg:#f4eee3;--ink:#141210;--ink2:#4f4a43;--line:#d93e1f;--up:#2f7a00;--down:#c8283f;--card:#fffdf8;--hair:rgba(20,18,16,.1)}
+*{margin:0;box-sizing:border-box}
+body{width:2560px;height:1280px;background:var(--bg);color:var(--ink);font-family:Inter,sans-serif;overflow:hidden;position:relative}
+.kanji{position:absolute;right:-60px;bottom:-200px;font:700 980px/1 "Noto Serif JP";color:var(--ink);opacity:.045;letter-spacing:-40px}
+.left{position:absolute;left:150px;top:210px;width:1300px}
+.brand{display:flex;align-items:center;gap:28px}
+.brand b{font:800 104px/1 Sora;letter-spacing:-5px}
+.pill{display:inline-flex;align-items:center;gap:22px;margin-top:84px;background:#e04d26;color:#fff;border-radius:999px;padding:16px 40px 16px 16px;font:700 40px/1 Sora;letter-spacing:-.5px}
+.pill i{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#fff;color:#e04d26;font:700 34px "Noto Serif JP";font-style:normal}
+.dot{width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 8px rgba(255,255,255,.25)}
+h1{margin-top:56px;font:800 200px/.9 Sora;letter-spacing:-11px}
+h1 span{color:var(--ink2)}
+p{margin-top:54px;font:500 50px/1.35 Inter;color:var(--ink2);max-width:1220px}
+.mono{margin-top:60px;font:600 32px JetBrains Mono;letter-spacing:3px;text-transform:uppercase;color:var(--ink2)}
+.mono em{font-style:normal;color:var(--up)} .mono u{text-decoration:none;color:var(--down)}
+.phone{position:absolute;right:250px;top:90px;width:520px;border-radius:84px;padding:18px;background:linear-gradient(135deg,#3a3634,#1f1c1b);box-shadow:0 60px 120px -40px rgba(0,0,0,.8)}
+.phone img{display:block;width:100%;border-radius:68px}
+.cover .phone{display:none}
+.cover .shot{position:absolute;right:120px;top:170px;width:1220px;border-radius:36px;overflow:hidden;border:2px solid var(--hair);box-shadow:0 60px 120px -40px rgba(0,0,0,.8)}
+.shot{display:none} .cover .shot{display:block} .shot img{display:block;width:100%}
+.play{display:none}
+.cover .play{display:grid;position:absolute;right:610px;top:520px;width:240px;height:240px;border-radius:50%;background:#e04d26;place-items:center;box-shadow:0 30px 80px -10px rgba(224,77,38,.7)}
+.play:after{content:"";margin-left:22px;border-left:84px solid #fff;border-top:52px solid transparent;border-bottom:52px solid transparent}
+.cover h1{font-size:150px;letter-spacing:-8px}
+.cover p{font-size:44px;max-width:1000px}
+.cover .left{width:1100px}
+</style></head>
+<body>
+<div class="kanji">上下</div>
+<div class="left">
+  <div class="brand"><svg width="120" height="120" viewBox="0 0 64 64"><g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"><path d="M21 32V8.5M21 19.5H32.5" stroke="var(--up)"/><path d="M43 32V55.5" stroke="var(--down)"/><circle cx="51.5" cy="42.5" r="3.9" fill="var(--down)" stroke="none"/><path d="M7.5 32H56.5" stroke="var(--line)"/></g></svg><b>Jōge</b></div>
+  <div class="pill"><i>本</i><span class="dot"></span>Live on Bitcoin Cash mainnet</div>
+  <h1 id="h">Up or down,<br><span>in minutes.</span></h1>
+  </div>
+<div class="phone"><img src="../captures/terminal-phone.png"></div>
+<div class="shot"><img src="../captures/round-785-desktop.png"></div>
+<div class="play"></div>
+<script>
+const q=new URLSearchParams(location.search);
+if(q.get('theme')==='light')document.body.classList.add('light');
+if(q.get('kind')==='cover'){document.body.classList.add('cover');}
+</script>
+</body></html>

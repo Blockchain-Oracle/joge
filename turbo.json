@@ -3,6 +3,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["NEXT_PUBLIC_*"],
+      "passThroughEnv": ["DATABASE_URL"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**", "artifacts/**"]
     },
     "dev": { "cache": false, "persistent": true },

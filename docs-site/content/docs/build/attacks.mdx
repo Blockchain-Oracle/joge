@@ -1,6 +1,6 @@
 ---
 title: Attacks refused
-description: "77 contract tests, 23 of them attacks. Each one tries to steal, inflate or reorder something, and each is refused by the contract's own rule."
+description: "77 contract tests, 23 of them attacks. Each one tries to steal, inflate or reorder something; 22 are refused by the contract's own rule, and the creator-fee cap, which the contract also enforces, is stopped by the shared builder in its test."
 ---
 
 `pnpm --filter @joge/contracts test` runs every function in Bitcoin Cash's own script VM, with real General Protocols messages: **77 tests, all passing.**

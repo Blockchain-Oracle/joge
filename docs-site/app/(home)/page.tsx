@@ -17,7 +17,7 @@ const QUESTIONS = [
   { q: "What if nobody takes the other side?", href: "/docs/round/refunds" },
   { q: "Who decides the price?", href: "/docs/price" },
   { q: "Can an agent spend my money?", href: "/docs/agents/vault" },
-  { q: "Where are the mainnet contracts?", href: "/docs/mainnet/verify" },
+  { q: "Where are the mainnet contracts?", href: "/docs/mainnet" },
   { q: "How do I get test BCH?", href: "/docs/play/first-round" },
 ]
 const FIRST_PAGES = 3

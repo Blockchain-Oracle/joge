@@ -1,6 +1,6 @@
 ---
 title: The line nobody can race
-description: "The line to beat is a price signed after entries closed, so nobody who locks a round can know it in advance."
+description: "The line to beat is the price signed after the lock message, about a minute after anyone can lock the round and close its entries."
 ---
 
 <Figure legend={<><Key swatch="signed">signed message</Key><Key swatch="line">the line</Key><span className="ms-auto text-muted-ink">one message ≈ one minute</span></>}>
@@ -13,4 +13,4 @@ description: "The line to beat is a price signed after entries closed, so nobody
 | <Line /> | the next message, S + 1, about a minute later |
 | Close | the first message at or after the close time |
 
-Whoever sends the lock can see message S, but not S + 1: it doesn't exist yet. Picking by sequence number rather than by time keeps that gap even when the oracle's minutes drift, and every client finds the same messages.
+A lock sent as soon as message S exists, as the keeper does within seconds, closes the gates before S + 1 is signed; the contract doesn't stop a late lock, so a round nobody locks keeps taking entries. Picking by sequence number rather than by time keeps that gap even when the oracle's minutes drift, and every client finds the same messages.

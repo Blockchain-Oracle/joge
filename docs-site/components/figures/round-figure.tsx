@@ -230,8 +230,8 @@ export function RoundFigure() {
 
         <g opacity={show(0, PHASE.open)}>
           <Master x={at(0).x - (v ? 0 : 96)} y={at(0).y} />
-          <Gate x={at(0).x - (v ? 40 : 20)} y={at(0).y + (v ? 48 : 0)} side="up" k={k} />
-          <Gate x={at(0).x + 40} y={at(0).y + (v ? 48 : 0)} side="down" k={k} />
+          <Gate x={at(0).x - (v ? 40 : 20)} y={at(0).y + (v ? 48 : 0)} n={1} k={k} />
+          <Gate x={at(0).x + 40} y={at(0).y + (v ? 48 : 0)} n={2} k={k} />
         </g>
         <g opacity={show(PHASE.open, PHASE.enter)}>
           <Ticket x={at(1).x - (v ? 0 : 66)} y={at(1).y - (v ? 4 : 0)} side="up" label="13,655" k={k} />
@@ -297,13 +297,12 @@ function Master({ x, y }: Point) {
   )
 }
 
-function Gate({ x, y, side, k }: Point & { side: "up" | "down"; k: number }) {
-  const up = side === "up"
+function Gate({ x, y, n, k }: Point & { n: number; k: number }) {
   return (
     <g>
-      <rect x={x - 22} y={y - 16} width="44" height="32" rx="8" fill={up ? "var(--up)" : "var(--down)"} />
-      <text x={x} y={y + 7} textAnchor="middle" fontSize={18 * Math.min(k, 1.15)} className="font-jp" fill={up ? "var(--up-ink)" : "var(--down-ink)"}>
-        {up ? "上" : "下"}
+      <rect x={x - 22} y={y - 16} width="44" height="32" rx="8" fill="var(--surface-2)" stroke="var(--ink-2)" strokeWidth="2" />
+      <text x={x} y={y + 6} textAnchor="middle" fontSize={15 * Math.min(k, 1.15)} className="font-mono font-semibold" fill="var(--ink)">
+        {n}
       </text>
     </g>
   )

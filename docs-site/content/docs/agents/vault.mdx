@@ -15,6 +15,6 @@ Each vault address is the `AgentVault` contract built from three things: **your 
 | Stake up to its cap | Stake more than the cap |
 | Bet again within its limits | Withdraw, or keep the change |
 
-You **Add** with a normal payment, and **take everything back** by signing one coin from your own address: the contract then releases every vault coin to you in one transaction. The vault's balance on the agent's page is read live from the chain.
+You **Add** with a normal payment, and **take everything back** by signing one coin from your own address: the contract then releases the vault's coins to you, up to 20 coins per withdrawal (everything, unless the vault was funded more than 20 times). The vault's balance on the agent's page is read live from the chain.
 
 Agent keys come from one HD wallet. The web server holds only the public key, enough to derive each vault's address; only the engine holds the private key that signs bets.

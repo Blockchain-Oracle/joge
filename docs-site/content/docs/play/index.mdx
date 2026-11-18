@@ -3,13 +3,13 @@ title: What Jōge is
 description: "Call BTC, ETH, BCH or gold up or down for a few cents. A contract on Bitcoin Cash checks the signed price and pays the winners; nobody runs the house."
 ---
 
-Every few minutes a round opens on each market. You call <Up /> or <Down /> against <Line />, your wallet signs one entry, and your stake joins the round's pot. At the close a contract reads the price General Protocols signed, and the side that called it splits the whole pot. The payout lands in your wallet by itself.
+A round opens every 5 minutes on Bitcoin, Ether and Bitcoin Cash and every hour on gold (on mainnet, while someone is watching). You call <Up /> or <Down /> against <Line />, your wallet signs one entry, and your stake joins the round's pot. At the close a contract reads the price General Protocols signed, and the side that called it splits the pot, less the fees on bigger pots ([2.2](/docs/round/payouts)). The payout lands in your wallet by itself.
 
 <Crop src="/shots/crop/round-785.webp" alt="Mainnet round 785 decided: BTC closed at $63,073.76, $97.44 above the line to beat, Up won" caption="Mainnet round 785: Bitcoin closed $97.44 above the line, so Up won." />
 
 <Facts>
   <Fact label="Markets">Bitcoin, Ether and Bitcoin Cash every 5 minutes; gold every hour.</Fact>
-  <Fact label="Stakes">From about a cent. The app's ladder runs $0.05 to $10 a tap, or type any amount.</Fact>
+  <Fact label="Stakes">From about a cent. The app's ladder runs $0.05 to $10 a tap, cut at each market's cap (about $1 on the 5-minute markets), or type any amount within those bounds.</Fact>
   <Fact label="No house">A shared pot. If only one side plays, or the close ties the line, everyone is refunded.</Fact>
   <Fact label="Who pays">The contract, straight to the address on your ticket. Anyone can send the payout.</Fact>
 </Facts>

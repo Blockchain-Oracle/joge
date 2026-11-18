@@ -1,6 +1,6 @@
 ---
 title: The contracts
-description: "Nine covenants in two languages. CashScript holds everything a player's money touches; SolidCash opens lanes, creates rounds and boxes in the agents."
+description: "Nine covenants in two languages. CashScript holds every round's money; SolidCash opens lanes, creates rounds and holds the agents' vaults."
 ---
 
 | Contract | Language | Size | Its job |
@@ -9,7 +9,7 @@ description: "Nine covenants in two languages. CashScript holds everything a pla
 | `Factory` | SolidCash | 1,084 B | validated custom rounds and events |
 | `Gate` | CashScript | 353 B | takes entries, mints tickets |
 | `EventGate` | CashScript | 644 B | an event's gate, with leaving before the start |
-| `Ticket` | CashScript | 78 B | moves only with its own decided round |
+| `Ticket` | CashScript | 78 B | moves only with its own decided round, or its own event gate when its owner leaves early |
 | `MasterOpen` | CashScript | 808 B | locks at the first signed price past the start |
 | `MasterLocked` | CashScript | 878 B | proves the line and the close; decides; fees |
 | `MasterSweep` | CashScript | 409 B | pays tickets in batches |

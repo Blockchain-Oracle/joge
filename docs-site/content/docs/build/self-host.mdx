@@ -31,6 +31,6 @@ ENGINE_COMPONENTS=oracle,indexer,keeper pnpm --filter @joge/engine start
 </Step>
 </Steps>
 
-Your keeper opens rounds on the lanes you choose and is paid 0.5% of every pot of 200,000 sats or more, plus its budget back, by the same contracts. Two keepers sending the same step is harmless.
+Your keeper opens rounds on the lanes you choose and is paid 0.5% of every decided pot of 200,000 sats or more, plus what's left of each round's budget after its fixed lock, settle and payout fees, by the same contracts. Two keepers sending the same step is harmless.
 
 > Never run two engines with the same `KEEPER_WIF`: they would spend the same coins.

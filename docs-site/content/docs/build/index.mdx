@@ -20,8 +20,8 @@ description: "The chain is the referee. Your browser builds your entry from the 
 
 | Rule | How |
 |---|---|
-| Your browser trusts the chain, not us | entries are built from live coins on public Bitcoin Cash servers; our database never feeds a signature |
-| Nobody has to be online | the steps after an entry have one valid form and need no key ([2.3](/docs/round/anyone-can-finish)) |
-| AI never holds your money | Sensei only suggests; agents sign from a vault that only pays you ([4.3](/docs/agents/vault)) |
+| Your browser trusts the chain, not us | entries are built from live coins on public Bitcoin Cash servers, and the contracts check every entry whatever our database says; only an agent vault's address and its withdrawal come from our server |
+| Nobody has to be online | the lock and settle after an entry have one valid form, payouts are fixed at settlement, and none of them needs a key ([2.3](/docs/round/anyone-can-finish)) |
+| AI never holds your money | Sensei only suggests; agents sign from a vault that can only buy tickets that pay you ([4.3](/docs/agents/vault)) |
 
 Built on <Logo name="bch.svg" /> Bitcoin Cash, <Logo name="cashtokens.svg" /> CashTokens, <Logo name="cashscript.png" /> CashScript 0.14, <Logo name="solidcash.svg" /> SolidCash 0.51, <Logo name="general-protocols.png" /> General Protocols and <Logo name="wizardconnect.png" /> WizardConnect.

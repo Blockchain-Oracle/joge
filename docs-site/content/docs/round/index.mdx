@@ -1,6 +1,6 @@
 ---
 title: A round's life
-description: "Five moments, each one a Bitcoin Cash transaction that the contracts accept in exactly one form, so anyone can send it."
+description: "Five moments, each one a Bitcoin Cash transaction. After your entry, the lock and settle have exactly one valid form, and anyone can send them and the payouts."
 ---
 
 This is mainnet round 785: Bitcoin over five minutes, two players, from open to payout. <You>You</You> sign only your entry. Everything after it is decided by a <Signed>signed price</Signed> and the contract.
@@ -27,4 +27,4 @@ Round 785 on chain: [open](https://explorer.bch.ninja/tx/332051cda19f58d5a0dbad1
 
 ## Lanes keep time
 
-Each market and length is a **lane** with its own thread on chain. Its rounds start on a fixed grid (every five minutes for a 5-minute lane), and the thread opens only the next slot it hasn't opened, so two rounds for the same slot can't exist. While one round runs, the next takes entries. The chain has 13 lanes: 3, 5 and 15 minutes on BTC, ETH and BCH, and an hour on all four markets; the app plays four of them.
+Each market and length is a **lane** with its own thread on chain. Its rounds start on a fixed grid (every five minutes for a 5-minute lane), and the thread opens only a grid slot at or after the last one it opened, then moves past it, so two rounds for the same slot can't exist. While one round runs, the next takes entries. The chain has 13 lanes: 3, 5 and 15 minutes on BTC, ETH and BCH, and an hour on all four markets; the app plays four of them.

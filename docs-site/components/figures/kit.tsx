@@ -111,18 +111,17 @@ export function Traveller({ d, tone = "up", dur = 2.4, delays = [0] }: { d: stri
   )
 }
 
-/** The Up and Down gate plates, side by side. */
+/** A round's two gates, side by side: each takes Up and Down entries (a player's entry picks one at random). */
 export function Gates({ at, k = 1 }: { at: Pt; k?: number }) {
   return (
     <g>
-      {(["up", "down"] as const).map((side, i) => {
+      {[1, 2].map((n, i) => {
         const x = at.x + (i ? 26 : -26)
-        const up = side === "up"
         return (
-          <g key={side}>
-            <rect x={x - 22} y={at.y - 16} width="44" height="32" rx="8" fill={up ? "var(--up)" : "var(--down)"} />
-            <text x={x} y={at.y + 7} textAnchor="middle" fontSize={18 * Math.min(k, 1.1)} className="font-jp" fill={up ? "var(--up-ink)" : "var(--down-ink)"}>
-              {up ? "上" : "下"}
+          <g key={n}>
+            <rect x={x - 22} y={at.y - 16} width="44" height="32" rx="8" fill="var(--surface-2)" stroke="var(--ink-2)" strokeWidth="2" />
+            <text x={x} y={at.y + 6} textAnchor="middle" fontSize={15 * Math.min(k, 1.1)} className="font-mono font-semibold" fill="var(--ink)">
+              {n}
             </text>
           </g>
         )

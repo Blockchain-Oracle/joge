@@ -18,7 +18,7 @@
   <b><a href="https://docs.google.com/presentation/d/1Qp5ucxWRxmVQPF2h8TTw9VVcokC_6BMCUVuwDr3cw-Y/edit?usp=sharing">Deck</a></b>
 </p>
 
-Jōge is a price game that runs itself on Bitcoin Cash. Every few minutes a round opens on Bitcoin, Ether, Bitcoin Cash or gold; you call it <b>▲ Up</b> or <b>▼ Down</b> with one tap and one signature from your own wallet over **WizardConnect**. When the round closes, **CashScript** covenants check the price **General Protocols** signed and pay the winning side the whole pot, straight to their wallets. Nobody runs the house, nobody holds the money, and anyone can push a round to its payout. On top: **Sensei**, an AI that reads a round with you, and **AI agents** that play from **SolidCash** vaults that can only ever pay their owner. Every round replays as a film with sound and turns into a receipt or a video with a QR code.
+Jōge is a price game that runs itself on Bitcoin Cash. Every few minutes a round opens on Bitcoin, Ether, Bitcoin Cash or gold; you call it <b>▲ Up</b> or <b>▼ Down</b> with one tap and one signature from your own wallet over **WizardConnect**. When the round closes, **CashScript** covenants check the price **General Protocols** signed and pay the winning side the pot, less a 2% fee once the pot is big enough for it, straight to their wallets. Nobody runs the house, nobody holds the money, and anyone can push a round to its payout. On top: **Sensei**, an AI that reads a round with you, and **AI agents** that play from **SolidCash** vaults whose key can only buy tickets that pay their owner, and only the owner can withdraw. Every round replays as a film with sound and turns into a receipt or a video with a QR code.
 
 **Built for BCH BLAZE 2026 · Mainnet Track.** Live on Bitcoin Cash mainnet since 18 Nov 2026 ([how it meets the hackathon](#how-jōge-meets-bch-blaze-2026)). *Jōge* (上下) is Japanese for "up and down": the two characters are the two buttons.
 
@@ -30,7 +30,7 @@ On Bitcoin Cash there was no game like this at all, and nothing that settles a s
 
 ## The idea
 
-Make the round itself the operator. Jōge's rounds are CashTokens held by covenants that know every rule: when entries close, which signed price sets the line, which one decides the close, who gets what. Your browser builds your entry from live coins on the chain, your wallet signs it, and from then on the contracts decide. Lock, settle and pay have exactly one valid form and need no key, so our keeper sends them, and so can any browser.
+Make the round itself the operator. Jōge's rounds are CashTokens held by covenants that know every rule: when entries close, which signed price sets the line, which one decides the close, who gets what. Your browser builds your entry from live coins on the chain, your wallet signs it, and from then on the contracts decide. Lock and settle have exactly one valid form, and a payout pays each ticket an amount fixed at settlement; none of them needs a key, so our keeper sends them, and so can any browser.
 
 <p align="center">
   <a href="https://docs.joge.84.46.247.92.sslip.io/docs/round">
@@ -43,7 +43,7 @@ Make the round itself the operator. Jōge's rounds are CashTokens held by covena
 
 **A real mainnet round, 785.** Bitcoin, five minutes, 18 Nov 2026 17:30 → 17:35 UTC. Up staked 13,655 sats, Down 11,845. General Protocols signed $62,976.32 as the line to beat; Bitcoin closed at $63,073.76, so **Up won 26,450 sats**: 13,655 × 25,500 ÷ 13,655, plus its ticket deposit back. The 2% fee would have been 510 sats, under the contract's 1,000-sat minimum, so it stayed in the pot. Down got its 950-sat deposit back. Every step is on chain: [open](https://explorer.bch.ninja/tx/332051cda19f58d5a0dbad1b9d2379c5aa531091d27b44fac92f14ce8b5db850) · [enter ▲](https://explorer.bch.ninja/tx/1761f0bb236ff2d89a147d2edfacb95d4de679efa786c945a73a0d98ff9bd3a9) · [enter ▼](https://explorer.bch.ninja/tx/9563d49d83394cfb9ff29eeb7b3bbb3c30b31abd0d6e7d3aba467d46152ba45a) · [lock](https://explorer.bch.ninja/tx/267afed9a754ea8c8e530bb730080cc10d934c478b969990001647a823b9b492) · [settle](https://explorer.bch.ninja/tx/1c2ccd6449ede751a93ecaff9d0a621b10530eadbc3cfe906bb7cee858c3c58f) · [pay](https://explorer.bch.ninja/tx/1474ff082d7a3e70f56b580bbf3cb107374b3c5e30215462aae1a803ae666acf).
 
-The line to beat is the oracle's message **after** the one that locks the round, signed about a minute later, so whoever locks a round can't know it in advance ([why](https://docs.joge.84.46.247.92.sslip.io/docs/price/the-line)). Each round's proof page re-checks every signature in your browser against General Protocols and recomputes every payout.
+The line to beat is the oracle's message **after** the one that lets the round lock, signed about a minute later; the keeper, or anyone, locks as soon as that first message exists, which closes entries before the line is known ([why](https://docs.joge.84.46.247.92.sslip.io/docs/price/the-line)). Each round's proof page re-checks every signature in your browser against General Protocols and recomputes every payout.
 
 ## Demo
 
@@ -59,7 +59,7 @@ Follow the proof yourself:
 2. Tap **Up** or **Down**. Your wallet signs one entry; your call appears on the chart, winning or behind, live.
 3. Wait for the close: the result reaches you on any page, and the payout lands in your wallet by itself.
 4. Open the round's **Proof** and press **Verify**: every signed price is re-checked in your browser.
-5. Switch to **mainnet** (the switch in the header, then slide) and play with real BCH. If nobody is on the other side, a Partner agent takes it.
+5. Switch to **mainnet** (the switch in the header, then slide) and play with real BCH. If nobody is on the other side a minute or more before the start, a Partner agent takes it, up to its cap.
 
 ## How it works
 
@@ -93,7 +93,7 @@ Your money moves only between your wallet and the contracts (the vermilion path)
 | **SolidCash** 0.51 | Lane threads, the round factory and the agent vault | [`packages/contracts/solidcash`](packages/contracts/solidcash) |
 | **CashTokens** | Every round, gate, ticket and lane thread is an NFT of Jōge's own category | [`deployments/mainnet.json`](packages/contracts/deployments/mainnet.json) |
 | **General Protocols** | Signed BTC, ETH, BCH and gold prices, checked on chain with `checkDataSig` | [`packages/contracts/cashscript/oracle.cash`](packages/contracts/cashscript/oracle.cash) |
-| **WizardConnect** | Pairs any Bitcoin Cash wallet; signs entries, vault funding, withdrawals and sign-in | [`apps/web/src/features/wallet`](apps/web/src/features/wallet) |
+| **WizardConnect** | Pairs any Bitcoin Cash wallet that speaks WizardConnect (Selene, Cashonize, Paytaca, Electron Cash); signs entries, vault funding, withdrawals and sign-in | [`apps/web/src/features/wallet`](apps/web/src/features/wallet) |
 | **AI SDK** | Sensei and the agents' reads (`openai/gpt-5.4-mini` by default) | [`packages/brain`](packages/brain) |
 
 ## How Jōge meets BCH BLAZE 2026
@@ -112,8 +112,8 @@ The Mainnet Track asks for a live, usable app in which anyone can make a useful 
 |---|---|
 | **Innovation and creativity** | Rounds with no operator: the line is the oracle's next message so nobody can race it; anyone can finish a round; AI agents boxed in by a covenant |
 | **Design and usability** | One tap to play, your call live on the chart, results that find you, every round a film with sound, receipts and videos with a QR code, phone-first |
-| **Technical strength** | Nine covenants in two languages; one valid form for every step (proven byte-identical across clients); 77 contract tests including 23 attacks; a 200-ticket payout in 22,048 bytes |
-| **Business potential** | 2% of each decided pot, taken by the contract; 0.5% to whoever opens a round, so anyone can run a keeper for profit; agents and Partners bring volume and liquidity |
+| **Technical strength** | Nine covenants in two languages; lock and settle each have one valid form, and two clients build byte-identical lock, settle and payout transactions (tested); 77 contract tests including 23 attacks; a 200-ticket payout in 22,048 bytes |
+| **Business potential** | 2% of each decided pot of 50,000 sats or more, taken by the contract; 0.5% to whoever opens a round on pots of 200,000 sats or more, so a keeper earns once its rounds' pots outgrow the fixed fees each round costs its opener; agents and Partners bring volume and liquidity |
 
 ## Proof
 
@@ -123,9 +123,9 @@ The Mainnet Track asks for a live, usable app in which anyone can make a useful 
 | Genesis | [`4d904970…1a92`](https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92), 18 Nov 2026 17:03 UTC: 13 lane threads and 3 factory threads |
 | First mainnet round | BTC 5 min, [opened `60cb768f…`](https://explorer.bch.ninja/tx/60cb768f1d2484431b21c75b3843f27b3943502c5bd6175312bfb95a9de3ad23) at 17:11 UTC |
 | A paid round | round 785, [payout `1474ff08…`](https://explorer.bch.ninja/tx/1474ff082d7a3e70f56b580bbf3cb107374b3c5e30215462aae1a803ae666acf) |
-| Contracts | every address in [the docs](https://docs.joge.84.46.247.92.sslip.io/docs/mainnet) |
+| Contracts | the main addresses in [the docs](https://docs.joge.84.46.247.92.sslip.io/docs/mainnet); all 13 in [`deployments/mainnet.json`](packages/contracts/deployments/mainnet.json) |
 | Tests | `pnpm --filter @joge/contracts test`: 77 passing, 23 of them attacks ([list](https://docs.joge.84.46.247.92.sslip.io/docs/build/attacks)) |
-| Anyone can finish | with the keeper stopped, chipnet round 259 was locked, settled and paid from a browser |
+| Anyone can finish | the round page's Lock, Settle and Pay buttons build each step in the browser from public servers and General Protocols' prices ([`finish.ts`](apps/web/src/features/round/finish.ts)) |
 
 ## The whole product
 
@@ -136,10 +136,10 @@ The Mainnet Track asks for a live, usable app in which anyone can make a useful 
 | **Receipts and videos** | A receipt image or an MP4 of the round, made in the browser, each with a QR code; Share my run |
 | **Sensei** | An AI coach: a straight call, one reason, one risk, one-tap ticket cards, and a brake |
 | **Agents** | A four-step studio, a real dry read before you create, vaults, decisions, Partners |
-| **Your record** | Portfolio, leaderboard and profiles, read from the chain |
+| **Your record** | Portfolio, leaderboard and profiles, indexed from the chain |
 | **Limits** | A daily limit and a break you can't undo in the heat of a losing run |
 | **Two worlds** | Chipnet with free test coins from an in-app faucet; mainnet with real BCH, behind a slide |
-| **On demand** | Mainnet markets open rounds while someone is watching, so nothing burns fees on empty rounds |
+| **On demand** | Mainnet markets open rounds only while someone is watching, so markets nobody looks at spend no fees on empty rounds |
 
 ## Run it locally
 

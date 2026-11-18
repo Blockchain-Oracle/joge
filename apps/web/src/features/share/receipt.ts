@@ -37,7 +37,7 @@ export interface ShareWords {
 
 export const RECEIPT = {
   frame: { w: 1080, h: 1350 },
-  paper: { x: 72, y: 72, w: 936, h: 1206, radius: 40, pad: 64 },
+  paper: { x: 72, y: 72, w: 936, h: 1206, radius: 40, pad: 64, edge: 2 },
   brand: { mark: 60, wordSize: 46, base: 112, markDrop: 8, gap: 16 },
   folio: { size: 24, base: 104 },
   market: { coin: 72, top: 176, nameSize: 40, nameBase: 210, subSize: 26, subBase: 248 },
@@ -81,7 +81,7 @@ const GROUND_STEP = 36;
 const DOT_ALPHA = 0.08;
 
 /**
- * The receipt (Senryo's slip, Kakure's cream stub, Mitoshi's paper): a fixed object in either world — the brand and the
+ * The receipt (Senryo's slip, Kakure's stub, Mitoshi's ticket, in the app's night): a fixed object in either world — the brand and the
  * round's folio, the market, the result as one big figure with its seal pressed in, the round's line against the price
  * to beat, three facts, a perforation, and a stub that says where it settled with a QR to the round.
  */
@@ -108,6 +108,9 @@ export function drawReceipt(
   ctx.beginPath();
   ctx.roundRect(0, 0, paper.w, paper.h, paper.radius);
   ctx.fill();
+  ctx.strokeStyle = PAPER.edge;
+  ctx.lineWidth = paper.edge;
+  ctx.stroke();
   const left = paper.pad;
   const right = paper.w - paper.pad;
   const width = right - left;
@@ -122,7 +125,7 @@ export function drawReceipt(
   ctx.font = `600 ${folio.size}px ${fonts.mono}`;
   ctx.fillStyle = PAPER.muted;
   ctx.textAlign = "right";
-  ctx.fillText(`N° ${film.roundId} · ${words.date}`, right, folio.base);
+  ctx.fillText(words.date, right, folio.base);
   ctx.textAlign = "left";
 
   // Market.
@@ -207,7 +210,7 @@ export function drawReceipt(
   ctx.restore();
 }
 
-/** The round on paper: the price against the line to beat, darker greens and reds that read on cream. */
+/** The round on the card: the price against the line to beat, in Up's lime above it and Down's coral below. */
 function paperChart(
   ctx: CanvasRenderingContext2D,
   film: Film,

@@ -209,6 +209,11 @@ function Player({
               />
               {mine ? <SealStamp verdict={film.voided ? "void" : won ? "hit" : "miss"} size={SEAL_SIZE} /> : null}
             </div>
+            {/* The stamps in plain words (his rule: no glyph without its meaning). */}
+            <p className="nx-glass rounded-full px-4 py-1.5 font-semibold text-[14px]">
+              {film.voided ? "Refunded · nobody took the other side" : film.winner === 0 ? "Up won" : "Down won"}
+              {mine && !film.voided ? (won ? " · you were right" : " · not this time") : ""}
+            </p>
             {atRest ? (
               <button
                 type="button"

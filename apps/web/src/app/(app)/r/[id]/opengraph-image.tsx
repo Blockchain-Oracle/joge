@@ -119,7 +119,9 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           </div>
         </div>
         <div style={{ display: "flex", fontFamily: "Mono", fontSize: 22, color: MUTE }}>
-          {round ? `${round.asset} ${length} · #${round.roundId}` : "Bitcoin Cash"}
+          {round
+            ? `${round.asset} ${length} · ${UTC_TIME.format(round.lockTime * SECOND_MS)}–${UTC_TIME.format(round.closeTime * SECOND_MS)} UTC`
+            : "Bitcoin Cash"}
         </div>
       </div>
       <div style={{ display: "flex", marginTop: 40, fontSize: 84, letterSpacing: -4, lineHeight: 1.02 }}>

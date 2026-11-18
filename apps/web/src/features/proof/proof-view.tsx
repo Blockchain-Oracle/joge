@@ -20,7 +20,7 @@ import { AssetCube } from "@/marks/asset";
 import { addressOf } from "../players/api.ts";
 import { roundQuery } from "../round/api.ts";
 import { RoundStamp } from "../round/verdict.tsx";
-import { usd } from "../rounds/format.ts";
+import { roundName, usd } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
 import { useWorld } from "../shell/world.tsx";
 import { ChainList, type CheckState, PayoutMath, SignedTile, WinnerRow } from "./pieces.tsx";
@@ -158,7 +158,7 @@ export function ProofView({ roundId }: { roundId: number }) {
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <AssetCube asset={round.asset} size={44} />
-            <h1 className="nx-display text-[clamp(24px,3vw,32px)] leading-tight">Proof · #{round.roundId}</h1>
+            <h1 className="nx-display text-[clamp(24px,3vw,32px)] leading-tight">Proof · {roundName(round)}</h1>
           </div>
           {decided ? <RoundStamp state={round.state} winner={round.winner} size={56} /> : null}
         </div>

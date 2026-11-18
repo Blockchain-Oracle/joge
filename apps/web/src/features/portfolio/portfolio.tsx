@@ -1,8 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { LoaderCircle, Ticket, Trophy } from "lucide-react";
+import { LoaderCircle, Share2, Ticket, Trophy } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { EmptyState, Skeleton } from "@/kit";
 import { FUNDED_SATS } from "../guide/faucet.ts";
 import { openGuide } from "../guide/store.ts";
@@ -10,6 +11,8 @@ import { profileHref } from "../players/api.ts";
 import { StoryFilm } from "../replay/story-film.tsx";
 import { clockTime } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
+import { RunShareSheet } from "../share/run-share.tsx";
+import { ShareSheet } from "../share/share-sheet.tsx";
 import { useWorld } from "../shell/world.tsx";
 import { useJournal } from "../ticket/journal.ts";
 import { useWalletCoins } from "../wallet/coins.ts";
@@ -31,6 +34,8 @@ export function Portfolio() {
   const journal = useJournal();
   const money = useMoney();
   const coins = useWalletCoins();
+  const [sharing, setSharing] = useState<number | null>(null);
+  const [runOpen, setRunOpen] = useState(false);
   const receive = wallet.keys.filter((key) => key.path === "receive").map((key) => key.pkh);
   const tickets = useQuery({
     queryKey: ["tickets", network, receive.join(",")],
@@ -85,12 +90,23 @@ export function Portfolio() {
         <div className="flex items-center justify-between gap-3">
           <p className="nx-eyebrow">Net</p>
           {wallet.payout ? (
-            <Link
-              href={profileHref(network, wallet.payout.pkh) as never}
-              className="nx-glass inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 font-semibold text-[13px]"
-            >
-              <Trophy aria-hidden className="size-3.5 text-[var(--vermilion)]" /> Your record
-            </Link>
+            <span className="flex flex-wrap items-center justify-end gap-2">
+              {settled.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setRunOpen(true)}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--vermilion)] px-3.5 font-semibold text-[13px] text-white"
+                >
+                  <Share2 aria-hidden className="size-3.5" /> Share my run
+                </button>
+              ) : null}
+              <Link
+                href={profileHref(network, wallet.payout.pkh) as never}
+                className="nx-glass inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 font-semibold text-[13px]"
+              >
+                <Trophy aria-hidden className="size-3.5 text-[var(--vermilion)]" /> Your record
+              </Link>
+            </span>
           ) : null}
         </div>
         {settled.length > 0 ? (
@@ -148,10 +164,14 @@ export function Portfolio() {
       ) : (
         <section className="flex flex-col gap-1.5" aria-label="Tickets">
           {rows.map(({ ticket, round }) => (
-            <TicketLine key={ticket.outpoint} ticket={ticket} round={round} />
+            <TicketLine key={ticket.outpoint} ticket={ticket} round={round} onShare={setSharing} />
           ))}
         </section>
       )}
+      {sharing === null ? null : <ShareSheet roundId={sharing} open onClose={() => setSharing(null)} />}
+      {runOpen && wallet.payout ? (
+        <RunShareSheet rows={rows} pkh={wallet.payout.pkh} open onClose={() => setRunOpen(false)} />
+      ) : null}
     </div>
   );
 }

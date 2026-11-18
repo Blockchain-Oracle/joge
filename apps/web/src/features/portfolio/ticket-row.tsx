@@ -2,7 +2,7 @@
 
 import type { RoundRow } from "@joge/db";
 import { TICKET_DUST } from "@joge/sdk";
-import { ChevronRight, Play } from "lucide-react";
+import { ChevronRight, Play, Share2 } from "lucide-react";
 import Link from "next/link";
 import { cx } from "@/kit";
 import { AssetCube } from "@/marks/asset";
@@ -40,16 +40,17 @@ export function Side({ outcome }: { outcome: number }) {
 
 /**
  * One ticket as four facts and a play button: the side, the round, the stake, and what it did to your money (+ won,
- * − lost, 無 refunded, a pulse while live). A decided ticket opens its round playing (the round film).
+ * − lost, refunded, a pulse while live). A decided ticket opens its round playing (the round film); with `onShare`
+ * (your own portfolio) it also offers its receipt and video.
  */
-export function TicketLine({ ticket, round }: TicketRow) {
+export function TicketLine({ ticket, round, onShare }: TicketRow & { onShare?: (roundId: number) => void }) {
   const money = useMoney();
   const decided = ticket.status === "won" || ticket.status === "lost" || ticket.status === "refunded";
   const net = (ticket.payoutSats ?? 0) - ticket.stake - Number(TICKET_DUST);
-  return (
+  const row = (
     <Link
       href={decided ? `/r/${ticket.roundId}?play=1` : `/r/${ticket.roundId}`}
-      className="group flex items-center gap-3 rounded-[18px] bg-[var(--surface-1)] p-3 transition-colors hover:bg-[var(--surface-2)]"
+      className="group flex min-w-0 flex-1 items-center gap-3 rounded-[18px] bg-[var(--surface-1)] p-3 transition-colors hover:bg-[var(--surface-2)]"
     >
       <Side outcome={ticket.outcome} />
       <AssetCube asset={round.asset} size={26} />
@@ -64,9 +65,7 @@ export function TicketLine({ ticket, round }: TicketRow) {
         ) : ticket.status === "lost" ? (
           <span className="text-[var(--down-text)]">−{money.format(ticket.stake)}</span>
         ) : ticket.status === "refunded" ? (
-          <span className="nx-jp text-[var(--gold-text)]" title="Refunded">
-            無
-          </span>
+          <span className="text-[var(--gold-text)]">Refunded</span>
         ) : (
           <span className="inline-flex items-center gap-1.5 text-[var(--muted)]">
             <span className="size-1.5 rounded-full bg-[var(--vermilion)] motion-safe:animate-pulse" /> live
@@ -83,5 +82,21 @@ export function TicketLine({ ticket, round }: TicketRow) {
         </span>
       )}
     </Link>
+  );
+  if (!onShare || !decided) return row;
+  // Your own decided tickets carry their receipt and video one tap away (his feedback: from the portfolio too).
+  return (
+    <div className="flex items-center gap-1.5">
+      {row}
+      <button
+        type="button"
+        aria-label="Receipt and video"
+        title="Receipt and video"
+        onClick={() => onShare(ticket.roundId)}
+        className="grid size-[64px] shrink-0 place-items-center rounded-[18px] bg-[var(--surface-1)] text-[var(--ink-2)] transition-colors hover:bg-[var(--vermilion)] hover:text-white"
+      >
+        <Share2 aria-hidden className="size-[18px]" />
+      </button>
+    </div>
   );
 }

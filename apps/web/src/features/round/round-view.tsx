@@ -295,7 +295,7 @@ export function RoundView({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <ShareActions
           path={`/r/${round.roundId}`}
-          text={`${ASSET_TONE[round.asset].name}: up or down? Round #${round.roundId} on Jōge.`}
+          text={`${ASSET_TONE[round.asset].name}: up or down? ${roundName(round)} on Jōge.`}
         />
         <Link
           href={`/proof/${round.roundId}`}
@@ -309,7 +309,7 @@ export function RoundView({
         <section className="flex flex-col gap-1 rounded-[24px] bg-[var(--surface-1)] p-3 md:p-4">
           <p className="nx-eyebrow px-2 pb-1">Entries</p>
           {view.data.entries.length === 0 ? (
-            <p className="px-2 py-3 text-[14px] text-[var(--muted)]">{decided ? "無" : "None yet"}</p>
+            <p className="px-2 py-3 text-[14px] text-[var(--muted)]">{decided ? "Nobody played" : "None yet"}</p>
           ) : null}
           {view.data.entries.map((entry) => {
             const net = (entry.payoutSats ?? 0) - entry.stake - Number(TICKET_DUST);
@@ -338,7 +338,7 @@ export function RoundView({
                   ) : entry.status === "lost" ? (
                     <span className="text-[var(--down-text)]">−{money.format(entry.stake)}</span>
                   ) : entry.status === "refunded" ? (
-                    <span className="nx-jp text-[var(--gold-text)]">無</span>
+                    <span className="text-[var(--gold-text)]">Refunded</span>
                   ) : (
                     <span className="text-[var(--muted)]">in</span>
                   )}

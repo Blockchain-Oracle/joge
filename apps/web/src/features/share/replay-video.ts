@@ -1,4 +1,3 @@
-import { renderCues } from "@/kit";
 import { drawFrame, type Palette as FilmPalette } from "../replay/draw.ts";
 import { type Film, HOLD_MS, marketAt, priceAt, resultAt, satsToUsd } from "../replay/film.ts";
 import { drawMark, drawQr, drawSeal, type Fonts, fit, HALF, NIGHT, shortUrl, WEIGHT } from "./paint-kit.ts";
@@ -38,10 +37,6 @@ export const SCENE = {
   qr: { x: 888, y: 1188, size: 144, radius: 16 },
 } as const;
 
-const FPS = 30;
-const MS_PER_SECOND = 1_000;
-const VIDEO_BITRATE = 6_000_000;
-const AUDIO_BITRATE = 128_000;
 const SEAL_WORD = { hit: "的中", miss: "外れ", void: "無効" } as const;
 const SIGNED = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", signDisplay: "always" });
 const PRICE = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
@@ -50,10 +45,8 @@ const PLOT_SCALE = 2;
 /** The seal lands slightly large and settles (Kakure's stamp press). */
 const TWO_POP = 1.25;
 
-export class VideoUnavailable extends Error {}
-
 /** The film's chart in the night colours, whatever the page's world. */
-const FILM_PALETTE: FilmPalette = {
+export const FILM_PALETTE: FilmPalette = {
   ink: NIGHT.ink,
   ink2: NIGHT.ink2,
   muted: NIGHT.muted,
@@ -196,52 +189,4 @@ export function drawScene(ctx: CanvasRenderingContext2D, film: Film, t: number, 
   );
   ctx.fillText(`Up or down · ${shortUrl(words.url)}`, plot.x, band.tagBase);
   drawQr(ctx, words.url, qr.x, qr.y, qr.size, qr.radius);
-}
-
-/** Makes the MP4. Throws `VideoUnavailable` where the browser cannot encode it (needs a secure page and H.264). */
-export async function exportReplay(
-  film: Film,
-  words: ShareWords,
-  parts: SceneParts,
-  onProgress: (share: number) => void,
-  signal: AbortSignal,
-): Promise<Blob> {
-  if (!window.isSecureContext || typeof VideoEncoder === "undefined") throw new VideoUnavailable();
-  const media = await import("mediabunny");
-  const { w, h } = SCENE.frame;
-  if (!(await media.canEncodeVideo("avc", { width: w, height: h, bitrate: VIDEO_BITRATE })))
-    throw new VideoUnavailable();
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new VideoUnavailable();
-  const output = new media.Output({
-    format: new media.Mp4OutputFormat({ fastStart: "in-memory" }),
-    target: new media.BufferTarget(),
-  });
-  const video = new media.CanvasSource(canvas, { codec: "avc", bitrate: VIDEO_BITRATE });
-  output.addVideoTrack(video, { frameRate: FPS });
-  const audio = (await media.canEncodeAudio("aac"))
-    ? new media.AudioBufferSource({ codec: "aac", bitrate: AUDIO_BITRATE })
-    : null;
-  if (audio) output.addAudioTrack(audio);
-  await output.start();
-  const frames = Math.ceil((film.totalMs / MS_PER_SECOND) * FPS) + 1;
-  try {
-    for (let index = 0; index < frames; index += 1) {
-      if (signal.aborted) throw new DOMException("Cancelled", "AbortError");
-      drawScene(ctx, film, (index / FPS) * MS_PER_SECOND, words, parts);
-      await video.add(index / FPS, 1 / FPS);
-      onProgress(index / frames);
-    }
-    if (audio) await audio.add(await renderCues(film.cues, film.totalMs));
-    await output.finalize();
-  } catch (error) {
-    await output.cancel();
-    throw error;
-  }
-  const buffer = output.target.buffer;
-  if (!buffer) throw new VideoUnavailable();
-  return new Blob([buffer], { type: "video/mp4" });
 }

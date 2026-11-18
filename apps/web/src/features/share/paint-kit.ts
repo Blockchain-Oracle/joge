@@ -43,16 +43,20 @@ export const NIGHT = {
   gold: "#e3b45a",
 } as const;
 
-/** The receipt's paper (Mitoshi's cream) and its darker inks that read on it. */
+/**
+ * The receipt's card: the app's own night (his feedback: "it should be dark mode"), the bright Up and Down, the
+ * vermilion seal. One look in either world.
+ */
 export const PAPER = {
-  paper: "#f4eee3",
-  ink: "#141210",
-  muted: "#7a7064",
-  hairline: "rgba(20,18,16,0.14)",
-  up: "#2f7a00",
-  down: "#c8283f",
-  gold: "#8e6418",
-  vermilion: "#d93e1f",
+  paper: "#151515",
+  edge: "rgba(255,255,255,0.10)",
+  ink: "#ffffff",
+  muted: "#8a8a8a",
+  hairline: "rgba(255,255,255,0.16)",
+  up: "#b5f543",
+  down: "#ff647c",
+  gold: "#e3b45a",
+  vermilion: "#e04d26",
 } as const;
 
 export interface Fonts {

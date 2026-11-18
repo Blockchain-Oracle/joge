@@ -1,6 +1,7 @@
 import { roundView } from "@joge/db";
 import type { Metadata } from "next";
 import { RoundView } from "@/features/round/round-view";
+import { roundName } from "@/features/rounds/format";
 import { database } from "@/server/db";
 import { serverEnv } from "@/server/env";
 
@@ -16,11 +17,11 @@ const load = async (id: string) => {
 
 /** A shared round link unfurls with the round's own question (its on-chain title, or "Bitcoin: up or down?"). */
 export async function generateMetadata({ params }: PageProps<"/r/[id]">): Promise<Metadata> {
-  const { roundId, round } = await load((await params).id);
-  if (!round) return { title: `Round #${roundId}` };
+  const { round } = await load((await params).id);
+  if (!round) return { title: "Round not found" };
   const question = round.title ?? `${NAMES[round.asset]}: up or down?`;
   return {
-    title: `${question} · Round #${round.roundId}`,
+    title: `${question} · ${roundName(round)}`,
     description:
       round.state === "open"
         ? "Taking entries now. Pick a side; the winners split the pot, paid straight to their wallets."

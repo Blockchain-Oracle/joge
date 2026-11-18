@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { AiGallery } from "@/features/dev/ai-gallery";
 import { ChartGallery } from "@/features/dev/chart-gallery";
 import { KitGallery } from "@/features/dev/kit-gallery";
@@ -9,6 +10,8 @@ export const metadata: Metadata = { title: "Design system" };
 
 /** Every token and component, live: the place to check a change against the whole system. */
 export default function DevPage() {
+  // A tool for building the app, not a page of it: production answers 404.
+  if (process.env.NODE_ENV === "production") notFound();
   return (
     <div className="flex flex-col gap-10">
       <header>

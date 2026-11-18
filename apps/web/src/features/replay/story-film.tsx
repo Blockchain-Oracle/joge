@@ -27,7 +27,14 @@ const EVEN_W = 1.5;
 const OUTCOME_COLOR = (palette: Palette, outcome: Beat["outcome"]) =>
   outcome === "won" ? palette.up : outcome === "lost" ? palette.down : palette.muted;
 
-function drawStory(ctx: CanvasRenderingContext2D, story: Story, t: number, w: number, h: number, palette: Palette) {
+export function drawStory(
+  ctx: CanvasRenderingContext2D,
+  story: Story,
+  t: number,
+  w: number,
+  h: number,
+  palette: Palette,
+) {
   ctx.clearRect(0, 0, w, h);
   const span = Math.max(story.high - story.low, 1);
   const low = story.low - span * RANGE_PAD;

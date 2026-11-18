@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Check, Copy, ExternalLink, Trophy, UserX } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cue, cx, EmptyState, Marble, Skeleton } from "@/kit";
 import { copyText } from "@/lib/browser";
 import { agentsQuery } from "../agents/api.ts";
@@ -13,7 +13,7 @@ import { TicketLine } from "../portfolio/ticket-row.tsx";
 import { StoryFilm } from "../replay/story-film.tsx";
 import { ADDRESS_EXPLORER } from "../round/api.ts";
 import { useNow } from "../rounds/use-now.ts";
-import { useWorld } from "../shell/world.tsx";
+import { setWorld, useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { addressOf, pkhOf, profileQuery } from "./api.ts";
 import { ShortAddress } from "./leaderboard.tsx";
@@ -67,8 +67,11 @@ function Days({ days, now }: { days: Array<{ day: number; tickets: number; net: 
  * A player (F9): no account, just a payout address. Its marble, its place, one big number (what it won), three small
  * ones, twelve weeks of days, and its tickets; all of it read from what the chain decided.
  */
-export function Profile({ address }: { address: string }) {
+export function Profile({ address, world }: { address: string; world?: "chipnet" | "mainnet" | undefined }) {
   const network = useWorld();
+  useEffect(() => {
+    if (world && world !== network) setWorld(world);
+  }, [world, network]);
   const now = useNow();
   const wallet = useWallet();
   const [copied, setCopied] = useState(false);

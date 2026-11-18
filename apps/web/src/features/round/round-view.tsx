@@ -3,29 +3,32 @@
 import type { ChartWindow, RoundLevels } from "@joge/chart";
 import { HOUR_SECONDS, TICKET_DUST, toDollars } from "@joge/sdk";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowUpRight, SearchX, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, SearchX, Share2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cx, EmptyState, Marble, Ring, Skeleton, toast } from "@/kit";
 import { ASSET_TONE, AssetCube } from "@/marks/asset";
 import { LiveChart } from "../chart/live-chart.tsx";
 import { profileHref } from "../players/api.ts";
+import { type Holding, positionOf } from "../position/position.ts";
+import { PositionCard } from "../position/position-card.tsx";
 import { RoundFilmPlayer } from "../replay/round-film.tsx";
 import { laneLabel, roundName, usd } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
 import { useClockTime, useNow } from "../rounds/use-now.ts";
 import { ShareActions } from "../share/share-actions.tsx";
-import { useWorld } from "../shell/world.tsx";
+import { ShareSheet } from "../share/share-sheet.tsx";
+import { setWorld, useWorld } from "../shell/world.tsx";
 import { SidePlates } from "../terminal/side-plates.tsx";
 import { pickLane } from "../terminal/use-lane.ts";
 import { useOneTap } from "../terminal/use-one-tap.ts";
+import { useJournal } from "../ticket/journal.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
-import { roundQuery } from "./api.ts";
+import { EXPLORER, roundQuery } from "./api.ts";
 import { ROLLING_SPAN_MS, SECOND_MS } from "./constants.ts";
 import { dueStep, finishRound } from "./finish.ts";
-import { Receipt } from "./receipt.tsx";
-import type { Verdict } from "./verdict.tsx";
+import { SealStamp, type Verdict } from "./verdict.tsx";
 
 const ROLLING: ChartWindow = { kind: "rolling", spanMs: ROLLING_SPAN_MS };
 const STEP_LABEL = { lock: "Lock this round", settle: "Settle this round", pay: "Pay the tickets" } as const;
@@ -37,8 +40,20 @@ const HERO_RING = 76;
  * decided, one big figure, the chart, one row of four facts, the one-tap plates while it takes entries, your receipt,
  * and the entries. Every transaction lives on the proof page, one link away. Anyone can finish a stuck round here (F6).
  */
-export function RoundView({ roundId, autoplay = false }: { roundId: number; autoplay?: boolean }) {
+export function RoundView({
+  roundId,
+  autoplay = false,
+  world,
+}: {
+  roundId: number;
+  autoplay?: boolean;
+  /** The world a shared link names; the page moves there to show that round. */
+  world?: "chipnet" | "mainnet" | undefined;
+}) {
   const network = useWorld();
+  useEffect(() => {
+    if (world && world !== network) setWorld(world);
+  }, [world, network]);
   const now = useNow();
   const clockTime = useClockTime();
   const wallet = useWallet();
@@ -46,8 +61,36 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
   const client = useQueryClient();
   const view = useQuery(roundQuery(network, roundId));
   const [finishing, setFinishing] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const round = view.data?.round;
   const priceNow = useSpot(round?.asset ?? "BTC") ?? undefined;
+  const journal = useJournal();
+  // Your stakes here: the chain's tickets at your addresses, or this browser's journal until the indexer has them.
+  const holdings: Holding[] = useMemo(() => {
+    if (!round || !view.data) return [];
+    const mine = new Set(wallet.keys.map((key) => key.pkh));
+    const fromChain = view.data.entries.filter((entry) => mine.has(entry.payoutPkh));
+    const sides = new Map<0 | 1, Holding>();
+    for (const ticket of fromChain) {
+      const side = ticket.outcome === 0 ? 0 : 1;
+      const known = sides.get(side);
+      sides.set(side, {
+        side,
+        stake: (known?.stake ?? 0) + ticket.stake,
+        paid: ticket.payoutSats === null ? (known?.paid ?? null) : (known?.paid ?? 0) + ticket.payoutSats,
+      });
+    }
+    if (sides.size === 0) {
+      for (const entry of journal) {
+        if (entry.network !== network || entry.roundId !== round.roundId) continue;
+        if (!["signed", "sent", "confirmed"].includes(entry.state)) continue;
+        const side = entry.outcome === 0 ? 0 : 1;
+        sides.set(side, { side, stake: (sides.get(side)?.stake ?? 0) + Number(entry.stake) });
+      }
+    }
+    return [...sides.values()];
+  }, [round, view.data, wallet.keys, journal, network]);
+  const holdingSide = holdings[0]?.side ?? null;
   const tap = useOneTap(
     round?.state === "open" ? round : null,
     round?.laneSeconds && round.laneSeconds >= HOUR_SECONDS ? "hourly" : "short",
@@ -67,9 +110,10 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
             strike: round.liveStrike === null ? null : toDollars(round.asset, round.liveStrike),
             lockAt: round.lockTime * SECOND_MS,
             closeAt: round.closeTime * SECOND_MS,
+            position: holdingSide === null ? null : { side: holdingSide },
           }
         : {},
-    [round],
+    [round, holdingSide],
   );
 
   if (view.isPending) return <Skeleton className="h-[520px] rounded-[32px]" label="Loading the round" />;
@@ -83,6 +127,17 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
   if (decided && round.state === "void") verdict = "void";
   else if (decided && myTickets.some((ticket) => ticket.outcome === round.winner)) verdict = "hit";
   else if (decided && myTickets.length > 0) verdict = "miss";
+  const firstTicket = myTickets[0] ?? null;
+  const txLink = (txid: string, label: string) => (
+    <a
+      href={`${EXPLORER[network]}${txid}`}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex items-center gap-1 hover:text-[var(--ink)]"
+    >
+      {label} <ArrowUpRight size={12} aria-hidden />
+    </a>
+  );
   const step = dueStep(round, now);
   const strike = round.liveStrike === null ? null : toDollars(round.asset, round.liveStrike);
   const close = round.closePrice === null ? null : toDollars(round.asset, round.closePrice);
@@ -122,7 +177,7 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
   return (
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-5 overflow-hidden rounded-[32px] bg-[var(--stage)] p-5 shadow-[inset_0_0_0_1px_var(--hairline)] md:p-7">
-        <header className="flex items-start justify-between gap-4">
+        <header className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 flex-col gap-3">
             <span className="flex items-center gap-1.5 self-start">
               <Link
@@ -162,15 +217,49 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
               </h1>
             )}
           </div>
-          {decided ? null : (
-            <Ring
-              leftMs={(ringEnd - now) * SECOND_MS}
-              spanMs={ringSpan}
-              size={HERO_RING}
-              label={open ? "Entries close" : "Closes"}
-              className="text-[18px]"
-            />
-          )}
+          <div className="flex w-full items-start gap-3 md:w-auto">
+            {holdings.length > 0 ? (
+              <div className="flex min-w-0 flex-1 flex-col gap-2 md:w-[380px] md:flex-none">
+                {holdings.map((holding) => (
+                  <PositionCard
+                    key={holding.side}
+                    position={positionOf(round, holding, priceNow ?? null, now)}
+                    now={now}
+                  />
+                ))}
+                {firstTicket ? (
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-1">
+                    {decided ? (
+                      <button
+                        type="button"
+                        onClick={() => setSharing(true)}
+                        className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--vermilion)] px-3.5 font-semibold text-[13px] text-white"
+                      >
+                        <Share2 size={15} aria-hidden /> Receipt & video
+                      </button>
+                    ) : null}
+                    <span className="nx-num flex gap-4 text-[12px] text-[var(--muted)]">
+                      {txLink(firstTicket.enterTxid, "Your entry")}
+                      {firstTicket.payoutTxid ? txLink(firstTicket.payoutTxid, "Payout") : null}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+            {decided ? (
+              verdict ? (
+                <SealStamp verdict={verdict} size={HERO_RING} />
+              ) : null
+            ) : (
+              <Ring
+                leftMs={(ringEnd - now) * SECOND_MS}
+                spanMs={ringSpan}
+                size={HERO_RING}
+                label={open ? "Entries close" : "Closes"}
+                className="ml-auto shrink-0 text-[18px]"
+              />
+            )}
+          </div>
         </header>
         {decided ? (
           <RoundFilmPlayer roundId={round.roundId} focus={mine} autoplay={autoplay} />
@@ -216,7 +305,7 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
           <ArrowUpRight size={14} aria-hidden />
         </Link>
       </div>
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid items-start gap-4">
         <section className="flex flex-col gap-1 rounded-[24px] bg-[var(--surface-1)] p-3 md:p-4">
           <p className="nx-eyebrow px-2 pb-1">Entries</p>
           {view.data.entries.length === 0 ? (
@@ -258,10 +347,8 @@ export function RoundView({ roundId, autoplay = false }: { roundId: number; auto
             );
           })}
         </section>
-        {myTickets.length > 0 ? (
-          <Receipt network={network} roundId={round.roundId} tickets={myTickets} verdict={verdict} />
-        ) : null}
       </div>
+      {sharing ? <ShareSheet roundId={round.roundId} open={sharing} onClose={() => setSharing(false)} /> : null}
     </div>
   );
 }

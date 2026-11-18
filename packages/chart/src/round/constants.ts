@@ -15,8 +15,17 @@ export const DEFAULT_ROLLING_MS = 5 * MS_PER_MINUTE;
 /** With no round live, the axis is the last few minutes plus a sliver of future. */
 export const ROLLING_FUTURE_SHARE = 0.08;
 
-/** Per frame the shown price closes this share of the gap to the latest tick (τ ≈ 84 ms at 60 Hz). */
-export const EASE_PRICE = 0.18;
+/**
+ * The shown price glides toward the latest tick with a time constant that follows the feed (Senryo): half the
+ * measured gap between ticks, never under 84 ms. A one-second feed glides; a sparse one (BCH ticks every ~2.4 s) no
+ * longer jumps and then sits flat like a staircase.
+ */
+export const EASE_TAU_MIN_MS = 84;
+export const EASE_TAU_SHARE = 0.5;
+/** How fast the measured tick gap follows a change in the feed's pace, and the longest gap it believes. */
+export const TICK_GAP_EASE = 0.2;
+export const TICK_GAP_MAX_MS = 5_000;
+export const FRAME_MS = 1_000 / 60;
 /** The y-range eases toward its target by this share each frame, so new highs glide in. */
 export const EASE_RANGE = 0.08;
 /** Headroom above and below the data, as a share of its span; a flat series still spans 0.05 % of the price. */
@@ -69,6 +78,11 @@ export const FUTURE_ALPHA = 0.05;
 export const WATERMARK_ALPHA = 0.05;
 export const PULSE_ALPHA = 0.38;
 export const PRINT_ALPHA = 0.85;
+
+/** While you hold a side: its half of the plot washes from this opacity at the line to beat to clear at the edge. */
+export const BAND_ALPHA = 0.22;
+/** The "you're winning / losing" tag sits this far under the price pill. */
+export const STATUS_GAP = 4;
 
 /** Each changed digit of the price pill rolls in this long (up on a rise, down on a fall). */
 export const ROLL_MS = 260;

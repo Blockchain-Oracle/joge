@@ -75,8 +75,8 @@ export function primeFeedback() {
   document.body.appendChild(holder);
 }
 
-function play(context: AudioContext, master: GainNode, note: Note, transpose: number) {
-  const start = context.currentTime + note.at;
+function play(context: BaseAudioContext, master: GainNode, note: Note, transpose: number, at = context.currentTime) {
+  const start = at + note.at;
   const gain = context.createGain();
   gain.gain.setValueAtTime(0, start);
   gain.gain.linearRampToValueAtTime(note.gain ?? 1, start + ATTACK_S);
@@ -144,6 +144,32 @@ export function filmCue(name: Cue, step = 0) {
   audio ??= new AudioContext();
   if (audio.state === "suspended") void audio.resume();
   playCue(name, step);
+}
+
+const MS_PER_SECOND = 1_000;
+const RENDER_RATE = 44_100;
+const RENDER_CHANNELS = 2;
+
+/**
+ * A replay's soundtrack rendered offline for a saved video (Senryo's `soundtrack`): every cue through the same voices
+ * the app plays, at its film time. Ignores the Sound setting; the person asked for the file.
+ */
+export async function renderCues(cues: Array<{ at: number; cue: Cue; step: number }>, totalMs: number) {
+  const context = new OfflineAudioContext(
+    RENDER_CHANNELS,
+    Math.ceil((RENDER_RATE * totalMs) / MS_PER_SECOND),
+    RENDER_RATE,
+  );
+  const master = context.createGain();
+  master.gain.value = MASTER_GAIN;
+  master.connect(context.destination);
+  for (const { at, cue: name, step } of cues) {
+    if (SILENT.has(name)) continue;
+    const semitones = LADDER_SEMITONES[Math.min(step, LADDER_SEMITONES.length - 1)] ?? 0;
+    const transpose = 2 ** (semitones / SEMITONES_PER_OCTAVE);
+    for (const note of NOTES[name]) play(context, master, note, transpose, at / MS_PER_SECOND);
+  }
+  return context.startRendering();
 }
 
 function playCue(name: Cue, step: number) {

@@ -3,14 +3,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowDownToLine, LoaderCircle, Pause, Play, Plus } from "lucide-react";
 import { type ReactNode, useState } from "react";
-import { cue, cx, Segmented, Sheet, toast } from "@/kit";
+import { AmountSheet, cue, Segmented, toast } from "@/kit";
 import { useSession } from "../auth/session.ts";
+import { NotEnough } from "../guide/top-up.tsx";
 import { useWorld } from "../shell/world.tsx";
 import { lostRace, sendEntry } from "../ticket/entry.ts";
 import { useWalletCoins } from "../wallet/coins.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { type Agent, patchAgent } from "./api.ts";
-import { FUND_CHIPS_USD } from "./constants.ts";
+import { FUND_CHIPS_USD, FUND_FEE_ROOM, FUND_MIN_USD } from "./constants.ts";
 import { chipUsd, MODE_COPY, useSatsUsd } from "./format.ts";
 import { buildFunding, buildWithdrawal } from "./vault.ts";
 
@@ -57,10 +58,8 @@ export function OwnerPanel({ agent, vaultSats }: { agent: Agent; vaultSats: bigi
   const client = useQueryClient();
   const money = useSatsUsd();
   const [fundOpen, setFundOpen] = useState(false);
-  const [fundUsd, setFundUsd] = useState<number>(FUND_CHIPS_USD[1]);
   const [busy, setBusy] = useState<"fund" | "take" | "save" | null>(null);
   const ownerKey = wallet.keys.find((key) => key.pkh === agent.ownerPkh);
-  const fundSats = money.toSats(fundUsd);
   const refresh = () => {
     for (const key of [
       ["vault", network],
@@ -77,7 +76,8 @@ export function OwnerPanel({ agent, vaultSats }: { agent: Agent; vaultSats: bigi
     return true;
   };
 
-  const fund = async () => {
+  const fund = async (dollars: number) => {
+    const fundSats = money.toSats(dollars);
     if (needWallet() || !fundSats || !ownerKey || !coins.data) return;
     try {
       setBusy("fund");
@@ -176,35 +176,22 @@ export function OwnerPanel({ agent, vaultSats }: { agent: Agent; vaultSats: bigi
         options={(["ask", "auto"] as const).map((mode) => ({ value: mode, label: MODE_COPY[mode].label }))}
         className="self-start"
       />
-      <Sheet open={fundOpen} onClose={() => setFundOpen(false)} title={`Add to ${agent.name}`}>
-        <div className="flex flex-col items-center gap-6 pb-2">
-          <p className="nx-num text-[56px] font-semibold leading-none tracking-[-0.04em]">{chipUsd(fundUsd)}</p>
-          <div className="grid w-full grid-cols-4 gap-2">
-            {FUND_CHIPS_USD.map((dollars) => (
-              <button
-                key={dollars}
-                type="button"
-                aria-pressed={dollars === fundUsd}
-                onClick={() => setFundUsd(dollars)}
-                className={cx(
-                  "nx-num h-14 rounded-[16px] text-[16px] font-semibold",
-                  dollars === fundUsd ? "bg-[var(--ink)] text-[var(--ink-inverse)]" : "bg-[var(--surface-2)]",
-                )}
-              >
-                {chipUsd(dollars)}
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={() => void fund()}
-            disabled={busy === "fund"}
-            className="nx-display h-14 w-full rounded-full bg-[var(--ink)] text-[17px] text-[var(--ink-inverse)] disabled:opacity-60"
-          >
-            {busy === "fund" ? "Signing…" : `Send ${chipUsd(fundUsd)}`}
-          </button>
-        </div>
-      </Sheet>
+      <AmountSheet
+        open={fundOpen}
+        onClose={() => setFundOpen(false)}
+        title={`Add to ${agent.name}`}
+        initial={FUND_CHIPS_USD[1]}
+        presets={FUND_CHIPS_USD}
+        min={FUND_MIN_USD}
+        max={null}
+        busy={busy === "fund"}
+        confirm={(dollars) => (busy === "fund" ? "Signing…" : `Send ${chipUsd(dollars)}`)}
+        problem={(dollars) => {
+          const sats = money.toSats(dollars);
+          return sats !== null && coins.data && BigInt(sats) + FUND_FEE_ROOM > coins.balance ? <NotEnough /> : null;
+        }}
+        onConfirm={(dollars) => fund(dollars)}
+      />
     </section>
   );
 }

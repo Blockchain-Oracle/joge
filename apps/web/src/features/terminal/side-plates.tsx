@@ -50,7 +50,11 @@ export function SidePlates({ tap, compact = false }: { tap: ReturnType<typeof us
               <span className="flex flex-col items-start leading-none">
                 <span className="text-[19px] tracking-[0.06em]">{word}</span>
                 <span className="nx-num mt-1 text-[13px] font-semibold opacity-75">
-                  {multiple ? `${multiple.toFixed(MULTIPLE_DIGITS)}×` : "—"}
+                  {multiple === "alone"
+                    ? `no ${side === 0 ? "Down" : "Up"} yet`
+                    : multiple
+                      ? `${multiple.toFixed(MULTIPLE_DIGITS)}×`
+                      : "—"}
                 </span>
               </span>
             </button>

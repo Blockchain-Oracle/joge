@@ -7,7 +7,7 @@ export const HERO = {
   live: { chipnet: "Live on Bitcoin Cash chipnet", mainnet: "Live on Bitcoin Cash mainnet" },
   title: "Up or down,",
   accent: "in minutes.",
-  line: "Cents on BTC, ETH, BCH or gold. No house: the pot pays the winners.",
+  line: "Cents on BTC, ETH, BCH or gold. No house: a contract checks the signed price and pays the winners.",
   play: "Play now",
   how: "How it pays",
 } as const;

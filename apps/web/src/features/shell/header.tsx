@@ -12,7 +12,8 @@ import { WorldSwitch } from "./world-switch.tsx";
 
 /**
  * The header (D21): the seal and the name, the places as pills (desktop), notices, the wallet and the menu. On a phone
- * the places live in the dock at the bottom instead.
+ * the places live in the dock at the bottom instead; between phone and desktop, search and notices move into the menu
+ * so the header never runs wider than the window (his screenshot at ~800 px).
  */
 export function Header({
   onNotices,
@@ -39,7 +40,7 @@ export function Header({
         <Link href="/" aria-label="Jōge home" className="flex shrink-0 items-center">
           <Logo size={40} />
         </Link>
-        <nav aria-label="Places" className="ml-4 hidden items-center gap-1 md:flex">
+        <nav aria-label="Places" className="ml-1 hidden items-center gap-0.5 md:flex lg:ml-4 lg:gap-1">
           {PLACES.map((each) => {
             const here = each === place;
             return (
@@ -48,7 +49,7 @@ export function Header({
                 href={each.href}
                 aria-current={here ? "page" : undefined}
                 className={cx(
-                  "rounded-full px-4 py-2 font-semibold text-[14px] transition-colors",
+                  "rounded-full px-3 py-2 font-semibold text-[14px] transition-colors lg:px-4",
                   here ? "bg-[var(--ink)] text-[var(--ink-inverse)]" : "text-[var(--ink-2)] hover:text-[var(--ink)]",
                 )}
               >
@@ -63,7 +64,7 @@ export function Header({
             type="button"
             onClick={onSearch}
             aria-label="Search (⌘K)"
-            className="nx-glass hidden size-11 place-items-center rounded-full md:grid"
+            className="nx-glass hidden size-11 place-items-center rounded-full lg:grid"
           >
             <Search size={18} aria-hidden />
           </button>
@@ -71,7 +72,7 @@ export function Header({
             type="button"
             onClick={onNotices}
             aria-label={unseen > 0 ? `Notices, ${unseen} new` : "Notices"}
-            className="nx-glass relative hidden size-11 place-items-center rounded-full md:grid"
+            className="nx-glass relative hidden size-11 place-items-center rounded-full lg:grid"
           >
             <Bell size={18} aria-hidden />
             {unseen > 0 ? (

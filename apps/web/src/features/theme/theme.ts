@@ -7,8 +7,11 @@ export type ThemeChoice = "dark" | "light" | "system";
 /** Mainnet becomes a choice once its category exists (stage S09, `NEXT_PUBLIC_JOGE_MAINNET_LIVE=true`). */
 export const MAINNET_LIVE = process.env.NEXT_PUBLIC_JOGE_MAINNET_LIVE === "true";
 
-/** The world a first visit opens in: chipnet, so nobody lands on real money without the slide (Kakure). */
-export const DEFAULT_NETWORK: Network = "chipnet";
+/**
+ * Where a first visit lands: mainnet once it is live (judges and players hold real BCH; the review, 2026-11-18), chipnet
+ * until then. Chipnet stays one tap away, with the guide's free test coins.
+ */
+export const DEFAULT_NETWORK: Network = MAINNET_LIVE ? "mainnet" : "chipnet";
 
 /**
  * Runs before first paint (inline in <head>): sets the theme and the network world from what this browser chose last,

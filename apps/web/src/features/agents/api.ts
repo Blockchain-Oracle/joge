@@ -5,7 +5,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { fromWire } from "@/lib/wire";
 
 /** What JSON makes of a database row: dates arrive as ISO strings. */
-type Wire<T> = { [K in keyof T]: T[K] extends Date ? string : T[K] extends Date | null ? string | null : T[K] };
+export type Wire<T> = { [K in keyof T]: T[K] extends Date ? string : T[K] extends Date | null ? string | null : T[K] };
 
 export type Agent = Wire<AgentRow>;
 export type Memory = Wire<MemoryEntry>;

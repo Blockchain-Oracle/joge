@@ -15,6 +15,12 @@ export interface FaucetView {
   error?: string;
 }
 
+/**
+ * A wallet counts as funded past the faucet's top-up threshold (FAUCET_THRESHOLD_SATS in @joge/db, about $1), so a
+ * near-empty wallet is still offered the free coins (his test: $0.13 counted as funded and he never got them).
+ */
+export const FUNDED_SATS = 500_000n;
+
 const POLL_MS = 2_000;
 const url = (address?: string) =>
   `/api/faucet?network=chipnet${address ? `&address=${encodeURIComponent(address)}` : ""}`;

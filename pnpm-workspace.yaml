@@ -48,6 +48,7 @@ catalog:
   "@wizardconnect/dapp": 0.2.7
   "@wizardconnect/react": 0.2.6
   uqr: 0.1.3
+  mediabunny: 1.65.1
   drizzle-orm: 0.45.4
   drizzle-kit: 0.31.11
   postgres: 3.4.9

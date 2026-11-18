@@ -8,6 +8,7 @@ import { useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { AgentTile } from "./agent-card.tsx";
 import { agentsQuery } from "./api.ts";
+import { DecisionFeed } from "./decision-feed.tsx";
 
 /**
  * Agents (F13, D21): characters, not a form. Yours first, then everyone's, ranked by the money their owners entrusted
@@ -42,6 +43,7 @@ export function AgentsPage() {
           </div>
         </section>
       ) : null}
+      <DecisionFeed />
       <section className="flex flex-col gap-3" aria-label="Every agent">
         <p className="nx-eyebrow">By money entrusted</p>
         {all.isPending ? <Skeleton className="h-[110px] rounded-[24px]" label="Loading agents" /> : null}

@@ -9,8 +9,10 @@ import {
   DOT_ALPHA,
   DOT_RADIUS,
   DOT_SPACING,
-  EASE_PRICE,
   EASE_RANGE,
+  EASE_TAU_MIN_MS,
+  EASE_TAU_SHARE,
+  FRAME_MS,
   FUTURE_ALPHA,
   GRID_ALPHA,
   GRID_LINES,
@@ -30,6 +32,8 @@ import {
   RANGE_PAD,
   ROLLING_FUTURE_SHARE,
   SAMPLE_MS,
+  TICK_GAP_EASE,
+  TICK_GAP_MAX_MS,
   WATERMARK,
   WATERMARK_ALPHA,
   WATERMARK_HEIGHT_SHARE,
@@ -39,9 +43,11 @@ import {
   type Frame,
   HALF,
   type Palette,
+  paintHolding,
   paintLine,
   paintPill,
   paintPrints,
+  paintStatus,
   paintStrike,
   type Roll,
   readPalette,
@@ -70,6 +76,10 @@ export class RoundChart {
   private target = Number.NaN;
   private shown = Number.NaN;
   private lastSample = 0;
+  /** The feed's measured pace (ms between ticks) and the clocks the glide needs. */
+  private tickGap = 0;
+  private lastTick = 0;
+  private lastFrame = 0;
   private yMin = Number.NaN;
   private yMax = Number.NaN;
   private w = 0;
@@ -137,6 +147,12 @@ export class RoundChart {
 
   pushPrice(price: number) {
     if (!Number.isFinite(price)) return;
+    const at = performance.now();
+    if (this.lastTick > 0) {
+      const gap = Math.min(TICK_GAP_MAX_MS, at - this.lastTick);
+      this.tickGap = this.tickGap > 0 ? this.tickGap + (gap - this.tickGap) * TICK_GAP_EASE : gap;
+    }
+    this.lastTick = at;
     this.target = price;
     if (Number.isNaN(this.shown)) this.shown = price;
   }
@@ -169,8 +185,11 @@ export class RoundChart {
     this.raf = requestAnimationFrame(this.frame);
     if (!this.visible || document.hidden) return;
     const now = Date.now();
+    const elapsed = this.lastFrame > 0 ? clock - this.lastFrame : FRAME_MS;
+    this.lastFrame = clock;
     if (!Number.isNaN(this.target)) {
-      this.shown += (this.target - this.shown) * EASE_PRICE;
+      const tau = Math.max(EASE_TAU_MIN_MS, this.tickGap * EASE_TAU_SHARE);
+      this.shown += (this.target - this.shown) * (1 - Math.exp(-elapsed / tau));
       if (now - this.lastSample >= SAMPLE_MS) {
         this.points.push({ t: now, p: this.shown });
         if (this.points.length > MAX_POINTS) this.points.shift();
@@ -203,6 +222,11 @@ export class RoundChart {
     this.paintFuture(head.x, right, bottom);
     this.paintMarkers(x, bottom);
     const strikeY = strike === null ? null : y(strike);
+    const position = this.levels.position ?? null;
+    if (position && strikeY !== null) {
+      const fromX = Math.max(0, x(this.levels.lockAt ?? t0));
+      paintHolding(frame, { side: position.side, strikeY, fromX, headX: head.x, bottom });
+    }
     paintLine(frame, series, x, y, strikeY, bottom, head);
     paintPrints(frame, this.prints, x, y, t0);
     if (strikeY !== null && strike !== null) paintStrike(frame, strikeY, right, strike);
@@ -213,6 +237,22 @@ export class RoundChart {
     const text = USD.format(this.shown);
     if (!this.roll || this.roll.to !== text) this.roll = { from: this.roll?.to ?? text, to: text, at: clock };
     paintPill(frame, this.roll, head.y, right, { fill, ink }, clock);
+    if (position && strike !== null) {
+      const level = this.shown === strike;
+      const winning = position.side === 0 ? this.shown > strike : this.shown < strike;
+      const mine = position.side === 0 ? palette.up : palette.down;
+      const mineInk = position.side === 0 ? palette.upInk : palette.downInk;
+      paintStatus(
+        frame,
+        level
+          ? { text: "LEVEL", fill: palette.muted, ink: palette.ground }
+          : winning
+            ? { text: "YOU'RE WINNING", fill: mine, ink: mineInk }
+            : { text: "YOU'RE BEHIND", fill: palette.hairline, ink: palette.ink },
+        head.y,
+        right,
+      );
+    }
   }
 
   private easeRange(series: Point[], strike: number | null) {

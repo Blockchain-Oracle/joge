@@ -19,10 +19,10 @@ export const STREAK_TICKETS = 500;
 
 // Chipnet faucet (S09R, Agari's rules): a wallet below the threshold is topped up to the target, never more.
 const FAUCET_HOUR_MS = 60 * 60 * 1_000;
-/** A wallet holding less than this gets topped up. */
-export const FAUCET_THRESHOLD_SATS = 200_000n;
-/** ...to this (enough for about twenty $0.10 calls on chipnet). */
-export const FAUCET_TARGET_SATS = 1_000_000n;
+/** A wallet holding less than this (about $1) gets topped up; the guide calls a wallet funded from here. */
+export const FAUCET_THRESHOLD_SATS = 500_000n;
+/** ...to this (about $4: a few dozen calls plus an agent's first top-up). */
+export const FAUCET_TARGET_SATS = 2_000_000n;
 /** One top-up per address per this long. */
 export const FAUCET_ADDRESS_COOLDOWN_MS = 12 * FAUCET_HOUR_MS;
 /** Claims per visitor (hashed IP) per day. */

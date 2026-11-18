@@ -11,11 +11,10 @@ import { useMoney } from "../rounds/money.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useWalletCoins } from "../wallet/coins.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
-import { useFaucet } from "./faucet.ts";
+import { FUNDED_SATS, useFaucet } from "./faucet.ts";
 import { closeGuide, GUIDE_STEPS, type GuideStep, setGuideStep, useGuide } from "./store.ts";
 
 /** Enough to make a first call (a $0.10 stake and its fees) on either world. */
-const FUNDED_SATS = 60_000n;
 const QR_SIZE = 196;
 const ADVANCE_MS = 900;
 const COPIED_MS = 1_500;

@@ -7,7 +7,7 @@ import { database, networkOf } from "@/server/db";
 const NOT_FOUND = 404;
 const BAD_REQUEST = 400;
 const FORBIDDEN = 403;
-const MEMORY_SHOWN = 60;
+const MEMORY_SHOWN = 200;
 
 /** One agent: its terms, its vault's address and its memory. */
 export async function GET(request: Request, { params }: RouteContext<"/api/agents/[id]">) {

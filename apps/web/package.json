@@ -32,6 +32,7 @@
     "react-dom": "catalog:",
     "server-only": "catalog:",
     "uqr": "catalog:",
+    "mediabunny": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

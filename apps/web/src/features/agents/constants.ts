@@ -4,6 +4,10 @@ export const PER_BET_CHIPS_USD = [0.05, 0.1, 0.25, 0.5, 1] as const;
 export const DAILY_BETS = [5, 10, 20] as const;
 /** What the owner can send to a vault in one tap, in US dollars. */
 export const FUND_CHIPS_USD = [0.5, 1, 2, 5] as const;
+/** The least worth putting in a vault: one minimum bet and its fee. */
+export const FUND_MIN_USD = 0.05;
+/** Room left for the funding transaction's own fee when checking the wallet can cover an amount (sats). */
+export const FUND_FEE_ROOM = 2_000n;
 export const NAME_MAX = 40;
 /** A plain transfer's fee: about one sat per byte (P2PKH inputs ≈ 150 bytes, outputs and overhead ≈ 100). */
 export const FUND_FEE_BASE = 100n;

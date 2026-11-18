@@ -10,9 +10,10 @@ import { EXPLORER } from "../round/api.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { LaneCubes, useNextCall } from "./agent-card.tsx";
-import { agentQuery, type Memory } from "./api.ts";
+import { agentQuery } from "./api.ts";
+import { Decisions } from "./decisions.tsx";
 import { MODE_COPY, ownerAddress, POSTURE_COPY, shortAddress, useSatsUsd } from "./format.ts";
-import { MemoryList, Proposal } from "./memory.tsx";
+import { Proposal } from "./memory.tsx";
 import { faceOf } from "./names.ts";
 import { OwnerPanel } from "./owner-panel.tsx";
 import { Portrait } from "./portrait.tsx";
@@ -20,12 +21,6 @@ import { useVault } from "./vault.ts";
 
 const FACE = 112;
 const NEXT_RING = 64;
-
-/** Net of an agent's settled entries: what came back minus what went in. */
-const netOf = (memory: Memory[]) =>
-  memory
-    .filter((entry) => entry.outcome === "won" || entry.outcome === "lost" || entry.outcome === "refunded")
-    .reduce((sum, entry) => sum + (entry.payout ?? 0) - (entry.stake ?? 0), 0);
 
 /**
  * One agent (F13, D21): its face and name, the money in its vault (read live from the chain) as the one big figure, a
@@ -48,7 +43,6 @@ export function AgentView({ id }: { id: number }) {
   const owner = wallet.keys.some((key) => key.pkh === agent.ownerPkh);
   const held = vault.data?.sats ?? BigInt(agent.vaultSats);
   const proposals = memory.filter((entry) => entry.proposal === "open");
-  const net = netOf(memory);
   const addressPage = EXPLORER[network].replace("/tx/", "/address/");
 
   return (
@@ -115,18 +109,7 @@ export function AgentView({ id }: { id: number }) {
           ))}
         </section>
       ) : null}
-      <section className="flex flex-col gap-2" aria-label="Calls">
-        <div className="flex items-baseline justify-between px-1">
-          <p className="nx-eyebrow">Calls</p>
-          {net !== 0 ? (
-            <p className="nx-num text-[13px] font-semibold">
-              {net > 0 ? "+" : "−"}
-              {money.format(Math.abs(net))}
-            </p>
-          ) : null}
-        </div>
-        <MemoryList memory={memory} />
-      </section>
+      <Decisions memory={memory} />
     </div>
   );
 }

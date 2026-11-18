@@ -45,14 +45,14 @@ export function WorldSwitch({ words = false, className }: { words?: boolean; cla
       >
         <span aria-hidden className="jg-glow-label" data-side="off">
           <span className="nx-jp">試</span>
-          {words ? <span className="hidden lg:inline">Chipnet</span> : null}
+          {words ? <span className="hidden xl:inline">Chipnet</span> : null}
         </span>
         <span aria-hidden className="jg-glow-track">
           <span className="jg-glow-thumb" />
         </span>
         <span aria-hidden className="jg-glow-label" data-side="on">
           <span className="nx-jp">本</span>
-          {words ? <span className="hidden lg:inline">Mainnet</span> : null}
+          {words ? <span className="hidden xl:inline">Mainnet</span> : null}
         </span>
       </button>
       <Sheet open={confirming} onClose={() => setConfirming(false)} title="Switch to mainnet">

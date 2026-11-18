@@ -15,7 +15,8 @@ export const ASSET_TONE: Record<AssetId, { c1: string; c2: string; solid: string
 const INGOT =
   '<path fill="currentColor" fill-rule="evenodd" d="M7.1 7.5h9.8l3.6 9.5h-17zm1.4 2-2.1 5.5h11.2l-2.1-5.5z" clip-rule="evenodd"/><path fill="currentColor" d="M9.6 11.3h4.8l.8 2.2H8.8z"/>';
 
-const MARKUP: Record<AssetId, string> = { ...ASSET_MARKS, GOLD: INGOT };
+/** Each asset's logo markup (24-unit box, `currentColor`): the app's SVGs and the share images draw from it. */
+export const ASSET_MARKUP: Record<AssetId, string> = { ...ASSET_MARKS, GOLD: INGOT };
 
 /** An asset's real logo, in the current colour. */
 export function AssetMark({ asset, size = 20, className }: { asset: AssetId; size?: number; className?: string }) {
@@ -28,7 +29,7 @@ export function AssetMark({ asset, size = 20, className }: { asset: AssetId; siz
       aria-label={ASSET_TONE[asset].name}
       className={className}
       // Build-time logo markup from scripts/marks.ts, never user input.
-      dangerouslySetInnerHTML={{ __html: MARKUP[asset] }}
+      dangerouslySetInnerHTML={{ __html: ASSET_MARKUP[asset] }}
     />
   );
 }

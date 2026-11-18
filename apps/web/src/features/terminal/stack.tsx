@@ -2,13 +2,9 @@
 
 import { Coins, Volume2, VolumeX } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
-import { cue, cx, feedbackPrefs, Sheet, setFeedbackPrefs } from "@/kit";
+import { AmountSheet, cue, cx, feedbackPrefs, setFeedbackPrefs } from "@/kit";
 import { usd } from "../rounds/format.ts";
 import { setChosenStake, type useOneTap } from "./use-one-tap.ts";
-
-/** Up to five stakes sit in one row; a longer ladder (the hourly lanes') wraps four to a row. */
-const ONE_ROW = 5;
-const TWO_ROWS = 4;
 
 const soundListeners = new Set<() => void>();
 const soundOn = () => feedbackPrefs().sound;
@@ -30,7 +26,7 @@ function toggleSound() {
 
 /**
  * Kakure's glass stack on the chart's left edge: each setting is an icon and its value, nothing else. The stake opens
- * a sheet with one big figure and the ladder (one tap picks, and every Up/Down tap after uses it).
+ * the amount sheet: type any stake (or tap one of the usual ones), and every Up/Down tap after uses it.
  */
 export function Stack({ tap }: { tap: ReturnType<typeof useOneTap> }) {
   const sound = useSoundOn();
@@ -73,38 +69,21 @@ export function Stack({ tap }: { tap: ReturnType<typeof useOneTap> }) {
           </button>
         ))}
       </div>
-      <Sheet open={open} onClose={() => setOpen(false)} title="Stake per tap">
-        <div className="flex flex-col items-center gap-6 pb-2">
-          <p className="nx-num text-[56px] font-semibold leading-none tracking-[-0.04em]">{usd(tap.stakeUsd)}</p>
-          <div
-            className="grid w-full gap-2"
-            style={{
-              gridTemplateColumns: `repeat(${tap.ladder.length <= ONE_ROW ? tap.ladder.length : TWO_ROWS}, 1fr)`,
-            }}
-          >
-            {tap.ladder.map((dollars) => (
-              <button
-                key={dollars}
-                type="button"
-                aria-pressed={dollars === tap.stakeUsd}
-                onClick={() => {
-                  setChosenStake(dollars);
-                  cue("tap");
-                  setOpen(false);
-                }}
-                className={cx(
-                  "nx-num h-14 rounded-[16px] text-[16px] font-semibold",
-                  dollars === tap.stakeUsd
-                    ? "bg-[var(--ink)] text-[var(--ink-inverse)]"
-                    : "bg-[var(--surface-2)] hover:bg-[var(--surface-3)]",
-                )}
-              >
-                {Number.isInteger(dollars) ? `$${dollars}` : usd(dollars)}
-              </button>
-            ))}
-          </div>
-        </div>
-      </Sheet>
+      <AmountSheet
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Stake per tap"
+        initial={tap.stakeUsd}
+        presets={tap.ladder}
+        min={tap.minUsd}
+        max={tap.capUsd}
+        maxLabel="Lane max"
+        confirm={(dollars) => `Use ${usd(dollars)} a call`}
+        onConfirm={(dollars) => {
+          setChosenStake(dollars);
+          setOpen(false);
+        }}
+      />
     </>
   );
 }

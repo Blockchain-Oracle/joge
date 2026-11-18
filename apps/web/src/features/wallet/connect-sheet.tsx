@@ -10,6 +10,8 @@ import { WalletPlate } from "./wallet-plate.tsx";
 import { WALLETS, WIZARDCONNECT_LOGO } from "./wallets.ts";
 
 const QR_SIZE = 232;
+const CASHONIZE_WEB = "https://cashonize.com/";
+const CASHONIZE_LOGO = "/wallets/cashonize.png";
 const COPIED_MS = 1_600;
 
 /** Pairing over WizardConnect: scan the code (or open the link on this phone), approve in the wallet. */
@@ -76,10 +78,28 @@ export function ConnectSheet() {
                 <a href={wallet.uri} data-tone="accent" className="jg-key type-cta h-14 rounded-full">
                   Open wallet <ExternalLink size={18} aria-hidden />
                 </a>
-              ) : null}
+              ) : (
+                // Cashonize's web wallet pairs straight from its address (`?uri=`, read in its router and live bundle):
+                // the nearest BCH has to a browser-extension click.
+                <a
+                  href={`${CASHONIZE_WEB}?uri=${encodeURIComponent(wallet.uri)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-tone="accent"
+                  className="jg-key type-cta flex h-14 items-center justify-center gap-2 rounded-full"
+                >
+                  <img src={CASHONIZE_LOGO} alt="" className="size-6 rounded-md" />
+                  Open in Cashonize <ExternalLink size={16} aria-hidden />
+                </a>
+              )}
               <Button onClick={copy} icon={copied ? <Check size={16} /> : <Copy size={16} />}>
                 {copied ? "Copied" : "Copy link"}
               </Button>
+              {phone ? null : (
+                <p className="text-[12px] text-[var(--muted)]">
+                  Paytaca extension: Apps → WizardConnect → paste the link
+                </p>
+              )}
             </div>
             <Wait verb="Waiting for your wallet" />
           </>

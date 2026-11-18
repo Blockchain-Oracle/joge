@@ -44,7 +44,13 @@ export function TradeCard({ call }: { call: CallOutput }) {
   const multiple = tap.pays(side);
   const detail = tap.blocker
     ? tap.blocker.label
-    : `${usd(tap.stakeUsd)} · ${multiple ? multiple.toFixed(MULTIPLE_DIGITS) : "—"}×`;
+    : `${usd(tap.stakeUsd)} · ${
+        multiple === "alone"
+          ? `no ${side === 0 ? "Down" : "Up"} yet`
+          : multiple
+            ? `${multiple.toFixed(MULTIPLE_DIGITS)}×`
+            : "—"
+      }`;
   return (
     <button
       type="button"

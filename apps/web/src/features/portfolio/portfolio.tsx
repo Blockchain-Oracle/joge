@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle, Ticket, Trophy } from "lucide-react";
 import Link from "next/link";
 import { EmptyState, Skeleton } from "@/kit";
+import { FUNDED_SATS } from "../guide/faucet.ts";
 import { openGuide } from "../guide/store.ts";
 import { profileHref } from "../players/api.ts";
 import { StoryFilm } from "../replay/story-film.tsx";
@@ -18,8 +19,6 @@ import { Side, TicketLine, type TicketRow } from "./ticket-row.tsx";
 
 const PERCENT = 100;
 const SECOND_MS = 1_000;
-/** Enough for a first call (a $0.10 stake and its fees), as the guide counts it. */
-const FUNDED_SATS = 60_000n;
 const SETTLED = new Set(["won", "lost", "refunded"]);
 
 /**

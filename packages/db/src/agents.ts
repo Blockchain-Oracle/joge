@@ -135,3 +135,46 @@ export async function agentReadById(db: Db, network: Network, id: number): Promi
 
 export const setProposal = (db: Db, id: number, proposal: "taken" | "passed") =>
   db.update(agentReads).set({ proposal }).where(eq(agentReads.id, id));
+
+/** One decision in the feed across every agent: the read, its agent's name and face, and how it ended. */
+export interface FeedDecision extends MemoryEntry {
+  agentName: string;
+  agentFace: string;
+}
+
+/**
+ * The latest decisions of every agent in a world (the agents page's live feed): read, round and ending in one query.
+ * The ending comes from the round itself: a bet whose side won, lost, or was refunded; a hold is "skipped".
+ */
+export async function latestDecisions(db: Db, network: Network, limit: number): Promise<FeedDecision[]> {
+  const rows = await db
+    .select({
+      read: agentReads,
+      agentName: agents.name,
+      agentFace: sql<string>`coalesce(nullif(${agents.avatarSeed}, ''), ${agents.agentPubkey})`,
+      asset: rounds.asset,
+      laneSeconds: rounds.laneSeconds,
+      state: rounds.state,
+      winner: rounds.winner,
+    })
+    .from(agentReads)
+    .innerJoin(agents, and(eq(agents.network, agentReads.network), eq(agents.id, agentReads.agentId)))
+    .leftJoin(rounds, and(eq(rounds.network, agentReads.network), eq(rounds.roundId, agentReads.roundId)))
+    .where(eq(agentReads.network, network))
+    .orderBy(desc(agentReads.createdAt))
+    .limit(limit);
+  return rows.map(({ read, agentName, agentFace, asset, laneSeconds, state, winner }) => {
+    const bet = read.verdict === "enter" && (read.txid !== null || read.proposal === "taken");
+    const side = read.side === "up" ? 0 : read.side === "down" ? 1 : null;
+    const outcome: ReadOutcome = !bet
+      ? "skipped"
+      : state === "void"
+        ? "refunded"
+        : state === "settled"
+          ? winner === side
+            ? "won"
+            : "lost"
+          : "pending";
+    return { ...read, agentName, agentFace, asset, laneSeconds, outcome, payout: null };
+  });
+}

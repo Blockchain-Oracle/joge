@@ -31,6 +31,9 @@ export async function generateMetadata({ params }: PageProps<"/r/[id]">): Promis
 export default async function RoundPage({ params, searchParams }: PageProps<"/r/[id]">) {
   const { roundId } = await load((await params).id);
   // ?play=1 starts the replay at once (from a result notice or a ticket's play button).
-  const play = (await searchParams).play === "1";
-  return <RoundView roundId={Number.isSafeInteger(roundId) ? roundId : -1} autoplay={play} />;
+  const query = await searchParams;
+  const play = query.play === "1";
+  // A shared link names its world (`?w=chipnet`): round numbers repeat across chipnet and mainnet.
+  const world = query.w === "chipnet" || query.w === "mainnet" ? query.w : undefined;
+  return <RoundView roundId={Number.isSafeInteger(roundId) ? roundId : -1} autoplay={play} world={world} />;
 }

@@ -14,6 +14,8 @@ export type InputPath = [number, PathName, number];
 
 interface WalletApi {
   state: WizardConnectState;
+  /** The wallet itself has answered since the page loaded (false while a restored session waits for it). */
+  online: boolean;
   walletName: string | null;
   walletIcon: string | null;
   /** Pairing URIs while connecting (null during an automatic reconnect: there is no QR then). */
@@ -50,21 +52,29 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [connectOpen, setConnectOpen] = useState(false);
   const announced = useRef(false);
   const { manager, state } = wizard;
+  // A refresh restores the stored session: the wallet's keys come back at once from storage, while the relay
+  // reconnects behind the scenes and the wallet answers whenever it next opens. That is still a paired wallet.
+  // (Only a pairing in progress shows a code; a restore never does.)
+  const resuming = manager !== null && (state === "reconnecting" || (state === "connecting" && !wizard.uri));
 
   const keys = useMemo(
     () =>
-      manager && state === "connected" ? walletKeys((child, index) => manager.getPubkey(child, index), network) : [],
-    [manager, state, network],
+      manager && (state === "connected" || resuming)
+        ? walletKeys((child, index) => manager.getPubkey(child, index), network)
+        : [],
+    [manager, state, resuming, network],
   );
+  const paired = state === "connected" || (resuming && keys.length > 0);
 
   useEffect(() => {
-    if (state === "connected" && !announced.current) {
+    // Announce a new pairing only; a refresh that reconnects quietly is not news.
+    if (state === "connected" && wizard.uri && !announced.current) {
       announced.current = true;
       setConnectOpen(false);
       toast({ tone: "up", title: `Paired with ${wizard.walletName ?? "your wallet"}` });
     }
     if (state === "disconnected" || state === "idle") announced.current = false;
-  }, [state, wizard.walletName]);
+  }, [state, wizard.uri, wizard.walletName]);
 
   const openConnect = useCallback(() => {
     setConnectOpen(true);
@@ -77,26 +87,33 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const closeConnect = useCallback(() => {
     setConnectOpen(false);
-    if (state === "connecting") void wizard.disconnect();
+    // Closing the sheet abandons a pairing in progress, never a stored session that is reconnecting.
+    if (state === "connecting" && wizard.uri) void wizard.disconnect();
   }, [state, wizard]);
 
   const sign = useCallback(
     async (transaction: unknown, inputPaths: InputPath[], signal?: AbortSignal) => {
-      if (!manager || state !== "connected") throw new Error("Pair a wallet first");
+      if (!manager || !paired) throw new Error("Pair a wallet first");
       // Wallets parse libauth's extended JSON (tagged bigints and bytes); CashScript's object holds raw ones.
       const relaySafe = JSON.parse(stringify(transaction)) as never;
-      const response = await manager.signTransaction(
-        { transaction: relaySafe, inputPaths },
-        signal ? { signal } : undefined,
-      );
+      const response = await manager
+        .signTransaction({ transaction: relaySafe, inputPaths }, signal ? { signal } : undefined)
+        .catch((cause: unknown) => {
+          // The relay is still coming back after a refresh: say what to do, not the library's words.
+          if (cause instanceof Error && /not connected/i.test(cause.message))
+            throw new Error("Reconnecting to your wallet. Open it, then try again.");
+          throw cause;
+        });
       if (response.error) throw new Error(response.error);
       return response.signedTransaction;
     },
-    [manager, state],
+    [manager, paired],
   );
 
   const value: WalletApi = {
-    state,
+    // A restored session counts as paired: its addresses and balance show at once.
+    state: paired ? "connected" : state,
+    online: state === "connected",
     walletName: wizard.walletName,
     walletIcon: wizard.walletIcon,
     uri: wizard.uri,

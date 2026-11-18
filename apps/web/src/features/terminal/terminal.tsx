@@ -1,14 +1,19 @@
 "use client";
 
 import type { ChartWindow, RoundLevels } from "@joge/chart";
-import { ChevronDown, History } from "lucide-react";
+import { ChevronDown, History, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { cue, Ring, Sheet, Skeleton } from "@/kit";
 import { AssetCube } from "@/marks/asset";
+import { HistoryChart } from "../chart/history-chart.tsx";
 import { LiveChart } from "../chart/live-chart.tsx";
+import { PositionCard } from "../position/position-card.tsx";
+import { useLanePositions } from "../position/use-lane-positions.ts";
 import { clockTime, laneLabel } from "../rounds/format.ts";
 import { useNow } from "../rounds/use-now.ts";
+import { ShareSheet } from "../share/share-sheet.tsx";
+import { ChartControls, useChartView } from "./chart-controls.tsx";
 import { LaneRail } from "./lane-rail.tsx";
 import { SidePlates } from "./side-plates.tsx";
 import { Stack } from "./stack.tsx";
@@ -33,10 +38,14 @@ export function Terminal() {
   const now = useNow();
   const { lane, lanes, live, next, strike, loading } = useLane();
   const [lanesOpen, setLanesOpen] = useState(false);
+  const chart = useChartView();
+  const [sharing, setSharing] = useState<number | null>(null);
   const stakeClass = lane && lane.seconds >= HOUR_SECONDS ? "hourly" : "short";
   const tap = useOneTap(next, stakeClass);
   const left = next && now > 0 ? next.lockTime - now : null;
   useCountdownCues(left);
+  const positions = useLanePositions(lane, now);
+  const holdingSide = positions.live?.side ?? null;
 
   const window: ChartWindow = useMemo(
     () => (live ? { kind: "fixed", from: live.lockTime * SECOND_MS, to: live.closeTime * SECOND_MS } : ROLLING),
@@ -47,8 +56,9 @@ export function Terminal() {
       strike,
       lockAt: live ? live.lockTime * SECOND_MS : null,
       closeAt: live ? live.closeTime * SECOND_MS : null,
+      position: holdingSide === null ? null : { side: holdingSide },
     }),
-    [live, strike],
+    [live, strike, holdingSide],
   );
 
   if (loading || !lane) return <Skeleton className="h-[78dvh] rounded-[32px]" label="Loading the rounds" />;
@@ -62,7 +72,17 @@ export function Terminal() {
         className="relative h-[calc(100dvh-180px)] min-h-[540px] overflow-hidden rounded-[32px] bg-[var(--stage)] shadow-[inset_0_0_0_1px_var(--hairline)] md:h-[calc(100dvh-104px)]"
       >
         <div className="absolute inset-x-0 top-[150px] bottom-[150px] md:top-[176px] md:bottom-[124px]">
-          <LiveChart asset={lane.asset} window={window} levels={levels} engine="round" className="h-full w-full" />
+          {chart.view === "live" ? (
+            <LiveChart asset={lane.asset} window={window} levels={levels} engine="round" className="h-full w-full" />
+          ) : (
+            <HistoryChart
+              key={lane.asset}
+              asset={lane.asset}
+              range={chart.view}
+              style={chart.style}
+              className="h-full w-full"
+            />
+          )}
         </div>
         <div className="absolute top-4 left-4 flex flex-col items-start gap-4 md:top-6 md:left-6">
           <button
@@ -102,12 +122,35 @@ export function Terminal() {
           >
             <History aria-hidden className="size-4" /> Previous
           </Link>
+          <ChartControls />
         </div>
         <div className="absolute top-1/2 left-3 -translate-y-1/2 md:left-6">
           <Stack tap={tap} />
         </div>
         <div className="absolute inset-x-4 bottom-4 md:inset-x-6 md:bottom-6">
-          <div className="mx-auto max-w-[620px]">
+          <div className="mx-auto flex max-w-[620px] flex-col gap-2">
+            {positions.list.map(({ round, position }) => (
+              <PositionCard
+                key={`${round.roundId}:${position.side}`}
+                position={position}
+                now={now}
+                href={`/r/${round.roundId}`}
+                roundLabel={`${clockTime(round.lockTime)}–${clockTime(round.closeTime)}`}
+                action={
+                  position.endsAt === null ? (
+                    <button
+                      type="button"
+                      aria-label="Receipt and video"
+                      title="Receipt and video"
+                      onClick={() => setSharing(round.roundId)}
+                      className="grid size-[68px] shrink-0 place-items-center rounded-[22px] bg-[var(--vermilion)] text-white"
+                    >
+                      <Share2 aria-hidden className="size-5" />
+                    </button>
+                  ) : null
+                }
+              />
+            ))}
             <SidePlates tap={tap} />
           </div>
         </div>
@@ -115,6 +158,7 @@ export function Terminal() {
       <aside className="hidden lg:block">
         <LaneRail lanes={lanes} lane={lane} />
       </aside>
+      {sharing === null ? null : <ShareSheet roundId={sharing} open onClose={() => setSharing(null)} />}
       <Sheet open={lanesOpen} onClose={() => setLanesOpen(false)} title="Lanes">
         <div className="pb-2">
           <LaneRail lanes={lanes} lane={lane} onPick={() => setLanesOpen(false)} />

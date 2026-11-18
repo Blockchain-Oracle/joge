@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AiGallery } from "@/features/dev/ai-gallery";
 import { ChartGallery } from "@/features/dev/chart-gallery";
 import { KitGallery } from "@/features/dev/kit-gallery";
+import { ShareGallery } from "@/features/dev/share-gallery";
 import { Tokens } from "@/features/dev/tokens";
 
 export const metadata: Metadata = { title: "Design system" };
@@ -20,6 +21,7 @@ export default function DevPage() {
         </p>
       </header>
       <Tokens />
+      <ShareGallery />
       <ChartGallery />
       <KitGallery />
       <AiGallery />

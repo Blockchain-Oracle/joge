@@ -20,6 +20,7 @@ import { useWallet } from "../wallet/wallet-context.tsx";
 import { CLOSE_LEAD_SECONDS, STAKE_LADDER_USD, STAKE_SHARE } from "./constants.ts";
 
 const SATS_PER_BCH = 100_000_000;
+const CENTS = 100;
 const SECOND_MS = 1_000;
 const STAKE_KEY = "joge:stake-usd";
 const LIMIT_WHEN = new Intl.DateTimeFormat("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
@@ -78,15 +79,23 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
     balanceUsd === null
       ? (ladder[1] ?? ladder[0] ?? 0)
       : (ladder.filter((dollars) => dollars <= balanceUsd * STAKE_SHARE).at(-1) ?? ladder[0] ?? 0);
-  const stakeUsd = chosen && ladder.includes(chosen) ? chosen : preset;
+  // Any amount the player typed stands, held inside this lane's bounds (a $5 choice reads $1 on a 5-minute lane).
+  const minUsd = bchUsd ? Math.ceil((Number(MIN_STAKE) / SATS_PER_BCH) * bchUsd * CENTS) / CENTS : 0;
+  const capUsd = bchUsd ? Math.floor((Number(cap) / SATS_PER_BCH) * bchUsd * CENTS) / CENTS : null;
+  const stakeUsd = chosen !== null && chosen > 0 ? Math.min(capUsd ?? chosen, Math.max(minUsd, chosen)) : preset;
   // An agent's proposal carries its own stake (sats); everything else uses the standing choice.
   const stake = stakeOverride
     ? BigInt(Math.min(Number(cap), Math.max(Number(MIN_STAKE), stakeOverride)))
     : bchUsd
       ? BigInt(Math.max(Number(MIN_STAKE), Math.round((stakeUsd / bchUsd) * SATS_PER_BCH)))
       : MIN_STAKE;
-  const pays = (side: Side) => {
+  /**
+   * What a call pays per dollar at today's pot, or `"alone"` while nobody is on the other side: a shared pot with one
+   * side refunds, so a multiple (0.98× after fees) would mislead.
+   */
+  const pays = (side: Side): number | "alone" | null => {
     if (!round) return null;
+    if ((round.totals[side === 0 ? 1 : 0] ?? 0) === 0) return "alone";
     const { pays: back } = estimatePayout(round, side, stake);
     return Number(back) / Number(stake);
   };
@@ -176,5 +185,5 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
     }
   };
 
-  return { enter, busy, blocker, stake, stakeUsd, ladder, pays };
+  return { enter, busy, blocker, stake, stakeUsd, ladder, pays, minUsd, capUsd };
 }

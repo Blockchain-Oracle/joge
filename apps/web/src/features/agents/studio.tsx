@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Bot, Sparkles, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { cue, cx, Segmented, toast } from "@/kit";
+import { AmountSheet, cue, cx, Segmented, toast } from "@/kit";
 import { useSession } from "../auth/session.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
@@ -25,6 +25,8 @@ const RISK_STEP = 3;
 const DAILY = DAILY_BETS[1];
 const HERO_FACE = 120;
 const faces = () => Array.from({ length: FACES }, newFaceSeed);
+const SATS_PER_BCH = 100_000_000;
+
 /** The first six faces are fixed, so the server render and the page agree; the die draws random ones. */
 const FIRST_FACES = ["sora", "kaze", "umi", "yama", "hoshi", "tsuki"];
 
@@ -56,6 +58,7 @@ export function Studio({ copyFrom }: { copyFrom: number | null }) {
   const [posture, setPosture] = useState<Posture>("balanced");
   const [lanes, setLanes] = useState<number[]>([]);
   const [perBetUsd, setPerBetUsd] = useState<number>(PER_BET_CHIPS_USD[1]);
+  const [perBetOpen, setPerBetOpen] = useState(false);
   const [mode, setMode] = useState<"ask" | "auto">("ask");
   const [read, setRead] = useState<{ result: DryRead | null; pending: boolean; error: string | null }>({
     result: null,
@@ -223,7 +226,14 @@ export function Studio({ copyFrom }: { copyFrom: number | null }) {
       {step === RISK_STEP ? (
         <div className="flex flex-col gap-5">
           <div className="flex flex-col items-center gap-4 rounded-[24px] bg-[var(--surface-1)] p-5">
-            <p className="nx-num text-[56px] font-semibold leading-none tracking-[-0.04em]">{chipUsd(perBetUsd)}</p>
+            <button
+              type="button"
+              onClick={() => setPerBetOpen(true)}
+              aria-label="Type the most it may bet"
+              className="nx-num rounded-[16px] px-2 text-[56px] font-semibold leading-none tracking-[-0.04em] underline decoration-[var(--hairline)] decoration-2 underline-offset-8 hover:decoration-[var(--ink)]"
+            >
+              {chipUsd(perBetUsd)}
+            </button>
             <p className="nx-eyebrow">a bet · up to {perBetSats ? money.format(perBetSats * DAILY) : "—"} a day</p>
             <div className="grid w-full grid-cols-5 gap-2">
               {PER_BET_CHIPS_USD.map((dollars) => {
@@ -245,6 +255,21 @@ export function Studio({ copyFrom }: { copyFrom: number | null }) {
                 );
               })}
             </div>
+            <AmountSheet
+              open={perBetOpen}
+              onClose={() => setPerBetOpen(false)}
+              title="Most it may bet"
+              initial={perBetUsd}
+              presets={PER_BET_CHIPS_USD}
+              min={money.bchUsd ? (Number(MIN_STAKE) / SATS_PER_BCH) * money.bchUsd : 0}
+              max={money.bchUsd ? (Number(ceiling) / SATS_PER_BCH) * money.bchUsd : null}
+              maxLabel="Lane max"
+              confirm={(dollars) => `${chipUsd(dollars)} a bet`}
+              onConfirm={(dollars) => {
+                setPerBetUsd(dollars);
+                setPerBetOpen(false);
+              }}
+            />
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
             {(["ask", "auto"] as const).map((key) => (

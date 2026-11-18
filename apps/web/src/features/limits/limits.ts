@@ -4,6 +4,8 @@ import type { Network } from "@joge/db";
 import { useSyncExternalStore } from "react";
 import type { JournalEntry } from "../ticket/journal.ts";
 
+const HALF_CENT_USD = 0.005;
+
 /**
  * Play limits you set for yourself (F26, decision D18): a daily stake limit in dollars and a cool-off. They live in
  * this browser and the ticket wears them as its blocker. Lowering a limit or starting a cool-off takes effect at once;
@@ -119,7 +121,8 @@ export function limitProblem({
   if (now.dailyUsd === null || !bchUsd) return null;
   const spentUsd = stakedTodayUsd(journal, network, bchUsd);
   const stakeUsd = dollarStake ?? (stakeSats / SATS_PER_BCH) * bchUsd;
-  if (spentUsd + stakeUsd <= now.dailyUsd) return null;
+  // Stakes are whole satoshis, so a $0.50 stake can read a hair over $0.50: half a cent of slack.
+  if (spentUsd + stakeUsd <= now.dailyUsd + HALF_CENT_USD) return null;
   const left = Math.max(0, now.dailyUsd - spentUsd);
   return left > 0 ? `Over your daily limit · $${left.toFixed(2)} left today` : "Daily limit reached · back tomorrow";
 }

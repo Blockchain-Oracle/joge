@@ -73,7 +73,7 @@ Your money moves only between your wallet and the contracts (the vermilion path)
 
 | Requirement | How Jōge meets it |
 |---|---|
-| Live, usable demo | https://getjoge.xyz, no setup: open it and play |
+| Live, usable demo | https://getjoge.xyz, no setup: open it and play; a 3:06 video shows it on mainnet at https://getjoge.xyz/demo |
 | Useful BCH mainnet transactions | Entering a round is a mainnet transaction from your wallet; rounds lock, settle and pay on mainnet ([mainnet contracts](https://docs.getjoge.xyz/docs/mainnet)) |
 | WizardConnect | The only way to pair; every wallet signature goes through it, with a "Confirm in your wallet" card for each |
 | Banner: slides, source, CashTokens address | At the top of the app and the docs; the slides open full screen at https://getjoge.xyz/slides; the address opens as a QR code |

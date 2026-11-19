@@ -40,7 +40,7 @@ int constant SHORT_GATE_CAP = 10000000;
 int constant HOURLY_GATE_CAP = 100000000;
 int constant EVENT_GATE_CAP = 500000000;
 
-// Fees and dust (satoshis). Lifecycle fees are fixed so every client builds the same bytes; calibrated in S00 from
+// Fees and dust (satoshis). Lifecycle fees are fixed so every client builds the same bytes; calibrated on chipnet from
 // measured sizes (gold settle ~1,840 B, gold lock with one gate ~1,940 B, ~190 B per swept P2SH32 ticket) with headroom.
 // P2S tickets carry their ~112-byte script in the output: dust is 444 + 3 × ~188 B ≈ 1,008 sats, so 1,200.
 int constant TICKET_DUST = 1200;
@@ -60,7 +60,7 @@ int constant EVENT_LOCK_FEE_PER_GATE = 1100;
 int constant SETTLE_FEE = 2200;
 int constant SWEEP_FEE_BASE = 1000;
 int constant SWEEP_FEE_PER_TICKET = 250;
-// Each swept ticket costs ~20,000 operation-cost units; 32 padding bytes buy 25,600 (measured in S00).
+// Each swept ticket costs ~20,000 operation-cost units; 32 padding bytes buy 25,600 (measured).
 int constant SWEEP_PAD_PER_TICKET = 32;
 int constant PROTOCOL_FEE_BPS = 200;
 int constant MAX_CREATOR_FEE_BPS = 300;

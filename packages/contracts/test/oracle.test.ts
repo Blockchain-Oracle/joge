@@ -1,4 +1,4 @@
-// Proof P1: the CashScript oracle module against real General Protocols boundaries (latest two hours of each feed and
+// The CashScript oracle module against real General Protocols boundaries (latest two hours of each feed and
 // the 2026-06-12 slow window), plus every message a contract must refuse.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -51,7 +51,7 @@ function boundaries(prices: PriceMessage[]): number[] {
 
 const usage: Array<{ feed: string; opCost: number; budget: number }> = [];
 
-describe("P1 · oracle module accepts the canonical pair at real boundaries", () => {
+describe("oracle module accepts the canonical pair at real boundaries", () => {
   for (const file of FIXTURES) {
     const { feed, messages } = load(file);
     const prices = sortPrices(messages);
@@ -71,7 +71,7 @@ describe("P1 · oracle module accepts the canonical pair at real boundaries", ()
   }
 });
 
-describe("P1 · strike is the message after the lock message", () => {
+describe("strike is the message after the lock message", () => {
   it("accepts S+1 with its price and refuses any other sequence", () => {
     const { feed, messages } = load("latest-usd-btc.json");
     const prices = sortPrices(messages);
@@ -90,7 +90,7 @@ describe("P1 · strike is the message after the lock message", () => {
   });
 });
 
-describe("P1 · refusals", () => {
+describe("refusals", () => {
   const { feed, messages } = load("latest-usd-btc.json");
   const prices = sortPrices(messages);
   const at = (index: number) => prices[index] as PriceMessage;
@@ -126,7 +126,7 @@ describe("P1 · refusals", () => {
   });
 });
 
-describe("P1 · measurements", () => {
+describe("measurements", () => {
   it("prints op-cost per boundary proof", () => {
     const worst = usage.reduce((max, row) => Math.max(max, row.opCost), 0);
     const budget = usage[0]?.budget ?? 0;

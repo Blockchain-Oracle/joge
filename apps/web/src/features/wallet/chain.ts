@@ -16,7 +16,7 @@ import type { Network } from "@joge/db";
 
 /**
  * The browser's own chain access: one Fulcrum pool per world, connected on first use. Every transaction the page builds
- * reads live coins from here, never from Jōge's database (decision D17), so the page works even if our server is gone.
+ * reads live coins from here, never from Jōge's database, so the page works even if our server is gone.
  */
 const pools = new Map<Network, Promise<Fulcrum>>();
 const contracts = new Map<Network, { deployment: Deployment; round: RoundContracts; dollar: DollarContracts }>();

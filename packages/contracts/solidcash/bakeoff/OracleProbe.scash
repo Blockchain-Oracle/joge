@@ -2,7 +2,7 @@ pragma solidcash ^0.51.0;
 
 import "../oracle.scash";
 
-// Proof P2 only: the oracle module in SolidCash, run against the same real boundaries as the CashScript probe.
+// Test only: the oracle module in SolidCash, run against the same real boundaries as the CashScript probe.
 contract OracleProbe(pubkey oracle) {
     function boundary(
         bytes previous,

@@ -1,4 +1,4 @@
-// Proof P6 (local part, continued): gold settled from two feeds, a price-range round, and a sweep in two batches.
+// Gold settled from two feeds, a price-range round, and a sweep in two batches.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
@@ -59,7 +59,7 @@ async function allGates(round: Round) {
 
 for (const testKit of KITS) {
   describe(testKit.kit.name, () => {
-    describe("P6 · gold, settled from USD/BCH and XAU/BCH together", () => {
+    describe("gold, settled from USD/BCH and XAU/BCH together", () => {
       it("locks and settles on two feeds and pays the winners", async () => {
         const usd = fixtures("latest-usd-bch.json");
         const xau = fixtures("latest-xau-bch.json");
@@ -116,7 +116,7 @@ for (const testKit of KITS) {
       });
     });
 
-    describe("P6 · price ranges (an event-style round)", () => {
+    describe("price ranges (an event-style round)", () => {
       it("pays the range the close lands in", async () => {
         const prices = fixtures("latest-usd-btc.json");
         const times = boundaries(prices, 20, 30);
@@ -180,7 +180,7 @@ for (const testKit of KITS) {
       });
     });
 
-    describe("P6 · sweep in batches", () => {
+    describe("sweep in batches", () => {
       it("pays the same amounts whatever the batching, then burns the master", async () => {
         const prices = fixtures("latest-usd-eth.json");
         const times = boundaries(prices, 40, 15);
@@ -239,7 +239,7 @@ for (const testKit of KITS) {
       });
     });
 
-    describe("P6 · fee calibration (gold, ranges)", () => {
+    describe("fee calibration (gold, ranges)", () => {
       it("every lifecycle fee covers at least 1 sat per byte", () => {
         for (const row of sizes) {
           const rate = Number(row.fee) / row.bytes;

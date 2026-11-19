@@ -64,7 +64,7 @@ function Days({ days, now }: { days: Array<{ day: number; tickets: number; net: 
 }
 
 /**
- * A player (F9): no account, just a payout address. Its marble, its place, one big number (what it won), three small
+ * A player: no account, just a payout address. Its marble, its place, one big number (what it won), three small
  * ones, twelve weeks of days, and its tickets; all of it read from what the chain decided.
  */
 export function Profile({ address, world }: { address: string; world?: "chipnet" | "mainnet" | undefined }) {

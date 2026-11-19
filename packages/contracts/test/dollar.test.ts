@@ -1,5 +1,5 @@
-// F11 dollar events: a dollar event made by the SolidCash factory, entered, left, locked, settled and swept in a
-// dollar token held by sidecars — then the attacks the sidecar design must stop (decision D20).
+// Dollar events: a dollar event made by the SolidCash factory, entered, left, locked, settled and swept in a
+// dollar token held by sidecars — then the attacks the sidecar design must stop.
 import assert from "node:assert/strict";
 import { after, describe, it } from "node:test";
 import { binToHex, hexToBin } from "@bitauth/libauth";
@@ -141,7 +141,7 @@ const tokensAt = async (c: Chain, who: Player) =>
     .filter((utxo) => utxo.token?.category === c.dollar.dollarCategory)
     .reduce((sum, utxo) => sum + utxo.token.amount, 0n);
 
-describe("F11 · a dollar event, end to end", () => {
+describe("a dollar event, end to end", () => {
   it("opens with seeded sidecars, takes dollar entries and an exit, locks, settles and pays in dollars", async () => {
     const c = chain();
     const [creator, alice, bob, carol, dave] = ["creator", "alice", "bob", "carol", "dave"].map(player) as [
@@ -236,7 +236,7 @@ after(() => {
   for (const size of sizes) console.log(`dollar ${size.step}: ${size.bytes} bytes, fee ${size.fee} sats`);
 });
 
-describe("F11 · attacks on the sidecars fail", () => {
+describe("attacks on the sidecars fail", () => {
   it("refuses a sibling sidecar passed as funding (it would leave a gate without its sidecar)", async () => {
     const c = chain();
     const creator = player("creator");

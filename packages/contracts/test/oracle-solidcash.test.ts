@@ -1,5 +1,5 @@
-// Proof P2: the same oracle module in SolidCash 0.51.0 (native mode), run through SolidCash's own SDK against the same
-// real boundaries as P1, plus a reproduction of the evmCompat endianness trap.
+// The same oracle module in SolidCash 0.51.0 (native mode), run through SolidCash's own SDK against the same
+// real boundaries as the CashScript test, plus a reproduction of the evmCompat endianness trap.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -55,7 +55,7 @@ function boundaries(prices: PriceMessage[]): number[] {
 const usage: number[] = [];
 let budget = 0;
 
-describe("P2 · SolidCash oracle module accepts the canonical pair at real boundaries", () => {
+describe("SolidCash oracle module accepts the canonical pair at real boundaries", () => {
   for (const file of FIXTURES) {
     it(`${file}: ${PER_FIXTURE} boundaries`, async () => {
       const { feed, messages } = load(file);
@@ -86,7 +86,7 @@ describe("P2 · SolidCash oracle module accepts the canonical pair at real bound
   }
 });
 
-describe("P2 · SolidCash refusals", () => {
+describe("SolidCash refusals", () => {
   it("refuses non-consecutive messages, wrong boundaries and another feed's signature", async () => {
     const prices = sortPrices(load("latest-usd-btc.json").messages);
     const at = (index: number) => prices[index] as PriceMessage;
@@ -117,7 +117,7 @@ describe("P2 · SolidCash refusals", () => {
   });
 });
 
-describe("P2 · evmCompat endianness trap", () => {
+describe("evmCompat endianness trap", () => {
   // In evmCompat, `int(bytes4)` does not compile; the way to an integer is through uint32, which reads big-endian.
   const source = `pragma solidity ^0.8.0;
 contract Endian() {
@@ -146,7 +146,7 @@ contract Endian() {
   });
 });
 
-describe("P2 · measurements", () => {
+describe("measurements", () => {
   it("prints op-cost per boundary proof", () => {
     const worst = Math.max(...usage);
     console.log(

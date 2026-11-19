@@ -9,7 +9,7 @@ import type { RoundContracts } from "./contracts.ts";
 import type { DollarContracts } from "./dollar.ts";
 
 /**
- * Decision D16 (hybrid): the contracts players' money touches are CashScript (`roundContracts`); SolidCash writes the
+ * Hybrid: the contracts players' money touches are CashScript (`roundContracts`); SolidCash writes the
  * factory, the lane threads and the agent vaults. Every transaction is built with CashScript's TransactionBuilder;
  * SolidCash contract inputs join it through `asCashScriptUnlocker`, while SolidCash still produces their unlocking
  * bytecode (and any signature over its own function body).

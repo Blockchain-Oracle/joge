@@ -1,7 +1,7 @@
 {
   "name": "joge",
   "private": true,
-  "description": "Jōge 上下: up or down price rounds on Bitcoin Cash. Anyone opens a round, nobody runs the house; rounds lock and settle from General Protocols' signed prices and pay winners straight to their wallets.",
+  "description": "Jōge 上下: up or down, in minutes, on Bitcoin Cash mainnet. Call BTC, ETH, BCH or gold for a few cents; CashScript covenants check the price General Protocols signed and pay the winners. No house.",
   "license": "MIT",
   "packageManager": "pnpm@12.14.0",
   "engines": {

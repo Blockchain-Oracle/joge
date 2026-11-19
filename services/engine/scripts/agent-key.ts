@@ -1,6 +1,6 @@
 // Creates (once) the agents' master key: AGENT_XPRV goes to services/engine/.env (the engine signs vault bets) and
 // AGENT_XPUB to apps/web/.env.local (the web server derives each agent's public key for its vault). Both files are
-// git-ignored; nothing is printed. Chipnet keys use the testnet encoding; mainnet gets its own key in S09.
+// git-ignored; nothing is printed. Chipnet keys use the testnet encoding; mainnet gets its own key.
 // Usage: node scripts/agent-key.ts
 import { appendFileSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";

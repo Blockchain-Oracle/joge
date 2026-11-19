@@ -2,7 +2,7 @@
 // `contract.unlock.<function>` calls are checked against each ABI:
 //   cashscript/<Name>.cash           → artifacts/<Name>.ts                   (cashc: the contracts players' money touches)
 //   solidcash/<Name>.scash           → artifacts/solidcash/<Name>.ts         (solidc native: factory, lanes, agent vault)
-//   solidcash/bakeoff/<Name>.scash   → artifacts/solidcash-bakeoff/<Name>.ts (the S00 ports of the player contracts)
+//   solidcash/bakeoff/<Name>.scash   → artifacts/solidcash-bakeoff/<Name>.ts (the SolidCash versions of the player contracts)
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

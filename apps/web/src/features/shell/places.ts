@@ -25,7 +25,7 @@ export interface Place {
 }
 
 /**
- * The app's places, in header and dock order (D21: events and Create are gone; Leaders joined in S08).
+ * The app's places, in header and dock order.
  */
 export const PLACES: Place[] = [
   { key: "1", label: "Rounds", href: "/rounds", icon: CandlestickChart, paths: ["/rounds", "/r/"] },

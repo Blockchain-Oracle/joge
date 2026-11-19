@@ -1,4 +1,4 @@
-// S01 hybrid (decision D16): SolidCash lane threads, factory and agent vault opening and feeding the CashScript round
+// Hybrid: SolidCash lane threads, factory and agent vault opening and feeding the CashScript round
 // contracts in the same transactions — each path, and the attacks that must fail.
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
@@ -74,7 +74,7 @@ function chain() {
   return { provider, protocol, round, opening, lane, factory, nextLock, coin };
 }
 
-describe("S01 · a lane thread opens the next round", () => {
+describe("a lane thread opens the next round", () => {
   it("opens the slot, moves the lane on, and the round takes entries", async () => {
     const c = chain();
     const opener = player("opener");
@@ -153,7 +153,7 @@ describe("S01 · a lane thread opens the next round", () => {
   });
 });
 
-describe("S01 · the factory creates custom rounds and events", () => {
+describe("the factory creates custom rounds and events", () => {
   const event = (overrides: Partial<Omit<OpenRound, "roundId">> = {}): Omit<OpenRound, "roundId"> => ({
     asset: "BTC",
     mode: "ranges",
@@ -220,7 +220,7 @@ describe("S01 · the factory creates custom rounds and events", () => {
   });
 });
 
-describe("S01 · an agent vault bets for its owner, within its cap", () => {
+describe("an agent vault bets for its owner, within its cap", () => {
   const agentKey = generatePrivateKey();
   const agentPub = secp256k1.derivePublicKeyCompressed(agentKey) as Uint8Array;
   let c: ReturnType<typeof chain>;

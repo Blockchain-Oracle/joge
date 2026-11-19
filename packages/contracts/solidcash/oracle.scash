@@ -3,7 +3,7 @@ pragma solidcash ^0.51.0;
 // General Protocols price messages, as verified by AnyHedge v0.12 (contract.cash l.73-94).
 // A message is 16 bytes of little-endian script numbers:
 //   [0,4) message timestamp · [4,8) message sequence · [8,12) data sequence · [12,16) price.
-// Native mode reads them with little-endian VM numbers; evmCompat would read bytesN big-endian (the S00 trap).
+// Native mode reads them with little-endian VM numbers; evmCompat would read bytesN big-endian (a trap the tests reproduce).
 
 bigint constant MESSAGE_BYTES = 16;
 bigint constant DATASIG_BYTES = 64;

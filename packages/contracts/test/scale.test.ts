@@ -1,4 +1,4 @@
-// Proof P7 (local part): how many tickets one sweep can pay before it hits the 100 kB standard size or the master's
+// How many tickets one sweep can pay before it hits the 100 kB standard size or the master's
 // operation-cost budget — with P2SH32 tickets and with P2S tickets (no hash, the script is the locking bytecode).
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -54,7 +54,7 @@ async function settledRoundWith(tickets: number, ticketType: ContractType, testK
 }
 
 for (const testKit of KITS) {
-  describe(`${testKit.kit.name} · P7 · sweep scale`, {
+  describe(`${testKit.kit.name} · sweep scale`, {
     skip: !process.env.MEASURE && "set MEASURE=1 to measure",
   }, () => {
     for (const ticketType of ["p2sh32", "p2s"] as const) {

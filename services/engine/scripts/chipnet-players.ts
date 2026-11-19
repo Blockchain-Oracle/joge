@@ -1,5 +1,5 @@
 // Chipnet only: real entries into every lane round, so the engine's lock → settle → sweep path runs with two-sided
-// pots (S02's one-hour proof). Its own test key (CHIPNET_PLAYER_WIF in services/engine/.env, created on first run) is
+// pots. Its own test key (CHIPNET_PLAYER_WIF in services/engine/.env, created on first run) is
 // topped up from KEEPER_WIF when low; every payout goes back to the player key. Test coins only, never mainnet.
 // Usage: node --env-file=.env scripts/chipnet-players.ts
 import { appendFileSync } from "node:fs";

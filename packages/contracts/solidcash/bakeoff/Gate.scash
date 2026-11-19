@@ -1,6 +1,6 @@
 pragma solidcash ^0.51.0;
 
-// SolidCash port of cashscript/Gate.cash (S00 bake-off; kept in step for BAKEOFF=1 runs).
+// SolidCash version of cashscript/Gate.cash (language bake-off; kept in step for BAKEOFF=1 runs).
 import "../rules.scash";
 
 // One of a round's G entry gates (a minting NFT of category K). Entries spread over gates so two players rarely race

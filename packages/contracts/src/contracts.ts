@@ -12,7 +12,7 @@ const cashscriptArtifacts = { gate, eventGate, ticket, masterOpen, masterLocked,
 
 /**
  * A contract language: its SDK's Contract and TransactionBuilder plus the five compiled artifacts. SolidCash's SDK is
- * a fork of CashScript's with the same API, so the S00 bake-off runs the same builders and tests over both kits.
+ * a fork of CashScript's with the same API, so the language bake-off runs the same builders and tests over both kits.
  * Typed as CashScript; a SolidCash kit is passed in by the tests.
  */
 export interface Kit {
@@ -30,7 +30,7 @@ export interface RoundContractsOptions {
   provider: NetworkProvider;
   /** Where the protocol fee goes (hex locking bytecode). */
   protocolLockingBytecode: string;
-  /** Tickets are P2S by default (no address, half-size sweeps; Cashonize signs it, S00 P3); P2SH32 stays available. */
+  /** Tickets are P2S by default (no address, half-size sweeps; Cashonize signs it); P2SH32 stays available. */
   ticketType?: ContractType;
   kit?: Kit;
 }

@@ -1,4 +1,4 @@
-// The two contract languages of the S00 bake-off, each with its own SDK's mock chain, signer and UTXO helper.
+// The two contract languages of the language bake-off, each with its own SDK's mock chain, signer and UTXO helper.
 // SolidCash's SDK is a fork of CashScript's; its types are cast to CashScript's where the shapes match at runtime.
 import {
   Contract as SolidContract,
@@ -50,7 +50,7 @@ export const SOLIDCASH: TestKit = {
 };
 
 /**
- * Production runs the player contracts in CashScript (decision D16). `BAKEOFF=1` also runs every round test over the
- * SolidCash ports kept from the S00 bake-off.
+ * Production runs the player contracts in CashScript. `BAKEOFF=1` also runs every round test over the
+ * SolidCash ports kept from the language bake-off.
  */
 export const KITS = process.env.BAKEOFF ? [CASHSCRIPT, SOLIDCASH] : [CASHSCRIPT];

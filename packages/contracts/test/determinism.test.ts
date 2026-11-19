@@ -1,4 +1,4 @@
-// Proof P5 (local part): two clients that see the same chain build byte-identical lock, settle and sweep
+// Two clients that see the same chain build byte-identical lock, settle and sweep
 // transactions — fresh contract objects, fresh builders, same inputs — so any keeper or browser can broadcast them
 // without ever conflicting. (Variants with another sequence, locktime, output or fee are refused: attacks.test.ts.)
 import assert from "node:assert/strict";
@@ -23,7 +23,7 @@ const otherClient = (round: Round) =>
 const hexOf = async (builder: { build(): string | Promise<string> }) => builder.build();
 
 for (const testKit of KITS) {
-  describe(`${testKit.kit.name} · P5 · byte-identical lifecycle transactions`, () => {
+  describe(`${testKit.kit.name} · byte-identical lifecycle transactions`, () => {
     it("lock, settle and sweep come out the same from two independent clients", async () => {
       const round = await newRound({ lockTime: times.lockTime, closeTime: times.closeTime, gates: 2 }, testKit);
       for (const [index, stake] of [40_000n, 60_000n].entries()) {

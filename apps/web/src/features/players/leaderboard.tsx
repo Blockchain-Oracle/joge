@@ -61,7 +61,7 @@ function YouPill() {
 }
 
 /**
- * Leaders (F9): players ranked by what they won (paid back minus paid in), never by how often they were right; a
+ * Leaders: players ranked by what they won (paid back minus paid in), never by how often they were right; a
  * player is a payout address. A podium for the first three, then the field, your rows marked.
  */
 export function Leaderboard() {

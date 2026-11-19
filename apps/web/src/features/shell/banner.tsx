@@ -42,14 +42,16 @@ export function BlazeBanner() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Show the CashTokens address as a QR code"
+          aria-label={`CashTokens address ${CASHTOKENS}: show it as a QR code`}
+          title={CASHTOKENS}
           className="inline-flex items-center gap-1.5 rounded-full px-1.5 py-0.5 hover:bg-white/15"
         >
           <QrCode size={14} aria-hidden />
           <span className="opacity-85">CashTokens</span>
-          <span className="nx-num hidden underline decoration-white/40 underline-offset-4 sm:inline">
+          <span className="nx-num hidden underline decoration-white/40 underline-offset-4 sm:inline xl:hidden">
             {bare.slice(0, HEAD)}…{bare.slice(-TAIL)}
           </span>
+          <span className="nx-num hidden underline decoration-white/40 underline-offset-4 xl:inline">{CASHTOKENS}</span>
         </button>
       </div>
       <Sheet open={open} onClose={() => setOpen(false)} title="Send to Jōge">

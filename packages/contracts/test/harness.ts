@@ -1,5 +1,5 @@
 // Shared set-up for the round tests: a mock chain of either contract language, players with keys, a round minted
-// straight into the mock (the factory comes in S01), and real General Protocols messages from the fixtures.
+// straight into the mock (the factory has its own tests), and real General Protocols messages from the fixtures.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { binToHex, encodeLockingBytecodeP2pkh, generatePrivateKey, hash160, secp256k1 } from "@bitauth/libauth";

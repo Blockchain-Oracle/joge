@@ -91,12 +91,16 @@ export function BlazeBanner() {
         <Popover.Root>
           <Popover.Trigger
             className="group flex items-center gap-1.5 whitespace-nowrap rounded-full py-0.5 pr-2 pl-1.5 transition-colors hover:bg-white/15 focus-visible:bg-white/15"
-            aria-label="Show the CashTokens address as a QR code"
+            aria-label={`CashTokens address ${BLAZE.cashtokens}: show it as a QR code`}
+            title={BLAZE.cashtokens}
           >
             <QrCode className="size-3.5" />
             <span className="opacity-80">CashTokens</span>
-            <span className="hidden font-mono underline decoration-white/30 underline-offset-4 group-hover:decoration-white sm:inline">
+            <span className="hidden font-mono underline decoration-white/30 underline-offset-4 group-hover:decoration-white sm:inline xl:hidden">
               {cashtokens.slice(0, SHORT + 2)}…{cashtokens.slice(-SHORT)}
+            </span>
+            <span className="hidden font-mono underline decoration-white/30 underline-offset-4 group-hover:decoration-white xl:inline">
+              {BLAZE.cashtokens}
             </span>
           </Popover.Trigger>
           <Popover.Portal>

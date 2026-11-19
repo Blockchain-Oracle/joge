@@ -1,4 +1,4 @@
-// Proof P6 (local part): whole rounds on the local VM — entries, lock, settle and sweep with real oracle messages —
+// Whole rounds on the local VM — entries, lock, settle and sweep with real oracle messages —
 // with every payout checked against the SDK's maths and every lifecycle fee checked against its transaction size.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -50,7 +50,7 @@ async function enter(round: Round, who: Player, gateIndex: number, outcome: numb
 
 for (const testKit of KITS) {
   describe(testKit.kit.name, () => {
-    describe("P6 · a BTC up/down round, start to finish, on the local VM", () => {
+    describe("a BTC up/down round, start to finish, on the local VM", () => {
       it("enters, locks, settles and pays every ticket exactly", async () => {
         const prices = fixtures("latest-usd-btc.json");
         const times = boundaries(prices, 30, 10);
@@ -120,7 +120,7 @@ for (const testKit of KITS) {
       });
     });
 
-    describe("P6 · void at lock", () => {
+    describe("void at lock", () => {
       it("refunds everyone when only one side has stakes", async () => {
         const prices = fixtures("latest-usd-btc.json");
         const times = boundaries(prices, 50, 5);
@@ -151,7 +151,7 @@ for (const testKit of KITS) {
       });
     });
 
-    describe("P6 · fee calibration", () => {
+    describe("fee calibration", () => {
       it("every lifecycle fee covers at least 1 sat per byte", () => {
         for (const row of sizes) {
           const rate = Number(row.fee) / row.bytes;

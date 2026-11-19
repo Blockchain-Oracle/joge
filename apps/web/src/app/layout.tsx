@@ -11,7 +11,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3300";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "Jōge 上下", template: "%s · Jōge" },
-  description: "Up or down, in minutes. Anyone opens a round. Nobody runs the house.",
+  description:
+    "Up or down, in minutes. Call BTC, ETH, BCH or gold for a few cents; a contract on Bitcoin Cash pays the winners. No house.",
   applicationName: "Jōge",
 };
 

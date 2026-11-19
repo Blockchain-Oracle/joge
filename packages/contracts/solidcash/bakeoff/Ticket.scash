@@ -1,6 +1,6 @@
 pragma solidcash ^0.51.0;
 
-// SolidCash port of cashscript/Ticket.cash (S00 bake-off; kept in step for BAKEOFF=1 runs).
+// SolidCash version of cashscript/Ticket.cash (language bake-off; kept in step for BAKEOFF=1 runs).
 import "../rules.scash";
 
 // A player's entry (an immutable NFT of category K, 32 bytes):

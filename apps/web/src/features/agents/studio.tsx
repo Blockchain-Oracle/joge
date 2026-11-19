@@ -40,7 +40,7 @@ const ceilingOf = (lanes: number[]) =>
 /**
  * The agent studio: four steps, one decision each — a face (which names itself), how
  * it plays, where, and what it may risk — then an optional dry read with the real model and Create (a sign-in proof
- * first, D11). `copyFrom` starts from another agent.
+ * first). `copyFrom` starts from another agent.
  */
 export function Studio({ copyFrom }: { copyFrom: number | null }) {
   const network = useWorld();

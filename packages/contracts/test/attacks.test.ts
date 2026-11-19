@@ -1,4 +1,4 @@
-// Proof P4: the adversarial review's attacks, in both contract languages. Each starts from a valid transaction built
+// The adversarial review's attacks, in both contract languages. Each starts from a valid transaction built
 // by our builders and changes one thing; the contract itself must refuse it, with its own reason.
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
@@ -67,7 +67,7 @@ const smuggle = (builder: { inputs: unknown[] }, round: Round, victim: TokenUtxo
 
 for (const testKit of KITS) {
   describe(testKit.kit.name, () => {
-    describe("P4 · entering", () => {
+    describe("entering", () => {
       let round: Round;
       before(async () => {
         round = await enteredRound(testKit);
@@ -132,7 +132,7 @@ for (const testKit of KITS) {
       });
     });
 
-    describe("P4 · locking", () => {
+    describe("locking", () => {
       let round: Round;
       before(async () => {
         round = await enteredRound(testKit);
@@ -183,7 +183,7 @@ for (const testKit of KITS) {
       });
     });
 
-    describe("P4 · settling and sweeping", () => {
+    describe("settling and sweeping", () => {
       let round: Round;
       let locked: TokenUtxo;
       before(async () => {

@@ -189,7 +189,7 @@ function HelpArt() {
         ))}
       </span>
       <Link href="/agents" className="nx-num ml-auto text-[13px] text-[var(--muted)] hover:text-[var(--ink)]">
-        {agents.data?.length === 1 ? "1 agent" : `${agents.data?.length ?? 0} agents`} →
+        {agents.data === undefined ? "Agents" : agents.data.length === 1 ? "1 agent" : `${agents.data.length} agents`} →
       </Link>
     </div>
   );

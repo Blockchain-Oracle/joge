@@ -41,7 +41,7 @@ const HERO_RING = 76;
 /**
  * One round: who it is (asset, length, number), its state as a ring while it runs or its result as a stamp once
  * decided, one big figure, the chart, one row of four facts, the one-tap plates while it takes entries, your receipt,
- * and the entries. Every transaction lives on the proof page, one link away. Anyone can finish a stuck round here (F6).
+ * and the entries. Every transaction lives on the proof page, one link away. Anyone can finish a stuck round here.
  */
 export function RoundView({
   roundId,

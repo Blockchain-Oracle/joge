@@ -41,7 +41,7 @@ const SHORT_ASSETS: AssetId[] = ["BTC", "ETH", "BCH"];
 const HOURLY_ASSETS: AssetId[] = ["BTC", "ETH", "BCH", "GOLD"];
 const FIRST_LANE_THREAD = 0x10;
 
-/** The 13 lanes (decision D8): 3, 5 and 15 minutes on BTC, ETH and BCH; an hour on BTC, ETH, BCH and gold. */
+/** The 13 lanes: 3, 5 and 15 minutes on BTC, ETH and BCH; an hour on BTC, ETH, BCH and gold. */
 export const LANES: Lane[] = [
   ...SHORT_ASSETS.flatMap((asset) => SHORT_LANES.map((seconds) => ({ asset, seconds }))),
   ...HOURLY_ASSETS.map((asset) => ({ asset, seconds: HOUR_SECONDS })),

@@ -28,7 +28,7 @@ export function findBoundaryPair(prices: readonly PriceMessage[], boundary: numb
   return undefined;
 }
 
-/** The strike is the oracle's next message after the lock message: data sequence S + 1 (decision D3). */
+/** The strike is the oracle's next message after the lock message: data sequence S + 1. */
 export function findBySequence(prices: readonly PriceMessage[], dataSequence: number): PriceMessage | undefined {
   return prices.find((message) => message.dataSequence === dataSequence);
 }

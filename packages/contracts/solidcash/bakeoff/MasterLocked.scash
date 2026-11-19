@@ -1,6 +1,6 @@
 pragma solidcash ^0.51.0;
 
-// SolidCash port of cashscript/MasterLocked.cash (S00 bake-off; kept in step for BAKEOFF=1 runs).
+// SolidCash version of cashscript/MasterLocked.cash (language bake-off; kept in step for BAKEOFF=1 runs).
 import "../rules.scash";
 import "../oracle.scash";
 

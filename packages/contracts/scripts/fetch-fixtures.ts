@@ -1,4 +1,4 @@
-// Saves real General Protocols messages for proof P1: the latest two hours of each feed we settle on, plus the
+// Saves real General Protocols messages for the oracle tests: the latest two hours of each feed we settle on, plus the
 // 2026-06-12 slow window (spacings up to 125 s).
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

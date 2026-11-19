@@ -1,4 +1,4 @@
-// S01 paths: an event entrant leaving before the lock (exit fee joins the winners' pot) and both oracle-outage voids,
+// An event entrant leaving before the lock (exit fee joins the winners' pot) and both oracle-outage voids,
 // each with the attacks that must fail.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -52,7 +52,7 @@ const ticketOf = async (round: Round, who: Player) =>
       Buffer.from(who.pkh).toString("hex"),
   ) as TokenUtxo;
 
-describe("S01 · leaving an event before the lock", () => {
+describe("leaving an event before the lock", () => {
   const event = () =>
     newRound({ lockTime: times.lockTime, closeTime: times.closeTime, gates: 1, stakeClass: "event", creatorFeeBps: 0 });
 
@@ -143,7 +143,7 @@ describe("S01 · leaving an event before the lock", () => {
   });
 });
 
-describe("S01 · oracle outages void the round", () => {
+describe("oracle outages void the round", () => {
   it("voids an unlocked round after the deadline and refunds everyone", async () => {
     const round = await newRound({ lockTime: times.lockTime, closeTime: times.closeTime, gates: 2 });
     await enter(round, player("ana"), 0, 50_000n);

@@ -1,4 +1,4 @@
-// S01 on chipnet: the hybrid end to end. The BTC 3-minute lane thread (SolidCash) opens its next round with a signed
+// On chipnet: the hybrid end to end. The BTC 3-minute lane thread (SolidCash) opens its next round with a signed
 // oracle clock; two entries go into its gates (CashScript); then lock → settle → sweep with live prices.
 // Usage: node scripts/chipnet-lane-round.ts        (after scripts/genesis.ts; records to runs/lane-<lock>.json)
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";

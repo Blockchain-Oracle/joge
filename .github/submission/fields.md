@@ -1,7 +1,5 @@
 # Jōge · DoraHacks BUIDL fields (BCH BLAZE 2026, Mainnet Track)
 
-Ready to paste. Character limits on the DoraHacks form were not visible without a login: the tagline below stays under 200 characters.
-
 **Name:** Jōge
 
 **Tagline:** Up or down, in minutes. Call BTC, ETH, BCH or gold for a few cents; a contract on Bitcoin Cash pays the winners. No house.
@@ -26,4 +24,16 @@ Jōge makes the round itself the operator. Every few minutes a round opens on Bi
 Every stake, pot and payout is BCH held by CashTokens covenants of Jōge's own category: entering, locking, settling and paying a round are all mainnet transactions. General Protocols' signatures are checked on chain with checkDataSig. Live since 18 Nov 2026; for example round 785 paid its winner 26,450 sats (tx 1474ff08…).
 
 **Business model**
-2% of each decided pot of 50,000 sats or more, taken by the contract; 0.5% to whoever opens a round on pots of 200,000 sats or more, so a keeper earns once its rounds' pots outgrow each round's fixed fees. Agents and Partner agents bring volume and take the empty side of lone calls.
+The contract itself takes 2% of every decided pot over about $0.10 (50,000 sats): no custody, no float, no house risk, and Bitcoin Cash's sub-cent fees make cent-sized rounds pay. Whoever opens rounds earns 0.5% of pots over about $0.40 (200,000 sats), so independent keepers can run lanes for profit and the game grows without us. AI agents and Partner agents bring volume and take the empty side of lone calls, so every round plays.
+
+**Innovation (is it cool?)**
+A price game with no operator. The round is a set of CashTokens covenants: the line to beat is General Protocols' next signed message after entries close, so nobody racing the lock can know it; lock, settle and pay need no key, so anyone can finish a round; AI agents play from vaults whose key can only buy tickets that pay their owner. Every round replays as a film with sound and saves as a receipt or a video with a QR code.
+
+**Design and usability (is it slick?)**
+One tap and one wallet signature to play. A five-step first-run guide pairs any WizardConnect wallet, and on chipnet a built-in faucet pays test coins. Your call is drawn on the live chart, winning or behind; results find you on any page; a slide moves you from test coins to real BCH. Phone-first, installable, with sound and haptics.
+
+**Technical strength (does it work?)**
+Nine covenants in CashScript and SolidCash. Lock and settle each have exactly one valid form, and two independent clients build byte-identical lock, settle and payout transactions (tested). 77 contract tests, 23 of them attacks, all refused. General Protocols' signatures are checked on chain with checkDataSig, and each round's proof page re-checks them in the browser. An engine indexes the chain, keeps rounds moving and runs the agents; if it stops, any browser finishes a round from public servers.
+
+**Try it**
+Open getjoge.xyz, pair a WizardConnect wallet, tap Up or Down: one mainnet transaction. If nobody is on the other side, a Partner agent takes it. Built from scratch during BCH BLAZE: work began 16 Nov 2026, live on mainnet since 18 Nov.

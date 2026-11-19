@@ -59,7 +59,7 @@ export default {
     }
   ],
   "bytecode": "5c7f75587f7781 OP_0 OP_DEFINE 52798277609d78827701409d7c52797bbb76008a00a069607f755c7f778100a069 OP_1 OP_DEFINE OP_OVER OP_0 OP_NUMEQUAL OP_IF OP_2SWAP OP_SWAP OP_2ROT OP_SWAP OP_4 OP_ROLL OP_6 OP_ROLL OP_5 OP_PICK OP_5 OP_ROLL OP_3 OP_PICK OP_1 OP_INVOKE OP_3 OP_PICK OP_2SWAP OP_1 OP_INVOKE OP_OVER OP_0 OP_INVOKE OP_3 OP_PICK OP_0 OP_INVOKE OP_1ADD OP_NUMEQUALVERIFY OP_ROT OP_4 OP_SPLIT OP_DROP OP_BIN2NUM OP_OVER OP_LESSTHAN OP_VERIFY OP_OVER OP_4 OP_SPLIT OP_DROP OP_BIN2NUM OP_LESSTHANOREQUAL OP_VERIFY OP_0 OP_INVOKE OP_ROT OP_NUMEQUAL OP_NIP OP_ELSE OP_SWAP OP_1 OP_NUMEQUALVERIFY OP_SWAP OP_ROT OP_2SWAP OP_SWAP OP_3 OP_PICK OP_2SWAP OP_1 OP_INVOKE OP_OVER OP_0 OP_INVOKE OP_NUMEQUALVERIFY OP_16 OP_SPLIT OP_DROP OP_12 OP_SPLIT OP_NIP OP_BIN2NUM OP_NUMEQUAL OP_ENDIF",
-  "source": "pragma cashscript ^0.14.0;\n\nimport \"./oracle.cash\";\n\n// Proof P1 only: exposes the oracle module so it can be run against real General Protocols boundaries.\ncontract OracleProbe(pubkey oracle) {\n    function boundary(\n        bytes previous,\n        datasig previousSignature,\n        bytes first,\n        datasig firstSignature,\n        int boundaryTime,\n        int expectedSequence\n    ) {\n        int sequence = firstAtOrAfter(previous, previousSignature, first, firstSignature, oracle, boundaryTime);\n        require(sequence == expectedSequence);\n    }\n\n    function strike(bytes message, datasig signature, int sequence, int expectedPrice) {\n        require(priceAtSequence(message, signature, oracle, sequence) == expectedPrice);\n    }\n}\n",
+  "source": "pragma cashscript ^0.14.0;\n\nimport \"./oracle.cash\";\n\n// Test only: exposes the oracle module so it can be run against real General Protocols boundaries.\ncontract OracleProbe(pubkey oracle) {\n    function boundary(\n        bytes previous,\n        datasig previousSignature,\n        bytes first,\n        datasig firstSignature,\n        int boundaryTime,\n        int expectedSequence\n    ) {\n        int sequence = firstAtOrAfter(previous, previousSignature, first, firstSignature, oracle, boundaryTime);\n        require(sequence == expectedSequence);\n    }\n\n    function strike(bytes message, datasig signature, int sequence, int expectedPrice) {\n        require(priceAtSequence(message, signature, oracle, sequence) == expectedPrice);\n    }\n}\n",
   "fingerprint": "54144842a5284bc032a9987ccbae88a4f120f3e02d9b4de919fdc6228d88dd9b",
   "debug": {
     "bytecode": "075c7f75587f778100892152798277609d78827701409d7c52797bbb76008a00a069607f755c7f778100a069518978009c63727c717c547a567a5579557a5379518a537972518a78008a5379008a8b9d7b547f7581789f6978547f7581a169008a7b9c77677c519d7c7b727c537972518a78008a9d607f755c7f77819c68",
@@ -308,5 +308,5 @@ export default {
       "enforceLocktimeGuard": false
     }
   },
-  "updatedAt": "2026-11-18T19:51:45.407Z"
+  "updatedAt": "2026-11-19T09:12:36.951Z"
 } as const;

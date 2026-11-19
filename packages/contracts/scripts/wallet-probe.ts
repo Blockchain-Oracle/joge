@@ -1,4 +1,4 @@
-// Proofs P3 and P9 on chipnet, with a real phone wallet over WizardConnect. Run it in a terminal you can see:
+// Wallet checks on chipnet, with a real phone wallet over WizardConnect. Run it in a terminal you can see:
 //   node scripts/wallet-probe.ts
 // It shows a pairing QR; scan it with the wallet (set to chipnet). For each variant it opens a fresh round (funded by
 // the dev key from dev-key.ts) and asks the wallet to sign a real entry; then it asks for a sign-in proof: a signed
@@ -234,7 +234,7 @@ async function signEntry(dapp: DappConnectionManager, variant: Variant) {
   }
 }
 
-/** P9: a signed transaction that can never be mined proves the wallet holds this address (WizardConnect has no message signing). */
+/** A signed transaction that can never be mined proves the wallet holds this address (WizardConnect has no message signing). */
 async function signInProof(dapp: DappConnectionManager) {
   const { coin, address, path } = await walletCoin(dapp);
   const nonce = binToHex(crypto.getRandomValues(new Uint8Array(NONCE_BYTES)));

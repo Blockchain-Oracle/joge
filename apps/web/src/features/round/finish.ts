@@ -65,7 +65,7 @@ export function dueStep(round: RoundRow, now: number): FinishStep | null {
 }
 
 /**
- * Finish this round (F6): builds the step a round is due for from live coins and the oracle's signed messages, and
+ * Finish this round: builds the step a round is due for from live coins and the oracle's signed messages, and
  * broadcasts it. Every client builds the same bytes, so if Jōge's keeper already sent it, this changes nothing.
  */
 export async function finishRound(network: Network, round: RoundRow, now: number): Promise<FinishResult> {

@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   return Response.json({ network, agents: rows });
 }
 
-/** Creates an agent for the signed-in address (a sign-in proof first: D11). */
+/** Creates an agent for the signed-in address (a sign-in proof first). */
 export async function POST(request: Request) {
   const owner = sessionPkh(request);
   if (!owner) return Response.json({ error: "Sign in with your wallet first." }, { status: UNAUTHORIZED });

@@ -26,7 +26,7 @@ function readKey(): string | undefined {
 
 if (!readKey()) {
   const wif = encodePrivateKeyWif(generatePrivateKey(), "testnet");
-  writeFileSync(envFile, `# Chipnet test key for the S00 proof scripts. Test coins only.\n${KEY_NAME}=${wif}\n`, {
+  writeFileSync(envFile, `# Chipnet test key for the proof scripts. Test coins only.\n${KEY_NAME}=${wif}\n`, {
     flag: "a",
   });
   console.log("Created a new chipnet test key in packages/contracts/.env");

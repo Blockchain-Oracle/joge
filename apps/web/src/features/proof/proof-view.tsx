@@ -67,7 +67,7 @@ const proofQuery = (network: Network, roundId: number) => ({
 });
 
 /**
- * A round's proof (F7): every signed price that decided it, re-checked in the reader's browser (the Schnorr signature
+ * A round's proof: every signed price that decided it, re-checked in the reader's browser (the Schnorr signature
  * against General Protocols' key, and the same message fetched from General Protocols itself), the payout maths
  * recomputed from the chain's numbers, the covenants' addresses and every transaction. Nothing here asks you to
  * trust Jōge's server.

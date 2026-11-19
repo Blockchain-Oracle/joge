@@ -1,4 +1,4 @@
-// Proof P6 on chipnet: one real round, start to finish, with live General Protocols prices.
+// On chipnet: one real round, start to finish, with live General Protocols prices.
 //   genesis (category K: master + 2 gates) → two entries → wait for the oracle past T_lock → lock → wait for the
 //   strike and the close → settle → sweep. Every txid and size goes to runs/chipnet-<time>.json.
 // Usage: node scripts/chipnet-round.ts [cashscript|solidcash]   (needs chipnet coins on the key from dev-key.ts)
@@ -25,7 +25,7 @@ import { SOLIDCASH } from "../test/kits.ts";
 import { chipnetKey } from "./dev-key.ts";
 
 /**
- * Which contract language the round's covenants are compiled from (the S00 bake-off runs both). Each language runs on
+ * Which contract language the round's covenants are compiled from (the language bake-off runs both). Each language runs on
  * its own SDK end to end — provider, builder and signer — because the two SDKs' objects do not mix.
  */
 const useSolidCash = process.argv[2] === "solidcash";

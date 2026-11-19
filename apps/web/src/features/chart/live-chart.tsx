@@ -32,7 +32,7 @@ export function LiveChart({
   asset: AssetId;
   window: ChartWindow;
   levels?: RoundLevels;
-  /** "round": the redo's Window chart; "price": the current one. */
+  /** "round": the round's own chart; "price": the live price chart. */
   engine?: "price" | "round";
   className?: string;
 }) {

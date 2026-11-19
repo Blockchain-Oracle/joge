@@ -37,8 +37,7 @@ export interface Deployment {
 }
 
 /**
- * Written by scripts/genesis.ts. mainnet.json holds `null` until the mainnet genesis (stage S09, with the user's
- * go-ahead) writes the real one.
+ * Written by scripts/genesis.ts, once per network: the genesis transaction that makes the category's threads.
  */
 const DEPLOYMENTS: Partial<Record<Network, Deployment>> = {
   chipnet: chipnet as Deployment,

@@ -4,7 +4,7 @@ import { LEADERBOARD_ROWS, PROFILE_DAYS, STREAK_TICKETS } from "./constants.ts";
 import { type Network, rounds, type TicketStatus, tickets } from "./schema.ts";
 
 /**
- * Players (F9): no accounts, a player is a payout address. Money is counted in sats: what came back to the address
+ * Players: no accounts, a player is a payout address. Money is counted in sats: what came back to the address
  * minus what it put in (stake and the ticket's own dust), over tickets whose round is decided.
  */
 

@@ -213,15 +213,27 @@ export function KitGallery() {
       <Block title="Asking the wallet">
         <div className="grid gap-3 md:grid-cols-3">
           {[
-            { what: "Up $0.50 · BTC 5 min · 10:30–10:35", done: false, waited: 3 },
-            { what: "$1.00 to Kaze", done: false, waited: 18 },
-            { what: "Up $0.50 · BTC 5 min · 10:30–10:35", done: true, waited: 6 },
+            {
+              wallet: "Paytaca",
+              logo: "/wallets/paytaca.png",
+              what: "Up $0.50 · BTC 5 min · 10:30–10:35",
+              done: false,
+              waited: 3,
+            },
+            { wallet: "Selene", logo: "/wallets/selene.svg", what: "$1.00 to Kaze", done: false, waited: 18 },
+            {
+              wallet: "Cashonize",
+              logo: "/wallets/cashonize.png",
+              what: "Up $0.50 · BTC 5 min · 10:30–10:35",
+              done: true,
+              waited: 6,
+            },
           ].map((sample) => (
             <div key={`${sample.what}-${sample.waited}`} className="rounded-[24px] bg-[var(--surface-1)] px-5 pb-5">
               <SignCard
                 request={{ what: sample.what, since: 0, done: sample.done }}
-                name="Cashonize"
-                logo="/wallets/cashonize.png"
+                name={sample.wallet}
+                logo={sample.logo}
                 waited={sample.waited}
                 onCancel={() => undefined}
               />

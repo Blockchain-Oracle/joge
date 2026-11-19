@@ -153,7 +153,7 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
         coins: coins.data,
         payout,
         change,
-        prompt: `Jōge: ${side === 0 ? "Up" : "Down"} ${usd(stakeUsd)}, round #${round.roundId}`,
+        prompt: `Jōge: ${side === 0 ? "Up" : "Down"} ${usd(stakeUsd)} · ${roundName(round)}`,
       });
       const signed = await wallet.sign(request.transaction, request.inputPaths);
       updateEntry(entry.id, { state: "signed", txid: txidOf(signed) });
@@ -168,6 +168,7 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
       });
       void client.invalidateQueries({ queryKey: ["coins", network] });
       void client.invalidateQueries({ queryKey: ["lobby", network] });
+      void client.invalidateQueries({ queryKey: ["round", network, round.roundId] });
       return true;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

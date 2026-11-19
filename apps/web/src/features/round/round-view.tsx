@@ -27,6 +27,7 @@ import { Stack } from "../terminal/stack.tsx";
 import { pickLane, useWakeLane } from "../terminal/use-lane.ts";
 import { useOneTap } from "../terminal/use-one-tap.ts";
 import { useJournal } from "../ticket/journal.ts";
+import { inFlight, withEntries } from "../ticket/pending.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { EXPLORER, roundQuery } from "./api.ts";
 import { ROLLING_SPAN_MS, SECOND_MS } from "./constants.ts";
@@ -101,6 +102,19 @@ export function RoundView({
     return [...sides.values()];
   }, [round, view.data, wallet.keys, journal, network]);
   const holdingSide = holdings[0]?.side ?? null;
+  // Entries this browser just sent that the server has not listed yet: counted and shown at once.
+  const sending = useMemo(
+    () =>
+      round && view.data && round.state !== "settled" && round.state !== "void"
+        ? inFlight(
+            journal,
+            network,
+            round.roundId,
+            view.data.entries.map((entry) => entry.enterTxid),
+          )
+        : [],
+    [round, view.data, journal, network],
+  );
   const tap = useOneTap(
     round?.state === "open" ? round : null,
     round?.laneSeconds && round.laneSeconds >= HOUR_SECONDS ? "hourly" : "short",
@@ -159,8 +173,8 @@ export function RoundView({
   const facts = [
     { label: "To beat", value: strike === null ? "—" : usd(strike) },
     { label: decided ? "Closed" : "Closes", value: close === null ? clockTime(round.closeTime) : usd(close) },
-    { label: "Pot", value: money.format(round.pot) },
-    { label: "Entries", value: String(round.entrants) },
+    { label: "Pot", value: money.format(withEntries(round, sending).pot) },
+    { label: "Entries", value: String(withEntries(round, sending).entrants) },
   ];
 
   const finish = async () => {
@@ -338,7 +352,25 @@ export function RoundView({
       <div className="grid items-start gap-4">
         <section className="flex flex-col gap-1 rounded-[24px] bg-[var(--surface-1)] p-3 md:p-4">
           <p className="nx-eyebrow px-2 pb-1">Entries</p>
-          {view.data.entries.length === 0 ? (
+          {sending.map((entry) => (
+            <div key={entry.id} className="flex items-center gap-3 rounded-[14px] px-2 py-2">
+              <span
+                className={cx(
+                  "nx-jp grid size-8 place-items-center rounded-[9px] text-[15px]",
+                  entry.outcome === 0
+                    ? "bg-[var(--up)] text-[var(--up-ink)]"
+                    : "bg-[var(--down)] text-[var(--down-ink)]",
+                )}
+              >
+                {entry.outcome === 0 ? "上" : "下"}
+              </span>
+              {wallet.payout ? <Marble seed={wallet.payout.pkh} size={24} /> : null}
+              <span className="nx-num flex-1 text-[15px] font-semibold">{money.format(Number(entry.stake))}</span>
+              <span className="nx-eyebrow text-[var(--ink)]">you</span>
+              <span className="nx-num text-[13px] font-semibold text-[var(--muted)]">sent</span>
+            </div>
+          ))}
+          {view.data.entries.length === 0 && sending.length === 0 ? (
             <p className="px-2 py-3 text-[14px] text-[var(--muted)]">{decided ? "Nobody played" : "None yet"}</p>
           ) : null}
           {view.data.entries.map((entry) => {

@@ -13,6 +13,8 @@ const config: NextConfig = {
   agentRules: false,
   // postgres.js opens raw sockets; keep it a plain Node require on the server.
   serverExternalPackages: ["postgres"],
+  // Set once per container build (Dockerfile): a client from an older build hard-reloads on its next navigation.
+  ...(process.env.NEXT_DEPLOYMENT_ID ? { deploymentId: process.env.NEXT_DEPLOYMENT_ID } : {}),
 };
 
 export default config;

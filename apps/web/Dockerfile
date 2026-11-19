@@ -42,7 +42,10 @@ RUN --mount=type=cache,id=joge-pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile --filter "@joge/web..."
 COPY . .
 # The build reads the database only at request time; a placeholder satisfies the server's env check while it builds.
+# Each build gets its own deployment id, so a page left open across a redeploy reloads instead of asking for files
+# the new build no longer has.
 RUN --mount=type=cache,id=joge-next-cache,target=/repo/apps/web/.next/cache \
+    NEXT_DEPLOYMENT_ID="build-$(date +%s)" \
     DATABASE_URL=postgres://build:build@localhost:5432/build pnpm --filter @joge/web build
 
 FROM node:24.11.1-bookworm-slim

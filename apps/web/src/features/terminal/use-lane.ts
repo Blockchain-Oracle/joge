@@ -3,9 +3,11 @@
 import type { LaneView } from "@joge/db";
 import { toDollars } from "@joge/sdk";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { lobbyQuery } from "../rounds/api.ts";
 import { useWorld } from "../shell/world.tsx";
+import { useJournal } from "../ticket/journal.ts";
+import { inFlight, withEntries } from "../ticket/pending.ts";
 import { DEFAULT_THREAD, MARKET_THREADS } from "./constants.ts";
 
 const LANE_KEY = "joge:lane";
@@ -64,9 +66,21 @@ export function useLane() {
     stored,
     () => DEFAULT_THREAD,
   );
-  // The four markets, in their order (BTC, ETH, BCH every 5 minutes; gold every hour).
-  const all = lobby.data?.lanes ?? [];
-  const lanes: LaneView[] = MARKET_THREADS.flatMap((thread) => all.filter((lane) => lane.thread === thread));
+  const journal = useJournal();
+  // The four markets, in their order (BTC, ETH, BCH every 5 minutes; gold every hour). Your entries on the wire count
+  // at once: the chain has them, the server lists them a few seconds later.
+  const lanes: LaneView[] = useMemo(() => {
+    const all = lobby.data?.lanes ?? [];
+    const mine = (round: LaneView["next"]) =>
+      round?.entryTxids === undefined
+        ? round
+        : withEntries(round, inFlight(journal, network, round.roundId, round.entryTxids));
+    return MARKET_THREADS.flatMap((thread) => all.filter((lane) => lane.thread === thread)).map((lane) => ({
+      ...lane,
+      next: mine(lane.next),
+      live: mine(lane.live),
+    }));
+  }, [lobby.data, journal, network]);
   const lane = lanes.find((candidate) => candidate.thread === thread) ?? lanes[0];
   const live = lane?.live ?? null;
   const strike =

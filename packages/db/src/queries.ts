@@ -33,6 +33,9 @@ const FIRST_LANE_THREAD = Math.min(...LANES.map((lane) => lane.thread));
 export interface RoundCard extends RoundRow {
   /** The strike (message S + 1) as soon as the oracle signs it, before the settle writes it on chain. */
   liveStrike: number | null;
+  /** Entry transactions the indexer has counted (open and running rounds in the lobby), so a page can tell its own
+   * just-sent entry apart from one already in the totals. */
+  entryTxids?: string[];
 }
 
 /** Strike prices for locked rounds that have not settled yet: message S + 1 of their feed (gold combines two). */
@@ -104,6 +107,19 @@ export async function lobby(db: Db, network: Network, now: number): Promise<Lane
     )
     .orderBy(desc(rounds.lockTime));
   const cards = await withStrikes(db, recent);
+  const playing = cards
+    .filter((round) => round.state === "open" || round.state === "locked")
+    .map((round) => round.roundId);
+  if (playing.length > 0) {
+    const entered = await db
+      .select({ roundId: tickets.roundId, enterTxid: tickets.enterTxid })
+      .from(tickets)
+      .where(and(eq(tickets.network, network), inArray(tickets.roundId, playing)));
+    for (const card of cards) {
+      if (playing.includes(card.roundId))
+        card.entryTxids = entered.filter((row) => row.roundId === card.roundId).map((row) => row.enterTxid);
+    }
+  }
   return LANES.map((lane) => {
     const ofLane = cards.filter((round) => round.thread === lane.thread);
     return {

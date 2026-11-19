@@ -11,6 +11,7 @@ import { SenseiOrbMount } from "../sensei/orb-mount.tsx";
 import { SenseiMount } from "../sensei/sensei-mount.tsx";
 import { currentNetwork } from "../theme/theme.ts";
 import { ConnectSheet } from "../wallet/connect-sheet.tsx";
+import { SignPrompt } from "../wallet/sign-prompt.tsx";
 import { WalletProvider } from "../wallet/wallet-context.tsx";
 import { BlazeBanner } from "./banner.tsx";
 import { Dock } from "./dock.tsx";
@@ -114,6 +115,7 @@ export function AppShell({ children, bleed = false }: { children: ReactNode; ble
         <OfflineStrip />
         <ConnectSheet />
         <GuideHost />
+        <SignPrompt />
       </div>
     </WalletProvider>
   );

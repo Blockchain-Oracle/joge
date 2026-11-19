@@ -13,6 +13,16 @@ const SESSION_KEY = "joge-wizardconnect";
 /** One input the wallet signs: [input index, path name, address index]. */
 export type InputPath = [number, PathName, number];
 
+/** A signature the wallet is being asked for right now: what it is, since when, and whether it just came back. */
+export interface SignRequest {
+  what: string;
+  since: number;
+  done: boolean;
+}
+
+/** How long the "Signed" tick stays before the request card leaves. */
+const SIGNED_HOLD_MS = 700;
+
 interface WalletApi {
   state: WizardConnectState;
   /** The wallet itself has answered since the page loaded (false while a restored session waits for it). */
@@ -35,6 +45,10 @@ interface WalletApi {
   disconnect: () => Promise<void>;
   /** Asks the wallet to sign; resolves with the signed transaction (hex). The page broadcasts it. */
   sign: (transaction: unknown, inputPaths: InputPath[], signal?: AbortSignal) => Promise<string>;
+  /** The signature waiting in the wallet, shown as one card on every page (null when none). */
+  signing: SignRequest | null;
+  /** Stops waiting for the wallet (the request card's Cancel). */
+  cancelSigning: () => void;
 }
 
 const WalletContext = createContext<WalletApi | null>(null);
@@ -57,6 +71,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const network = useWorld();
   const wizard = useWizardConnect({ dappName: DAPP_NAME, dappIcon: DAPP_ICON, sessionKey: SESSION_KEY });
   const [connectOpen, setConnectOpen] = useState(false);
+  const [signing, setSigning] = useState<SignRequest | null>(null);
+  const waiting = useRef<AbortController | null>(null);
   const announced = useRef(false);
   const { manager, state } = wizard;
   // A refresh restores the stored session: the wallet's keys come back at once from storage, while the relay
@@ -103,19 +119,42 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (!manager || !paired) throw new Error("Pair a wallet first");
       // Wallets parse libauth's extended JSON (tagged bigints and bytes); CashScript's object holds raw ones.
       const relaySafe = JSON.parse(stringify(transaction)) as never;
-      const response = await manager
-        .signTransaction({ transaction: relaySafe, inputPaths }, signal ? { signal } : undefined)
-        .catch((cause: unknown) => {
-          // The relay is still coming back after a refresh: say what to do, not the library's words.
-          if (cause instanceof Error && /not connected/i.test(cause.message))
-            throw new Error("Reconnecting to your wallet. Open it, then try again.");
-          throw cause;
-        });
-      if (response.error) throw new Error(response.error);
-      return response.signedTransaction;
+      // The request card names what is being signed with the same words the wallet shows (the transaction's prompt).
+      const prompt = (transaction as { userPrompt?: unknown }).userPrompt;
+      const controller = new AbortController();
+      signal?.addEventListener("abort", () => controller.abort(), { once: true });
+      waiting.current = controller;
+      setSigning({
+        what: typeof prompt === "string" ? prompt.replace(/^Jōge:\s*/, "") : "A transaction",
+        since: Date.now(),
+        done: false,
+      });
+      let signed = false;
+      try {
+        const response = await manager
+          .signTransaction({ transaction: relaySafe, inputPaths }, { signal: controller.signal })
+          .catch((cause: unknown) => {
+            if (controller.signal.aborted) throw new Error("Cancelled");
+            // The relay is still coming back after a refresh: say what to do, not the library's words.
+            if (cause instanceof Error && /not connected/i.test(cause.message))
+              throw new Error("Reconnecting to your wallet. Open it, then try again.");
+            throw cause;
+          });
+        if (response.error) throw new Error(response.error);
+        signed = true;
+        return response.signedTransaction;
+      } finally {
+        waiting.current = null;
+        if (signed) {
+          setSigning((now) => (now ? { ...now, done: true } : now));
+          setTimeout(() => setSigning(null), SIGNED_HOLD_MS);
+        } else setSigning(null);
+      }
     },
     [manager, paired],
   );
+
+  const cancelSigning = useCallback(() => waiting.current?.abort(), []);
 
   const value: WalletApi = {
     // A restored session counts as paired: its addresses and balance show at once.
@@ -134,6 +173,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     closeConnect,
     disconnect: wizard.disconnect,
     sign,
+    signing,
+    cancelSigning,
   };
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
 }

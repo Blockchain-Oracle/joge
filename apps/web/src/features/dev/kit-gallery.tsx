@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Logo, Mark } from "@/brand/mark";
 import { RoundStamp, SealStamp } from "@/features/round/verdict";
 import { Hanko } from "@/features/shell/seal";
+import { SignCard } from "@/features/wallet/sign-prompt";
 import {
   Button,
   type Cue,
@@ -206,6 +207,25 @@ export function KitGallery() {
             <Button key={name} size="sm" onClick={() => cue(name)}>
               {name}
             </Button>
+          ))}
+        </div>
+      </Block>
+      <Block title="Asking the wallet">
+        <div className="grid gap-3 md:grid-cols-3">
+          {[
+            { what: "Up $0.50 · BTC 5 min · 10:30–10:35", done: false, waited: 3 },
+            { what: "$1.00 to Kaze", done: false, waited: 18 },
+            { what: "Up $0.50 · BTC 5 min · 10:30–10:35", done: true, waited: 6 },
+          ].map((sample) => (
+            <div key={`${sample.what}-${sample.waited}`} className="rounded-[24px] bg-[var(--surface-1)] px-5 pb-5">
+              <SignCard
+                request={{ what: sample.what, since: 0, done: sample.done }}
+                name="Cashonize"
+                logo="/wallets/cashonize.png"
+                waited={sample.waited}
+                onCancel={() => undefined}
+              />
+            </div>
           ))}
         </div>
       </Block>

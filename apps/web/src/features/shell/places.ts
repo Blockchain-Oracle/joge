@@ -7,6 +7,7 @@ import {
   History,
   type LucideIcon,
   Palette,
+  PlayCircle,
   Ticket,
   Trophy,
 } from "lucide-react";
@@ -53,6 +54,7 @@ export const PAGES: Page[] = [
   { label: "Previous rounds", href: "/rounds/previous", icon: History, group: "app" },
   { label: "Guide", href: "/rounds?guide=1" as Route, icon: Compass, group: "joge" },
   { label: "Status", href: "/status", icon: Activity, group: "joge" },
+  { label: "Demo video", href: "/demo", icon: PlayCircle, group: "joge" },
   { label: "Docs", href: DOCS_URL, icon: BookOpen, group: "joge" },
   // The design gallery is for building Jōge, not for players: it is listed only in development.
   ...(process.env.NODE_ENV === "production"

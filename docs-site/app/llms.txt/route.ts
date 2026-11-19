@@ -11,6 +11,7 @@ const HEADER = [
   "",
   `- Live app (Bitcoin Cash mainnet): ${SITE.app}`,
   `- Source (MIT): ${SITE.repo}`,
+  `- Demo video (3:06): ${BLAZE.youtube}, with chapters and every round it shows at ${BLAZE.demo}`,
   `- Widget Factory deck: ${BLAZE.deck}`,
   `- CashTokens address: ${BLAZE.cashtokens}`,
   `- Full text of every page: ${SITE.url}/llms-full.txt`,

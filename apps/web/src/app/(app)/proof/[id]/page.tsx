@@ -10,8 +10,11 @@ export async function generateMetadata({ params }: PageProps<"/proof/[id]">): Pr
   };
 }
 
-export default async function ProofPage({ params }: PageProps<"/proof/[id]">) {
+export default async function ProofPage({ params, searchParams }: PageProps<"/proof/[id]">) {
   const roundId = Number((await params).id);
   if (!Number.isSafeInteger(roundId) || roundId < 0) notFound();
-  return <ProofView roundId={roundId} />;
+  // A link can name its world (`?w=mainnet`): round numbers repeat across chipnet and mainnet.
+  const { w } = await searchParams;
+  const world = w === "chipnet" || w === "mainnet" ? w : undefined;
+  return <ProofView roundId={roundId} world={world} />;
 }

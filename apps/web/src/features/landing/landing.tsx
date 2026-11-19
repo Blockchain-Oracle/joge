@@ -53,6 +53,12 @@ function Nav() {
             {place.label}
           </Link>
         ))}
+        <Link
+          href="/demo"
+          className="rounded-full px-4 py-2 font-semibold text-[14px] text-[var(--ink-2)] hover:bg-[var(--surface-1)] hover:text-[var(--ink)]"
+        >
+          Demo
+        </Link>
         <a
           href={DOCS_URL}
           className="rounded-full px-4 py-2 font-semibold text-[14px] text-[var(--ink-2)] hover:bg-[var(--surface-1)] hover:text-[var(--ink)]"
@@ -180,6 +186,9 @@ function Footer() {
               {place.label}
             </Link>
           ))}
+          <Link href="/demo" className="hover:text-[var(--ink)]">
+            Demo
+          </Link>
           <a href={DOCS_URL} className="hover:text-[var(--ink)]">
             Docs
           </a>

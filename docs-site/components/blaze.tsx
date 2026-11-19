@@ -61,8 +61,8 @@ export function CashTokensCard({ framed = false }: { framed?: boolean }) {
 }
 
 /**
- * The strip every BCH BLAZE entry carries, here above every docs page as on the app: the event and track, the Widget
- * Factory deck, the source and the CashTokens address with its QR code. Items appear once the build is given them.
+ * The strip every BCH BLAZE entry carries, here above every docs page as on the app: the event and track, the demo
+ * film, the Widget Factory deck, the source and the CashTokens address with its QR code. Items appear once the build is given them.
  */
 export function BlazeBanner() {
   const cashtokens = BLAZE.cashtokens.replace(/^bitcoincash:/, "")
@@ -76,6 +76,9 @@ export function BlazeBanner() {
         <span className="hidden sm:inline">
           {BLAZE.event} · {BLAZE.track}
         </span>
+      </a>
+      <a href={BLAZE.demo} className={link}>
+        Demo ↗
       </a>
       {BLAZE.deck ? (
         <a href={BLAZE.deck} className={link}>

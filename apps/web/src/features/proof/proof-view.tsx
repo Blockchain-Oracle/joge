@@ -14,7 +14,7 @@ import {
 } from "@joge/sdk";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, SearchX, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cx, EmptyState, Skeleton } from "@/kit";
 import { AssetCube } from "@/marks/asset";
 import { addressOf } from "../players/api.ts";
@@ -22,7 +22,7 @@ import { roundQuery } from "../round/api.ts";
 import { RoundStamp } from "../round/verdict.tsx";
 import { roundName, usd } from "../rounds/format.ts";
 import { useMoney } from "../rounds/money.ts";
-import { useWorld } from "../shell/world.tsx";
+import { setWorld, useWorld } from "../shell/world.tsx";
 import { ChainList, type CheckState, PayoutMath, SignedTile, WinnerRow } from "./pieces.tsx";
 
 interface OracleRow {
@@ -72,8 +72,18 @@ const proofQuery = (network: Network, roundId: number) => ({
  * recomputed from the chain's numbers, the covenants' addresses and every transaction. Nothing here asks you to
  * trust Jōge's server.
  */
-export function ProofView({ roundId }: { roundId: number }) {
+export function ProofView({
+  roundId,
+  world,
+}: {
+  roundId: number;
+  /** The world a shared link names (`?w=mainnet`); the page moves there to show that round's proof. */
+  world?: "chipnet" | "mainnet" | undefined;
+}) {
   const network = useWorld();
+  useEffect(() => {
+    if (world && world !== network) setWorld(world);
+  }, [world, network]);
   const proof = useQuery(proofQuery(network, roundId));
   const view = useQuery(roundQuery(network, roundId));
   const money = useMoney();

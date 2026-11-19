@@ -23,13 +23,16 @@ export const SITE = {
 } as const
 
 /**
- * The BCH BLAZE banner every Mainnet Track entry carries: the Widget Factory deck (full screen in the app, with the
- * Google Slides copy one click away there), the source, the team's CashTokens address.
+ * The BCH BLAZE banner every Mainnet Track entry carries: the demo film, the Widget Factory deck (full screen in the
+ * app, with the Google Slides copy one click away there), the source, the team's CashTokens address.
  */
 export const BLAZE = {
   event: "BCH BLAZE 2026",
   track: "Mainnet Track",
   deck: `${APP_URL}/slides`,
+  /** The demo film, played on the app's /demo with chapters and every round it shows. */
+  demo: `${APP_URL}/demo`,
+  youtube: "https://youtu.be/mnaZhjLxoqE",
   /** The team's CashTokens address (one team, one wallet). */
   cashtokens: process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9",
 } as const

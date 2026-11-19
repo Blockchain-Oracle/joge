@@ -20,7 +20,8 @@ Jōge is a price game that runs itself on Bitcoin Cash mainnet. Call BTC, ETH, B
 - Docs: https://docs.getjoge.xyz
 - CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
 - Mainnet genesis: https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92
-- Demo video (3:06): upload `context/joge-video/film/renders/joge-demo-final.mp4` to YouTube with the title, description and chapters in `context/joge-video/YOUTUBE.md` and the thumbnail `context/joge-video/thumb/joge-thumb.jpg`, then paste the YouTube link here
+- Demo video (3:06): https://youtu.be/mnaZhjLxoqE
+- The video with chapters and every round it shows: https://getjoge.xyz/demo
 
 **The problem**
 People like calling a short price move for a few cents. Today they do it on apps where an operator runs every round: it opens the round, holds everyone's stake, posts the closing price, decides who won and pays out when it chooses. Players trust that price, that payout and that the operator is still there tomorrow. On Bitcoin Cash there was no game like this at all.
@@ -50,17 +51,18 @@ Open getjoge.xyz, pair a WizardConnect wallet, tap Up or Down: one mainnet trans
 Paste [story.md](story.md). If the editor doesn't show the pictures from their links, upload these where they sit, in this order:
 
 1. `.github/assets/banner-light.png`: Jōge, up or down in minutes, live on Bitcoin Cash mainnet.
-2. `.github/assets/captures/terminal-desktop.png`: the round screen, Up or Down in one tap.
-3. `.github/assets/figures/round-light.png`: mainnet round 785, its price path and its five moments.
-4. `.github/assets/figures/money-light.png`: where round 785's sats went.
-5. `.github/assets/captures/proof-785-desktop.png`: the proof page, five signatures proven in the browser.
-6. `.github/assets/figures/system-light.png`: who touches what.
-7. `.github/assets/figures/vault-light.png`: an agent's leash.
+2. `.github/assets/demo-cover.png`: the demo video's cover, linking to YouTube.
+3. `.github/assets/captures/terminal-desktop.png`: the round screen, Up or Down in one tap.
+4. `.github/assets/figures/round-light.png`: mainnet round 785, its price path and its five moments.
+5. `.github/assets/figures/money-light.png`: where round 785's sats went.
+6. `.github/assets/captures/proof-785-desktop.png`: the proof page, five signatures proven in the browser.
+7. `.github/assets/figures/system-light.png`: who touches what.
+8. `.github/assets/figures/vault-light.png`: an agent's leash.
 
 ## How to submit
 
 1. Sign in on DoraHacks, open https://dorahacks.io/hackathon/bchblaze2026 and press **Submit BUIDL**.
-2. Fill in the fields above: name, logo, tagline, short description, links (website, GitHub, presentation, video), and paste `story.md` as the details with its seven images.
+2. Fill in the fields above: name, logo, tagline, short description, links (website, GitHub, presentation, video), and paste `story.md` as the details with its eight images.
 3. Pick the **Mainnet Track**.
 4. Say hello in the BCH BLAZE Telegram (https://t.me/bchblaze) so the organiser knows a real person is behind Jōge.
 
@@ -76,4 +78,4 @@ Paste [story.md](story.md). If the editor doesn't show the pictures from their l
 | Banner: repository link | done (public) |
 | Banner: CashTokens address | done, with its QR code, in the banner, the README and the slides |
 | Confirmed as real in the BCH BLAZE Telegram | to do by the team |
-| Demo video | done (3:06); YouTube upload by the team |
+| Demo video | done: https://youtu.be/mnaZhjLxoqE (3:06), with chapters at https://getjoge.xyz/demo |

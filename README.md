@@ -13,6 +13,7 @@
 
 <p align="center">
   <b><a href="https://getjoge.xyz">Play Jōge</a></b> ·
+  <b><a href="https://getjoge.xyz/demo">Demo video</a></b> ·
   <b><a href="https://docs.getjoge.xyz">Docs</a></b> ·
   <b><a href="https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92">Mainnet genesis</a></b> ·
   <b><a href="https://getjoge.xyz/slides">Deck</a></b>
@@ -47,15 +48,26 @@ Make the round itself the operator. Jōge's rounds are CashTokens held by covena
 
 The line to beat is the oracle's message **after** the one that lets the round lock, signed about a minute later; the keeper, or anyone, locks as soon as that first message exists, which closes entries before the line is known ([why](https://docs.getjoge.xyz/docs/price/the-line)). Each round's proof page re-checks every signature in your browser against General Protocols and recomputes every payout.
 
-## Demo
+## Demo video
 
 <p align="center">
-  <a href="https://getjoge.xyz/rounds">
-    <img src=".github/assets/demo-cover.png" alt="Play Jōge: a real mainnet round, open to payout" width="100%" />
+  <a href="https://getjoge.xyz/demo">
+    <img src=".github/assets/demo-cover.png" alt="Watch the Jōge demo: a real mainnet round, open to payout, with a play button" width="100%" />
   </a>
 </p>
 
-Follow the proof yourself:
+**Watch on YouTube: https://youtu.be/mnaZhjLxoqE** (3:06). Abu says hello, then the four questions BCH BLAZE judges ask, answered with real BCH on mainnet. Follow the proof:
+
+1. **0:47 · First visit.** The guide pairs a wallet over WizardConnect; tap Up, confirm in the wallet, and the call is on the chart.
+2. **1:04 · Real BCH.** One slide to mainnet, then five cents on Up in Ether round 1812 ([enter ▲ `5e7832cb…`](https://explorer.bch.ninja/tx/5e7832cb216a10ebfc174929bf6fe85ee8e127e29b5e758ae7c4b7cc796bdac8)).
+3. **1:14 · Round 785 on chain.** Open, enter, lock, settle, pay, drawn step by step: the line to beat is the oracle's next message, and no step needs a key.
+4. **1:34 · Paid to the wallet.** Up won 49,062 sats, paid in the round's payout transaction ([`4f3099c0…`](https://explorer.bch.ninja/tx/4f3099c008954d3b6f448240a1dc7f890dbade1df0f681c8e7daa52fd9ff3d97)); the round replays and saves as a receipt with a QR code.
+5. **1:44 · The proof.** Round 20's [proof page](https://getjoge.xyz/proof/20?w=mainnet) re-checks five General Protocols signatures in the browser.
+6. **1:51 · Agents, the business, the code.** An agent's SolidCash vault only pays its owner; the 2% fee and the keepers' 0.5%; the docs and source.
+
+The video plays with these chapters at [getjoge.xyz/demo](https://getjoge.xyz/demo), next to every transaction of the three rounds it shows.
+
+Try it yourself:
 
 1. Open [the rounds](https://getjoge.xyz/rounds): you land on mainnet, and the first-run guide pairs your wallet over WizardConnect.
 2. Tap **Up** or **Down**. Your wallet signs one entry; your call appears on the chart, winning or behind, live.
@@ -104,10 +116,10 @@ The Mainnet Track asks for a live, usable app in which anyone can make a useful 
 
 | Requirement | How Jōge meets it | Check it |
 |---|---|---|
-| Live, usable demo | The app, no setup: open it and play | [getjoge.xyz](https://getjoge.xyz) |
+| Live, usable demo | The app, no setup: open it and play; a 3:06 video shows it on mainnet | [getjoge.xyz](https://getjoge.xyz), [the video](https://getjoge.xyz/demo) |
 | Useful BCH mainnet transactions | Entering a round is a mainnet transaction from your wallet; rounds lock, settle and pay on mainnet | [round 785](#the-idea), [mainnet docs](https://docs.getjoge.xyz/docs/mainnet) |
 | WizardConnect | The only way to pair: QR, deep link or Cashonize one-click; every wallet signature goes through it | [`wallet-context.tsx`](apps/web/src/features/wallet/wallet-context.tsx) |
-| Banner: deck, source, CashTokens address | At the top of the app and the docs; the deck opens full screen at [getjoge.xyz/slides](https://getjoge.xyz/slides); the address opens as a QR code | [the app](https://getjoge.xyz) |
+| Banner: deck, source, CashTokens address | At the top of the app and the docs, with the demo video; the deck opens full screen at [getjoge.xyz/slides](https://getjoge.xyz/slides); the address opens as a QR code | [the app](https://getjoge.xyz) |
 | Open source | MIT | [LICENSE](LICENSE) |
 
 | Judged on | What to look at |

@@ -10,9 +10,15 @@ On top: **Sensei**, an AI that reads a round with you, and **AI agents** that pl
 
 Built for **BCH BLAZE 2026 · Mainnet Track**, from scratch during the event, and live on Bitcoin Cash mainnet since 18 Nov 2026. _Jōge_ (上下) is Japanese for "up and down": the two characters are the two buttons.
 
-**Play:** https://getjoge.xyz · **Docs:** https://docs.getjoge.xyz · **Code:** https://github.com/Blockchain-Oracle/joge · **Slides:** https://getjoge.xyz/slides
+**Watch:** https://youtu.be/mnaZhjLxoqE (3:06) · **Play:** https://getjoge.xyz · **Docs:** https://docs.getjoge.xyz · **Code:** https://github.com/Blockchain-Oracle/joge · **Slides:** https://getjoge.xyz/slides
 
 **CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`
+
+## Demo video
+
+[![Watch the Jōge demo: a real mainnet round, open to payout](https://raw.githubusercontent.com/Blockchain-Oracle/joge/main/.github/assets/demo-cover.png)](https://youtu.be/mnaZhjLxoqE)
+
+3:06 on YouTube: Abu's hello, then the four questions BCH BLAZE judges ask, answered with real BCH on mainnet. A wallet pairs over WizardConnect, five cents go on Up in Ether round 1812, round 785 is drawn step by step on chain, the win is paid straight to the wallet ([`4f3099c0…`](https://explorer.bch.ninja/tx/4f3099c008954d3b6f448240a1dc7f890dbade1df0f681c8e7daa52fd9ff3d97)), and the proof page re-checks every signature. It plays with chapters at https://getjoge.xyz/demo, next to every transaction of the rounds it shows.
 
 ## The problem
 

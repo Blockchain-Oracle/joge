@@ -1,16 +1,16 @@
 "use client";
 
-import { Check, Copy, ExternalLink, QrCode } from "lucide-react";
+import { Check, Copy, ExternalLink, Presentation, QrCode } from "lucide-react";
 import { useState } from "react";
 import { DottedQr, Sheet } from "@/kit";
 import { copyText } from "@/lib/browser";
 
 /**
- * The BCH BLAZE banner every Mainnet Track entry carries at the top of its home page: the Widget Factory deck,
- * the source repository and the team's CashTokens address (BLAZE sends prizes there; EMBER2026 holders vote by sending
+ * The BCH BLAZE banner every Mainnet Track entry carries at the top of its home page: the Widget Factory deck
+ * (/slides, full screen), the source repository and the team's CashTokens address (BLAZE sends prizes there; EMBER2026 holders vote by sending
  * their tokens there). The address is the team's (one team, one wallet); a tap opens it as a QR code.
  */
-const DECK = process.env.NEXT_PUBLIC_BLAZE_DECK_URL;
+const DECK = "/slides";
 const REPO = process.env.NEXT_PUBLIC_REPO_URL || "https://github.com/Blockchain-Oracle/joge";
 const CASHTOKENS =
   process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9";
@@ -30,12 +30,11 @@ export function BlazeBanner() {
         <a href="https://bchblaze.cash" target="_blank" rel="noreferrer" className="nx-num tracking-[0.08em]">
           BCH BLAZE 2026 <span className="hidden sm:inline">· Mainnet Track</span>
         </a>
-        {DECK ? (
-          <a href={DECK} target="_blank" rel="noreferrer" className={link}>
-            <span className="sm:hidden">Deck</span>
-            <span className="hidden sm:inline">Widget Factory deck</span> <ExternalLink size={12} aria-hidden />
-          </a>
-        ) : null}
+        <a href={DECK} target="_blank" rel="noreferrer" className={link}>
+          <Presentation size={13} aria-hidden />
+          <span className="sm:hidden">Deck</span>
+          <span className="hidden sm:inline">Widget Factory deck</span>
+        </a>
         <a href={REPO} target="_blank" rel="noreferrer" className={link}>
           Source <ExternalLink size={12} aria-hidden />
         </a>

@@ -15,7 +15,7 @@
   <b><a href="https://getjoge.xyz">Play Jōge</a></b> ·
   <b><a href="https://docs.getjoge.xyz">Docs</a></b> ·
   <b><a href="https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92">Mainnet genesis</a></b> ·
-  <b><a href="https://docs.google.com/presentation/d/1Qp5ucxWRxmVQPF2h8TTw9VVcokC_6BMCUVuwDr3cw-Y/edit?usp=sharing">Deck</a></b>
+  <b><a href="https://getjoge.xyz/slides">Deck</a></b>
 </p>
 
 Jōge is a price game that runs itself on Bitcoin Cash. Every few minutes a round opens on Bitcoin, Ether, Bitcoin Cash or gold; you call it <b>▲ Up</b> or <b>▼ Down</b> with one tap and one signature from your own wallet over **WizardConnect**. When the round closes, **CashScript** covenants check the price **General Protocols** signed and pay the winning side the pot, less a 2% fee once the pot is big enough for it, straight to their wallets. Nobody runs the house, nobody holds the money, and anyone can push a round to its payout.
@@ -107,7 +107,7 @@ The Mainnet Track asks for a live, usable app in which anyone can make a useful 
 | Live, usable demo | The app, no setup: open it and play | [getjoge.xyz](https://getjoge.xyz) |
 | Useful BCH mainnet transactions | Entering a round is a mainnet transaction from your wallet; rounds lock, settle and pay on mainnet | [round 785](#the-idea), [mainnet docs](https://docs.getjoge.xyz/docs/mainnet) |
 | WizardConnect | The only way to pair: QR, deep link or Cashonize one-click; every wallet signature goes through it | [`wallet-context.tsx`](apps/web/src/features/wallet/wallet-context.tsx) |
-| Banner: deck, source, CashTokens address | At the top of the app and the docs; the address opens as a QR code | [the app](https://getjoge.xyz) |
+| Banner: deck, source, CashTokens address | At the top of the app and the docs; the deck opens full screen at [/slides](https://getjoge.xyz/slides) ([Google Slides copy](https://docs.google.com/presentation/d/1Qp5ucxWRxmVQPF2h8TTw9VVcokC_6BMCUVuwDr3cw-Y/edit?usp=sharing)); the address opens as a QR code | [the app](https://getjoge.xyz) |
 | Open source | MIT | [LICENSE](LICENSE) |
 
 | Judged on | What to look at |

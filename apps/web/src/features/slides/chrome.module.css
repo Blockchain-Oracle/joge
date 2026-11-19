@@ -1,0 +1,153 @@
+/* The presenter's bar under Jōge's deck: shows on mouse move or a tap, hides when the pointer rests. */
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 0.3cqw;
+  min-height: 2px;
+  background: #d81b3c;
+  transition: width 0.5s ease;
+  z-index: 20;
+}
+
+.chrome {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 30;
+}
+
+[data-chrome="true"] > .chrome {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(18, 18, 18, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font:
+    600 13px / 1 var(--font-montserrat),
+    sans-serif;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+
+.count {
+  min-width: 52px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.wide {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .wide {
+    display: inline;
+  }
+}
+
+/* A phone held upright has black space under the slide: the bar lives there, always on, under a turn-me hint. */
+.turn {
+  display: none;
+}
+
+@media (pointer: coarse) and (orientation: portrait) {
+  .chrome {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .turn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font:
+      500 13px / 1 var(--font-montserrat),
+      sans-serif;
+    pointer-events: none;
+  }
+}
+
+.tilt {
+  animation: tilt 2.6s ease-in-out infinite;
+}
+
+@keyframes tilt {
+  0%,
+  35% {
+    transform: none;
+  }
+  60%,
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt {
+    animation: none;
+  }
+}

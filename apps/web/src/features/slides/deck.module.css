@@ -1,0 +1,277 @@
+/* The deck on /slides: one 16:9 stage letterboxed in black, slides that dissolve into each other and build in. */
+
+.root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  cursor: default;
+}
+
+.root[data-chrome="false"] {
+  cursor: none;
+}
+
+.stage {
+  position: relative;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  container-type: inline-size;
+  overflow: hidden;
+  background: #000;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.6s ease,
+    visibility 0s linear 0.6s;
+}
+
+.slide[data-active="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease;
+}
+
+.slide[data-dark="true"] {
+  background: #000;
+}
+
+/* Art layers: full-slide by default, placed when the deck gives them a box. */
+.art {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.placed {
+  object-fit: contain;
+}
+
+.shape {
+  position: absolute;
+}
+
+.text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5% 1%;
+  color: #fff;
+  overflow: visible;
+}
+
+.text p,
+.text ul {
+  margin: 0;
+}
+
+.link {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  text-decoration-thickness: 0.06em;
+  pointer-events: auto;
+}
+
+.link:hover {
+  filter: brightness(1.25);
+}
+
+.chain {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.chain svg {
+  width: 58%;
+  height: 58%;
+}
+
+.points {
+  list-style: disc;
+  padding-left: 1.6em;
+}
+
+.points li::marker {
+  font-size: 0.9em;
+}
+
+.address {
+  align-items: center;
+  justify-content: center;
+  color: #e0e0e0;
+  background: none;
+  border: 0;
+  cursor: copy;
+  text-align: center;
+}
+
+.address:hover {
+  color: #fff;
+}
+
+.copied {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-weight: 700;
+}
+
+.copied svg {
+  width: 1.4em;
+  height: 1.4em;
+}
+
+/* Builds: hidden until their slide opens, then in order (--d), like a presenter's click-free animation. */
+.slide:not([data-active="true"]) .build {
+  opacity: 0;
+}
+
+.slide[data-active="true"] .build {
+  animation-duration: 0.75s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation-fill-mode: both;
+  animation-delay: calc(0.25s + var(--d, 0) * 0.16s);
+}
+
+.slide[data-active="true"] .up {
+  animation-name: up;
+}
+
+.slide[data-active="true"] .pop {
+  animation-name: pop;
+  animation-duration: 0.9s;
+}
+
+.slide[data-active="true"] .wipe {
+  animation-name: wipe;
+  transform-origin: left center;
+}
+
+.slide[data-active="true"] .rise {
+  animation-name: rise;
+  animation-duration: 1.3s;
+}
+
+.slide[data-active="true"] .kb {
+  animation: kb 22s ease-out both;
+}
+
+.drift {
+  animation: drift 7s ease-in-out infinite alternate;
+}
+
+.flicker {
+  animation: flicker 1.8s ease-in-out infinite alternate;
+  transform-origin: 50% 55%;
+}
+
+@keyframes up {
+  from {
+    opacity: 0;
+    transform: translateY(1.6cqw);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wipe {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes kb {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateY(-1.2%);
+    opacity: 1;
+  }
+}
+
+@keyframes flicker {
+  from {
+    transform: scale(1) rotate(-2deg);
+    filter: brightness(1);
+  }
+  to {
+    transform: scale(1.07) rotate(2deg);
+    filter: brightness(1.25);
+  }
+}
+
+@media (pointer: coarse) {
+  .root[data-chrome="false"] {
+    cursor: default;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide,
+  .slide[data-active="true"] {
+    transition: none;
+  }
+  .slide[data-active="true"] .build,
+  .slide[data-active="true"] .kb,
+  .drift,
+  .flicker {
+    animation: none;
+  }
+}

@@ -10,7 +10,7 @@
 - Live app: https://getjoge.xyz
 - Docs: https://docs.getjoge.xyz
 - Source: https://github.com/Blockchain-Oracle/joge
-- Widget Factory deck: https://docs.google.com/presentation/d/1Qp5ucxWRxmVQPF2h8TTw9VVcokC_6BMCUVuwDr3cw-Y/edit?usp=sharing
+- Widget Factory deck: https://getjoge.xyz/slides (the same deck in Google Slides: https://docs.google.com/presentation/d/1Qp5ucxWRxmVQPF2h8TTw9VVcokC_6BMCUVuwDr3cw-Y/edit?usp=sharing)
 - CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
 - Mainnet genesis: https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92
 

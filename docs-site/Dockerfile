@@ -7,13 +7,12 @@ WORKDIR /docs
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
-# Where the app and the docs are served (links, previews), and the BLAZE banner's deck and CashTokens address.
+# Where the app and the docs are served (links, previews), and the BLAZE banner's CashTokens address.
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_DOCS_URL
-ARG NEXT_PUBLIC_BLAZE_DECK_URL
 ARG NEXT_PUBLIC_CASHTOKENS_ADDRESS
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_DOCS_URL=$NEXT_PUBLIC_DOCS_URL \
-    NEXT_PUBLIC_BLAZE_DECK_URL=$NEXT_PUBLIC_BLAZE_DECK_URL NEXT_PUBLIC_CASHTOKENS_ADDRESS=$NEXT_PUBLIC_CASHTOKENS_ADDRESS
+    NEXT_PUBLIC_CASHTOKENS_ADDRESS=$NEXT_PUBLIC_CASHTOKENS_ADDRESS
 RUN pnpm build
 
 FROM nginx:1.27.5-alpine

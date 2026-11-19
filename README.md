@@ -61,7 +61,7 @@ The line to beat is the oracle's message **after** the one that lets the round l
 1. **0:47 · First visit.** The guide pairs a wallet over WizardConnect; tap Up, confirm in the wallet, and the call is on the chart.
 2. **1:04 · Real BCH.** One slide to mainnet, then five cents on Up in Ether round 1812 ([enter ▲ `5e7832cb…`](https://explorer.bch.ninja/tx/5e7832cb216a10ebfc174929bf6fe85ee8e127e29b5e758ae7c4b7cc796bdac8)).
 3. **1:14 · Round 785 on chain.** Open, enter, lock, settle, pay, drawn step by step: the line to beat is the oracle's next message, and no step needs a key.
-4. **1:34 · Paid to the wallet.** Up won 49,062 sats, paid in the round's payout transaction ([`4f3099c0…`](https://explorer.bch.ninja/tx/4f3099c008954d3b6f448240a1dc7f890dbade1df0f681c8e7daa52fd9ff3d97)); the round replays and saves as a receipt with a QR code.
+4. **1:34 · Paid to the wallet.** Abu's $0.05 on Up paid $0.10 (49,062 sats) in the round's payout transaction ([`4f3099c0…`](https://explorer.bch.ninja/tx/4f3099c008954d3b6f448240a1dc7f890dbade1df0f681c8e7daa52fd9ff3d97)); the round replays and saves as a receipt with a QR code.
 5. **1:44 · The proof.** Round 20's [proof page](https://getjoge.xyz/proof/20?w=mainnet) re-checks five General Protocols signatures in the browser.
 6. **1:51 · Agents, the business, the code.** An agent's SolidCash vault only pays its owner; the 2% fee and the keepers' 0.5%; the docs and source.
 

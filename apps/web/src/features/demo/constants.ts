@@ -66,7 +66,7 @@ export const ROUNDS: readonly FilmRound[] = [
     when: "19 Nov 2026 · 09:30–09:35 UTC",
     shown: "Played on camera",
     at: 94,
-    result: "Abu's 5 cents on Up won 49,062 sats",
+    result: "Abu's $0.05 on Up paid $0.10",
     txs: [
       { step: "open", txid: "678b261ce4b9ea685deee2b2ebc40986b0ac3dd5e4d6f3508f57236d7ef63771" },
       { step: "enter ▲", txid: "5e7832cb216a10ebfc174929bf6fe85ee8e127e29b5e758ae7c4b7cc796bdac8" },

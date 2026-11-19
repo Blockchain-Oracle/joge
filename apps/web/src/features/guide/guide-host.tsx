@@ -7,8 +7,12 @@ import { guideSeen, openGuide, useGuide } from "./store.ts";
 
 const Guide = dynamic(() => import("./guide.tsx").then((module) => module.Guide), { ssr: false });
 
+/** Pages a visitor comes to watch, not to play: the guide waits there, and opens on the next page they visit. */
+const WATCH_ONLY = new Set(["/demo"]);
+
 /**
- * Hosts the first-run guide: it opens by itself the first time this device visits the app, whenever a link
+ * Hosts the first-run guide: it opens by itself the first time this device visits the app (except over the demo
+ * video), whenever a link
  * carries `?guide=1` (More and ⌘K use it), and when a blocker asks for it. Its code loads only once it opens.
  */
 export function GuideHost() {
@@ -32,7 +36,7 @@ function Host() {
       url.searchParams.delete("guide");
       window.history.replaceState(window.history.state, "", url);
       openGuide("intro");
-    } else if (!guideSeen()) openGuide("intro");
+    } else if (!(guideSeen() || WATCH_ONLY.has(path))) openGuide("intro");
   }, [path, asked]);
 
   useEffect(() => {

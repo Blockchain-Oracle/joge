@@ -4,13 +4,14 @@
 
 [![Jōge: up or down, in minutes. Live on Bitcoin Cash mainnet.](https://raw.githubusercontent.com/Blockchain-Oracle/joge/main/.github/assets/banner-light.png)](https://getjoge.xyz)
 
-Jōge is a price game that runs itself on Bitcoin Cash. Every few minutes a round opens on Bitcoin, Ether, Bitcoin Cash or gold; you call it **▲ Up** or **▼ Down** with one tap and one signature from your own wallet over **WizardConnect**. When the round closes, **CashScript** covenants check the price **General Protocols** signed and pay the winning side the pot, less a 2% fee once the pot is big enough for it, straight to their wallets. Nobody runs the house, nobody holds the money, and anyone can push a round to its payout.
+- **Is it cool?** Rounds with no operator. General Protocols signs the price, **CashScript** and **SolidCash** contracts check it and pay the winners, and anyone can finish a round. AI agents bet from vaults that can only pay their owner.
+- **Is it slick?** Open https://getjoge.xyz, pair any wallet over **WizardConnect**, tap **▲ Up** or **▼ Down**: one signature. The result finds you on any page, the payout lands in your wallet, and every round replays as a film with sound.
+- **Does it work?** Live on Bitcoin Cash mainnet since 18 Nov 2026. Round 785 paid Up 26,450 sats ([payout](https://explorer.bch.ninja/tx/1474ff082d7a3e70f56b580bbf3cb107374b3c5e30215462aae1a803ae666acf)); every signed price re-checks in your browser; 77 contract tests, 23 of them attacks.
+- **Will it make money?** The contract takes 2% of decided pots and pays whoever opened the round 0.5%, so anyone can run rounds for profit. No custody, no float, no house risk.
 
-On top: **Sensei**, an AI that reads a round with you, and **AI agents** that play from **SolidCash** vaults whose key can only buy tickets that pay their owner, and only the owner can withdraw. Every round replays as a film with sound and turns into a receipt or a video with a QR code.
+Built for **BCH BLAZE 2026 · Mainnet Track**, from scratch during the event. _Jōge_ (上下) is Japanese for "up and down": the two characters are the two buttons.
 
-Built for **BCH BLAZE 2026 · Mainnet Track**, from scratch during the event, and live on Bitcoin Cash mainnet since 18 Nov 2026. _Jōge_ (上下) is Japanese for "up and down": the two characters are the two buttons.
-
-**Watch:** https://youtu.be/mnaZhjLxoqE (3:06) · **Play:** https://getjoge.xyz · **Docs:** https://docs.getjoge.xyz · **Code:** https://github.com/Blockchain-Oracle/joge · **Slides:** https://getjoge.xyz/slides
+**Play:** https://getjoge.xyz · **Slides:** https://getjoge.xyz/slides · **Docs:** https://docs.getjoge.xyz · **Code:** https://github.com/Blockchain-Oracle/joge · **Watch:** https://youtu.be/mnaZhjLxoqE (3:06)
 
 **CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`
 

@@ -19,11 +19,12 @@
   <b><a href="https://getjoge.xyz/slides">Deck</a></b>
 </p>
 
-Jōge is a price game that runs itself on Bitcoin Cash. Every few minutes a round opens on Bitcoin, Ether, Bitcoin Cash or gold; you call it <b>▲ Up</b> or <b>▼ Down</b> with one tap and one signature from your own wallet over **WizardConnect**. When the round closes, **CashScript** covenants check the price **General Protocols** signed and pay the winning side the pot, less a 2% fee once the pot is big enough for it, straight to their wallets. Nobody runs the house, nobody holds the money, and anyone can push a round to its payout.
+- **Is it cool?** Rounds with no operator. General Protocols signs the price, **CashScript** and **SolidCash** contracts check it and pay the winners, and anyone can finish a round. AI agents bet from vaults that can only pay their owner.
+- **Is it slick?** Open https://getjoge.xyz, pair any wallet over **WizardConnect**, tap **▲ Up** or **▼ Down**: one signature. The result finds you on any page, the payout lands in your wallet, and every round replays as a film with sound.
+- **Does it work?** Live on Bitcoin Cash mainnet since 18 Nov 2026. Round 785 paid Up 26,450 sats ([payout](https://explorer.bch.ninja/tx/1474ff082d7a3e70f56b580bbf3cb107374b3c5e30215462aae1a803ae666acf)); every signed price re-checks in your browser; 77 contract tests, 23 of them attacks.
+- **Will it make money?** The contract takes 2% of decided pots and pays whoever opened the round 0.5%, so anyone can run rounds for profit. No custody, no float, no house risk.
 
-On top: **Sensei**, an AI that reads a round with you, and **AI agents** that play from **SolidCash** vaults whose key can only buy tickets that pay their owner, and only the owner can withdraw. Every round replays as a film with sound and turns into a receipt or a video with a QR code.
-
-**Built for BCH BLAZE 2026 · Mainnet Track.** Built from scratch during the event: work began 16 Nov 2026 and the repository was first pushed on 18 Nov. Live on Bitcoin Cash mainnet since 18 Nov 2026 ([how it meets the hackathon](#how-jōge-meets-bch-blaze-2026)). *Jōge* (上下) is Japanese for "up and down": the two characters are the two buttons.
+**Built for BCH BLAZE 2026 · Mainnet Track.** Built from scratch during the event: work began 16 Nov 2026 and the repository was first pushed on 18 Nov ([how it meets the hackathon](#how-jōge-meets-bch-blaze-2026)). *Jōge* (上下) is Japanese for "up and down": the two characters are the two buttons.
 
 ## The problem
 

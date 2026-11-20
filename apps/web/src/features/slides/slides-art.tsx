@@ -171,6 +171,10 @@ function Title() {
           <a href="/" className={s.link} style={{ color: LINK, fontWeight: 700 }}>
             getjoge.xyz
           </a>
+          <b> · </b>
+          <a href="/demo" className={s.link} style={{ color: LINK, fontWeight: 700 }}>
+            3-min demo
+          </a>
         </Line>
       </Text>
     </>
@@ -185,12 +189,12 @@ function Story() {
       <Shape rect={[796_475, 909_750, 3_882_900, 3_394_200]} fill={SHADE} d={1} />
       <Text rect={[796_475, 909_750, 3_882_900, 3_394_200]} font={montserrat(17, 700)}>
         <Line d={1} size={17}>
-          Short up-or-down price games exist, but an operator runs every round: it starts it, posts the price, holds the
-          pot and decides who gets paid. Bitcoin Cash had none at all.
+          Up-or-down price games exist, but an operator runs every round: holds the pot, posts the price, picks the
+          winners. Bitcoin Cash had none.
         </Line>
         <Line d={2} size={17} gap={17}>
-          So we built rounds that run themselves: General Protocols signs the price, CashScript and SolidCash contracts
-          check it and pay the winners, and anyone can finish a round.
+          Jōge's rounds run themselves: General Protocols signs the price, CashScript and SolidCash contracts check it
+          and pay. Anyone can finish a round.
         </Line>
       </Text>
       <Shape rect={[796_475, 425_625, 5_788_800, 397_800]} fill={CRIMSON} d={0} build="wipe" />
@@ -245,10 +249,10 @@ function Usage() {
           BCH <b style={{ color: CRIMSON }}>Usage</b>
         </Line>
         <Line d={1} size={25} gap={10}>
-          Every stake, pot and payout is BCH in CashTokens covenants, on mainnet.
+          Every stake, pot and payout is BCH in CashTokens covenants, live on mainnet.
         </Line>
         <Line d={2} size={25}>
-          Agents bet from SolidCash vaults that only pay their owner.
+          Mainnet round 785: Up won 26,450 sats, paid by the contract.
         </Line>
       </Text>
       <Art src="fig-round.webp" rect={[3_141_698, 2_883_116, 2_860_583, 1_985_918]} d={3} build="pop" />
@@ -322,12 +326,12 @@ export const SLIDES: { title: string; dark?: boolean; Slide: () => ReactNode }[]
       <Points
         title="Benefits of Jōge"
         points={[
+          "One tap from any WizardConnect wallet",
           "A few cents, a five-minute round",
           "No house: winners split the pot",
           "Paid straight to your wallet",
           "Every price signed, checked on chain",
           "AI agents in vaults that only pay you",
-          "Live on Bitcoin Cash mainnet",
         ]}
       />
     ),
@@ -339,10 +343,10 @@ export const SLIDES: { title: string; dark?: boolean; Slide: () => ReactNode }[]
       <Points
         title="The Vision for Jōge"
         points={[
-          "Every market and length: 13 lanes already on chain",
+          "Revenue: 2% of decided pots, no house risk",
+          "Anyone can open rounds and earn 0.5%",
+          "13 lanes on chain: every market and length",
           "Events and custom rounds, already in the contracts",
-          "Rounds staked in ParyonUSD",
-          "Agents anyone can copy and fund",
           "Target: a round open on every market, all day",
         ]}
       />

@@ -9,7 +9,7 @@ Ready to paste, in the order the form asks for them. The tagline stays under 200
 **Tagline:** Up or down, in minutes. Call BTC, ETH, BCH or gold for a few cents; a contract on Bitcoin Cash pays the winners. No house.
 
 **Description (short)**
-Jōge is a price game that runs itself on Bitcoin Cash mainnet. Call BTC, ETH, BCH or gold up or down for a few cents with one WizardConnect signature; CashScript covenants check the price General Protocols signed and pay the winners straight to their wallets. No house, no operator, and AI agents play from SolidCash vaults that only pay their owner.
+Jōge is a price game that runs itself on Bitcoin Cash mainnet. Call BTC, ETH, BCH or gold up or down for a few cents with one WizardConnect signature; CashScript covenants check the price General Protocols signed and pay the winners straight to their wallets. No house, no operator, and AI agents play from SolidCash vaults that only pay their owner. The contract takes 2% of decided pots, with no house risk.
 
 **Track:** Mainnet Track
 

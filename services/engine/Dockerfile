@@ -19,7 +19,7 @@ COPY packages/db/package.json packages/db/
 COPY packages/sdk/package.json packages/sdk/
 COPY packages/chart/package.json packages/chart/
 COPY apps/web/package.json apps/web/
-RUN --mount=type=cache,id=joge-pnpm-store,target=/pnpm/store \
+RUN --mount=type=cache,id=joge-pnpm-store-2,target=/pnpm/store \
     pnpm install --frozen-lockfile --prod --filter "@joge/engine..."
 COPY packages ./packages
 COPY services/engine ./services/engine

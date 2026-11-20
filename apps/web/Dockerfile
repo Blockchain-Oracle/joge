@@ -36,7 +36,7 @@ COPY packages/contracts/package.json packages/contracts/
 COPY packages/db/package.json packages/db/
 COPY packages/sdk/package.json packages/sdk/
 COPY services/engine/package.json services/engine/
-RUN --mount=type=cache,id=joge-pnpm-store-2,target=/pnpm/store \
+RUN --mount=type=cache,id=joge-pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile --filter "@joge/web..."
 COPY . .
 # The build reads the database only at request time; a placeholder satisfies the server's env check while it builds.

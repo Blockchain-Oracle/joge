@@ -18,7 +18,7 @@ Jōge is a price game that runs itself on Bitcoin Cash mainnet. Call BTC, ETH, B
 - GitHub: https://github.com/Blockchain-Oracle/joge
 - Presentation (Widget Factory slides): https://getjoge.xyz/slides
 - Docs: https://docs.getjoge.xyz
-- CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
+- CashTokens address: bitcoincash:zpx428ysgswaypfgk6aswckpjwa99hxk6v4gqs3xjp
 - Mainnet genesis: https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92
 - Demo video (3:06): https://youtu.be/mnaZhjLxoqE
 - The video with chapters and every round it shows: https://getjoge.xyz/demo

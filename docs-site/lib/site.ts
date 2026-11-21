@@ -34,7 +34,7 @@ export const BLAZE = {
   demo: `${APP_URL}/demo`,
   youtube: "https://youtu.be/mnaZhjLxoqE",
   /** The team's CashTokens address (one team, one wallet). */
-  cashtokens: process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9",
+  cashtokens: process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zpx428ysgswaypfgk6aswckpjwa99hxk6v4gqs3xjp",
 } as const
 
 /** Where the docs live. */

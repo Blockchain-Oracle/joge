@@ -21,7 +21,7 @@ const SHADE = "rgba(0, 0, 0, 0.41)";
 const COPIED_MS = 1500;
 
 const REPO = "https://github.com/Blockchain-Oracle/joge";
-const CASHTOKENS = "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9";
+const CASHTOKENS = "bitcoincash:zpx428ysgswaypfgk6aswckpjwa99hxk6v4gqs3xjp";
 
 type Rect = readonly [x: number, y: number, w: number, h: number];
 type Build = { d?: number; build?: "up" | "pop" | "wipe" | "rise" };

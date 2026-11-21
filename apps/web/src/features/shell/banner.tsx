@@ -14,7 +14,7 @@ const DEMO = "/demo";
 const DECK = "/slides";
 const REPO = process.env.NEXT_PUBLIC_REPO_URL || "https://github.com/Blockchain-Oracle/joge";
 const CASHTOKENS =
-  process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9";
+  process.env.NEXT_PUBLIC_CASHTOKENS_ADDRESS || "bitcoincash:zpx428ysgswaypfgk6aswckpjwa99hxk6v4gqs3xjp";
 const HEAD = 8;
 const TAIL = 6;
 const COPIED_MS = 1500;

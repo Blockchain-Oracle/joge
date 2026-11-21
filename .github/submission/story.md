@@ -13,7 +13,7 @@ Built for **BCH BLAZE 2026 · Mainnet Track**, from scratch during the event. _J
 
 **Play:** https://getjoge.xyz · **Slides:** https://getjoge.xyz/slides · **Docs:** https://docs.getjoge.xyz · **Code:** https://github.com/Blockchain-Oracle/joge · **Watch:** https://youtu.be/mnaZhjLxoqE (3:06)
 
-**CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`
+**CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zpx428ysgswaypfgk6aswckpjwa99hxk6v4gqs3xjp`
 
 ## Demo video
 

@@ -134,7 +134,7 @@ The Mainnet Track asks for a live, usable app in which anyone can make a useful 
 
 | | |
 |---|---|
-| CashTokens address (prizes, EMBER2026) | `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9` |
+| CashTokens address (prizes, EMBER2026) | `bitcoincash:zpx428ysgswaypfgk6aswckpjwa99hxk6v4gqs3xjp` |
 | Token category | `196b15bfdfab0cf49d0502a6e70ab91834875319db80d41e0a1586d395ad7fd1` |
 | Genesis | [`4d904970…1a92`](https://explorer.bch.ninja/tx/4d904970adeb0ebbaaa61b306fee54c4e7c3f5cb76c6d97e3d5a4a81ee211a92), 18 Nov 2026 17:03 UTC: 13 lane threads and 3 factory threads |
 | First mainnet round | BTC 5 min, [opened `60cb768f…`](https://explorer.bch.ninja/tx/60cb768f1d2484431b21c75b3843f27b3943502c5bd6175312bfb95a9de3ad23) at 17:11 UTC |

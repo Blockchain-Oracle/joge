@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Copy, ExternalLink, PlayCircle, Presentation, QrCode } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DottedQr, Sheet } from "@/kit";
 import { copyText } from "@/lib/browser";
 
@@ -23,11 +23,29 @@ const QR_SIZE = 220;
 export function BlazeBanner() {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const bar = useRef<HTMLDivElement>(null);
   const bare = CASHTOKENS.replace(/^bitcoincash:/, "");
+
+  // Its height as `--banner-h` (one line on desktop, two on a phone): the round screen fits itself under it, or the
+  // banner pushed Up and Down under a phone's dock and below a desktop's fold.
+  useEffect(() => {
+    const element = bar.current;
+    if (!element) return;
+    const root = document.documentElement;
+    const observer = new ResizeObserver(() => root.style.setProperty("--banner-h", `${element.offsetHeight}px`));
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--banner-h");
+    };
+  }, []);
   const link = "inline-flex items-center gap-1 whitespace-nowrap underline-offset-4 hover:underline";
   return (
     <>
-      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 bg-[var(--vermilion)] px-4 py-2 font-semibold text-[13px] text-white">
+      <div
+        ref={bar}
+        className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 bg-[var(--vermilion)] px-4 py-2 font-semibold text-[13px] text-white"
+      >
         <a href="https://bchblaze.cash" target="_blank" rel="noreferrer" className="nx-num tracking-[0.08em]">
           BCH BLAZE 2026 <span className="hidden sm:inline">· Mainnet Track</span>
         </a>

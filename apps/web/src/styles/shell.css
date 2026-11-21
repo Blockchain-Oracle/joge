@@ -17,7 +17,8 @@
 .jg-column {
   display: flex;
   min-width: 0;
-  min-height: 100dvh;
+  /* The banner sits above the column: together they fill the screen, with no scroll left over. */
+  min-height: calc(100dvh - var(--banner-h));
   flex-direction: column;
   max-width: var(--column-max);
   margin: 0 auto;
@@ -42,6 +43,16 @@
  * The chipnet world (test coins) wears a gold rule along the top of every page, set before first paint by the
  * theme script's data-network, so a test page is never mistaken for mainnet. Mainnet has no rule.
  */
+/* The BLAZE banner's height before its ResizeObserver measures it (two lines on a phone, one from 640 px). */
+:root {
+  --banner-h: 63px;
+}
+@media (min-width: 640px) {
+  :root {
+    --banner-h: 37px;
+  }
+}
+
 :root[data-network="chipnet"] .jg-shell {
   box-shadow: inset 0 3px 0 var(--gold);
 }

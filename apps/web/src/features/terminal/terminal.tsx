@@ -72,7 +72,7 @@ export function Terminal() {
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_248px]">
       <section
         aria-label={`${NAMES[lane.asset]} ${laneLabel(lane.seconds)}`}
-        className="relative h-[calc(100dvh-180px)] min-h-[540px] overflow-hidden rounded-[32px] bg-[var(--stage)] shadow-[inset_0_0_0_1px_var(--hairline)] md:h-[calc(100dvh-104px)]"
+        className="relative h-[calc(100dvh-180px-var(--banner-h))] min-h-[540px] overflow-hidden rounded-[32px] bg-[var(--stage)] shadow-[inset_0_0_0_1px_var(--hairline)] md:h-[calc(100dvh-104px-var(--banner-h))]"
       >
         <div className="absolute inset-x-0 top-[150px] bottom-[150px] md:top-[176px] md:bottom-[124px]">
           {chart.view === "live" ? (

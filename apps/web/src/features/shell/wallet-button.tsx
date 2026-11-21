@@ -23,7 +23,11 @@ export function WalletButton({ compact = false }: { compact?: boolean }) {
     <button
       type="button"
       onClick={wallet.openConnect}
-      aria-label={connected ? `Paired with ${wallet.walletName ?? "a wallet"}` : "Pair a wallet"}
+      aria-label={
+        connected
+          ? `${wallet.answering ? "Paired with" : "Not answering:"} ${wallet.walletName ?? "a wallet"}`
+          : "Pair a wallet"
+      }
       className={cx(
         "inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-accent font-semibold text-[14px] text-accent-ink transition-transform active:scale-[0.98]",
         compact ? "pr-1.5 pl-4" : "pr-1.5 pl-5",
@@ -31,7 +35,13 @@ export function WalletButton({ compact = false }: { compact?: boolean }) {
     >
       {connected ? (
         <>
-          {wallet.walletIcon ? <img src={wallet.walletIcon} alt="" className="-ml-2 size-7 rounded-full" /> : null}
+          <span className="relative -ml-2">
+            {wallet.walletIcon ? <img src={wallet.walletIcon} alt="" className="size-7 rounded-full" /> : null}
+            {wallet.answering ? null : (
+              // The wallet stopped answering: a red dot on its logo (the sheet says what to do).
+              <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full bg-[var(--down)] ring-2 ring-[var(--accent,#fff)] motion-safe:animate-pulse" />
+            )}
+          </span>
           <span className="tabular-nums">{usd ?? "Paired"}</span>
         </>
       ) : (

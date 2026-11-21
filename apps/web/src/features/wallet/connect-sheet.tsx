@@ -37,7 +37,10 @@ export function ConnectSheet() {
           // Paired: the wallet card (its logo, balance, payout address and disconnect), not a new pairing.
           <WalletPlate className="w-full text-left" />
         ) : wallet.state === "reconnecting" ? (
-          <Wait verb="Reconnecting to your wallet" />
+          <>
+            <Wait verb="Reconnecting to your wallet" />
+            <StartOver />
+          </>
         ) : wallet.error ? (
           <>
             <p className="type-body text-down-text">{wallet.error}</p>
@@ -104,9 +107,26 @@ export function ConnectSheet() {
             <Wait verb="Waiting for your wallet" />
           </>
         ) : (
-          <Wait verb="Opening a secure relay" />
+          <>
+            <Wait verb="Opening a secure relay" />
+            <StartOver />
+          </>
         )}
       </div>
     </Sheet>
+  );
+}
+
+/** The way out of any wait: drop whatever session is stuck and show a fresh pairing code. */
+function StartOver() {
+  const wallet = useWallet();
+  return (
+    <button
+      type="button"
+      onClick={wallet.repair}
+      className="text-[14px] font-semibold text-[var(--muted)] underline underline-offset-4 hover:text-[var(--ink)]"
+    >
+      Taking too long? Pair again
+    </button>
   );
 }

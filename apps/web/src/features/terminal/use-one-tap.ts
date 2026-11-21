@@ -132,6 +132,9 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
       label: wallet.state === "reconnecting" ? "Reconnecting · open your wallet" : "Pair a wallet",
       onClick: wallet.openConnect,
     };
+  // A wallet that stopped answering would never sign: say so, and offer a fresh pairing (a judge's report).
+  else if (!wallet.answering)
+    blocker = { label: `${wallet.walletName ?? "Your wallet"} isn't answering · Pair again`, onClick: wallet.repair };
   // A tap never does nothing: before the wallet's coins are read, the button says so (his report: Up did nothing).
   else if (!coins.data)
     blocker = coins.isError

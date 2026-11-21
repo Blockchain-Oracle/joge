@@ -48,6 +48,22 @@ export function WalletPlate({ className }: { className?: string }) {
   }
   return (
     <div className={cx("flex flex-col gap-3 rounded-[24px] bg-[var(--surface-1)] p-4", className)}>
+      {wallet.answering ? null : (
+        <div className="flex items-center gap-3 rounded-[16px] bg-[color-mix(in_oklab,var(--down)_14%,transparent)] px-3.5 py-3">
+          <span className="size-2.5 shrink-0 rounded-full bg-[var(--down)] motion-safe:animate-pulse" aria-hidden />
+          <p className="min-w-0 flex-1 text-[14px] leading-snug">
+            <span className="font-semibold">{wallet.walletName ?? "Your wallet"} isn't answering.</span> Open it, or
+            pair again.
+          </p>
+          <button
+            type="button"
+            onClick={wallet.repair}
+            className="shrink-0 rounded-full bg-[var(--ink)] px-3.5 py-2 font-semibold text-[13px] text-[var(--ink-inverse)]"
+          >
+            Pair again
+          </button>
+        </div>
+      )}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           {coins.isError && !coins.data ? (

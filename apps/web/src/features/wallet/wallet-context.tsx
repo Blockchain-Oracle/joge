@@ -10,6 +10,10 @@ import { PATHS, type PathName, type WalletKey, walletKey, walletKeys } from "./k
 import { signRequestToWire } from "./wire.ts";
 
 const SESSION_KEY = "joge-wizardconnect";
+/** Set when Pair again had to reload the page: the new page opens the pairing sheet at once. */
+const PAIR_ON_LOAD = "joge-pair-on-load";
+/** How long Pair again waits for the old session's goodbye before starting clean anyway. */
+const REPAIR_TIMEOUT_MS = 4_000;
 
 /** One input the wallet signs: [input index, path name, address index]. */
 export type InputPath = [number, PathName, number];
@@ -21,6 +25,10 @@ export interface SignRequest {
   done: boolean;
 }
 
+/** A paired wallet that sent nothing (not even its answer to the 10-second ping) for this long is not answering. */
+const QUIET_MS = 25_000;
+const QUIET_CHECK_MS = 3_000;
+
 /** How long the "Signed" tick stays before the request card leaves. */
 const SIGNED_HOLD_MS = 700;
 
@@ -28,6 +36,10 @@ interface WalletApi {
   state: WizardConnectState;
   /** The wallet itself has answered since the page loaded (false while a restored session waits for it). */
   online: boolean;
+  /** Paired and heard from lately; false once a paired wallet stopped answering (closed, asleep, or removed us). */
+  answering: boolean;
+  /** Drops a session that is not answering and starts a fresh pairing (a new code). */
+  repair: () => void;
   walletName: string | null;
   walletIcon: string | null;
   /** Pairing URIs while connecting (null during an automatic reconnect: there is no QR then). */
@@ -123,14 +135,89 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (state === "disconnected" || state === "idle") announced.current = false;
   }, [state, wizard.uri, wizard.walletName]);
 
-  const openConnect = useCallback(() => {
+  // Liveness. The library calls a restored session "connecting" until the wallet sends its keys again, and keeps it
+  // there forever if the wallet has removed the session; a live wallet answers the dapp's ping every 10 s. So a wallet
+  // that sent nothing for QUIET_MS is not answering (a judge: "if the wallet removes the connection, the app doesn't
+  // notice", then "finding a secure connection" forever).
+  const heardAt = useRef(Date.now());
+  const [quiet, setQuiet] = useState(false);
+  useEffect(() => {
+    if (!manager) return;
+    heardAt.current = Date.now();
+    setQuiet(false);
+    const heard = () => {
+      heardAt.current = Date.now();
+      setQuiet(false);
+    };
+    manager.on("messagereceived", heard);
+    return () => {
+      manager.off("messagereceived", heard);
+    };
+  }, [manager]);
+  useEffect(() => {
+    const check = setInterval(() => setQuiet(Date.now() - heardAt.current > QUIET_MS), QUIET_CHECK_MS);
+    return () => clearInterval(check);
+  }, []);
+  const answering = paired && !quiet;
+
+  // Pair again: drop the session that is not answering (its relay, its stored keys) and start a fresh pairing with a
+  // new code. The new pairing starts once the reset has settled (the library refuses to start mid-session).
+  const freshPairing = useRef(false);
+  const repair = useCallback(() => {
+    freshPairing.current = true;
+    // The goodbye to the old session waits on its relay; a dead relay could hold it forever. Past REPAIR_TIMEOUT_MS
+    // the stored session is dropped by hand and the page starts clean, straight into a new pairing.
+    const fallback = setTimeout(() => {
+      try {
+        localStorage.removeItem(SESSION_KEY);
+        sessionStorage.setItem(PAIR_ON_LOAD, "1");
+      } catch {
+        // Storage refused: the reload still drops the relay.
+      }
+      window.location.reload();
+    }, REPAIR_TIMEOUT_MS);
+    void wizard.disconnect().finally(() => clearTimeout(fallback));
+  }, [wizard]);
+  // After that clean start: the pairing sheet opens with a fresh code.
+  useEffect(() => {
+    try {
+      if (!sessionStorage.getItem(PAIR_ON_LOAD)) return;
+      sessionStorage.removeItem(PAIR_ON_LOAD);
+    } catch {
+      return;
+    }
+    freshPairing.current = true;
     setConnectOpen(true);
-    if (state === "idle" || state === "disconnected") wizard.connect();
+  }, []);
+  useEffect(() => {
+    if (freshPairing.current && (state === "idle" || state === "disconnected")) {
+      freshPairing.current = false;
+      wizard.connect();
+    }
   }, [state, wizard]);
 
+  /** Starts (or shows) a pairing: a fresh one from nothing, the code already showing, or Pair again over a dead session. */
   const pair = useCallback(() => {
     if (state === "idle" || state === "disconnected") wizard.connect();
-  }, [state, wizard]);
+    else if (state === "connecting" && wizard.uri) return;
+    else if (!answering) repair();
+  }, [state, wizard, answering, repair]);
+
+  // The sheet: a paired wallet's card (it says when the wallet stopped answering, with Pair again), otherwise a pairing.
+  const openConnect = useCallback(() => {
+    setConnectOpen(true);
+    if (!paired) pair();
+  }, [paired, pair]);
+
+  // A wallet that ends the session itself (its remove button sends a goodbye) is said, not just shown.
+  const wasPaired = useRef(false);
+  useEffect(() => {
+    if (paired) wasPaired.current = true;
+    else if (state === "disconnected" && wasPaired.current) {
+      wasPaired.current = false;
+      toast({ tone: "info", title: "Your wallet ended the connection", body: "Pair again to keep playing" });
+    } else if (state === "idle") wasPaired.current = false;
+  }, [paired, state]);
 
   const closeConnect = useCallback(() => {
     setConnectOpen(false);
@@ -184,6 +271,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // A restored session counts as paired: its addresses and balance show at once.
     state: paired ? "connected" : state === "connected" ? "reconnecting" : state,
     online: state === "connected",
+    answering,
+    repair: () => {
+      setConnectOpen(true);
+      repair();
+    },
     walletName: wizard.walletName,
     walletIcon: wizard.walletIcon,
     uri: wizard.uri,

@@ -76,8 +76,23 @@ export async function utxosAt(fulcrum: Fulcrum, lockingBytecode: string): Promis
   })) as ListedUtxo[];
 }
 
-export const broadcast = async (fulcrum: Fulcrum, hex: string): Promise<string> =>
-  (await fulcrum.request("blockchain.transaction.broadcast", [hex])) as string;
+/**
+ * Sends a transaction to every server in the pool at once and returns at the first that takes it. Chipnet nodes pass
+ * unconfirmed transactions on poorly: one sent to a single server stayed unknown to the others, so explorers built on
+ * them said "Failed to load transaction" until it was mined, and the next transaction spending it was refused there
+ * ("Missing inputs").
+ */
+export async function broadcast(fulcrum: Fulcrum, hex: string): Promise<string> {
+  const servers = (fulcrum as unknown as { transports?: Fulcrum[] }).transports;
+  const send = (server: Fulcrum) => server.request("blockchain.transaction.broadcast", [hex]) as Promise<string>;
+  if (!servers || servers.length < 2) return send(fulcrum);
+  try {
+    return await Promise.any(servers.map(send));
+  } catch (error) {
+    // Every server refused: the first server's own reason (a conflict, missing inputs) is the one to show.
+    throw error instanceof AggregateError ? error.errors[0] : error;
+  }
+}
 
 /**
  * CashScript's NetworkProvider over the same Fulcrum pool, so contracts and builders need no second connection. The

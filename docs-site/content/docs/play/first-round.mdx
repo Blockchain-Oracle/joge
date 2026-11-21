@@ -1,59 +1,84 @@
 ---
 title: Your first round
-description: "Five steps the first time you open Jōge. Each one moves on by itself when it happens: your wallet pairs, your coins land."
+description: "Jōge opens on free test coins, and the first time you see the rounds a ring walks you round the screen: the question, the clock, your bet, Up or Down, and the switch to real BCH."
 ---
 
 <div className="grid gap-3 sm:grid-cols-2">
-  <Crop src="/shots/crop/guide.webp" alt="The first-run guide, step one: Up or down, in minutes" caption="1 · What it is" />
-  <Crop src="/shots/crop/pair.webp" alt="Pair a wallet: a WizardConnect code, wallet logos, Open wallet and Copy link" caption="3 · Pair it" />
+  <Crop src="/shots/crop/tour-question.webp" alt="The walkthrough's first step: a ring around 'Up or down by 21:50?' and the card 'Will Bitcoin go up or down?'" caption="1 · The question" />
+  <Crop src="/shots/crop/tour-sides.webp" alt="The walkthrough's fourth step: a ring around the Up and Down buttons and the card 'Then tap Up or Down'" caption="4 · Up or Down" />
 </div>
+
+The first time you open the rounds, the screen dims and a ring circles one thing at a time, with one line beside it. Tap **Next**, or use the arrow keys. **Skip** is always there.
 
 <Steps>
 <Step>
 
-### What it is
+### The question
 
-One screen, one sentence. **Skip** is always there.
-
-</Step>
-<Step>
-
-### Get a wallet
-
-Any Bitcoin Cash wallet that speaks WizardConnect: <Logo name="cashonize.png" /> Cashonize, <Logo name="paytaca.png" /> Paytaca, <Logo name="selene.svg" /> Selene.
+**Will Bitcoin go up or down?** Guess whether the price ends higher or lower. Guess right and you split the pot.
 
 </Step>
 <Step>
 
-### Pair it
+### The clock
 
-Scan the code, tap **Open wallet** on a phone, or **Open in Cashonize** on a desktop. Your wallet sees Jōge's name and icon. You pair once; a refresh keeps it.
-
-</Step>
-<Step>
-
-### Get coins
-
-On chipnet, **Get test BCH** tops your wallet up to 2,000,000 test sats, about twenty calls. On mainnet, the guide shows your address and its QR code.
+Bets close when the ring runs out. The price at that moment is [the line to beat](/docs/price/the-line). When the round ends, the price is above it (<Up /> wins) or below it (<Down /> wins).
 
 </Step>
 <Step>
 
-### Call it
+### Your bet
 
-Tap <Up /> or <Down />. Your wallet signs one transaction: that's the entry.
+Tap an amount, or **Other** for your own. It stays picked for every bet after.
+
+</Step>
+<Step>
+
+### Up or Down
+
+One tap and your wallet signs. The number on each button is what a win pays per dollar: 1.8× means a $1 bet pays back $1.80.
+
+</Step>
+<Step>
+
+### Test coins
+
+The switch at the top says which money you're playing with. A first visit starts on free test coins.
+
+</Step>
+<Step>
+
+### How to play
+
+Replays the walkthrough. It's on the round screen, in **More** and in ⌘K.
 
 </Step>
 </Steps>
 
-## Chipnet or mainnet
+## Then pair a wallet
 
-<Crop src="/shots/crop/switch.webp" alt="Switch to mainnet: Real BCH from here, and Slide to use real money" caption="Going to mainnet takes a slide; coming back takes one tap." width={420} />
+<Crop src="/shots/crop/pair.webp" alt="Pair a wallet: a WizardConnect code, wallet logos, Open wallet and Copy link" caption="Pair once; a refresh keeps it." width={360} />
 
-| | 試 Chipnet | 本 Mainnet |
+The walkthrough ends on **Pair a wallet**:
+
+1. **Get a wallet.** Any Bitcoin Cash wallet that speaks WizardConnect: <Logo name="cashonize.png" /> Cashonize (in your browser), <Logo name="paytaca.png" /> Paytaca, <Logo name="selene.svg" /> Selene.
+2. **Pair it.** Scan the code, or tap **Open wallet** on a phone. Your wallet shows Jōge's name and icon.
+3. **Get coins.** On test coins, **Get test BCH** fills your wallet in one tap. On mainnet, Jōge reads what your wallet already holds and never asks you to send it anything. Your BCH stays in your wallet until you sign a bet.
+
+## Test coins or real BCH
+
+<div className="grid gap-3 sm:grid-cols-2">
+  <Crop src="/shots/crop/tour-world.webp" alt="The walkthrough's test-coins step: a ring around the switch and the card 'These are free test coins'" caption="5 · The switch" />
+  <Crop src="/shots/crop/switch-hint.webp" alt="The switch's bubble: 試 Free test coins · tap for real BCH" caption="Until you use it, the switch nudges now and then." />
+</div>
+
+| | 試 Testnet (chipnet) | 本 Mainnet |
 |---|---|---|
 | Money | Free test coins | Real BCH |
-| Coins | **Get test BCH**, in the app | Send BCH to your wallet |
+| Where you start | Every first visit | One switch away |
+| Coins | **Get test BCH**, in the app | Already in your wallet |
 | Rounds | Nonstop on all four markets | While someone is watching ([5.2](/docs/mainnet/on-demand)) |
 
-The faucet tops up a wallet holding under 500,000 test sats, once per address every 12 hours and five times a day per visitor (counted by IP address). The guide reopens from **More** or ⌘K.
+<Crop src="/shots/crop/switch.webp" alt="Switch to mainnet: Real BCH from here, and Slide to use real money" caption="Going to mainnet takes a slide; coming back takes one tap. Your choice is kept on this device." width={420} />
+
+The faucet tops up a wallet holding under 500,000 test sats to 2,000,000 (about twenty bets), once per address every 12 hours and five times a day per visitor (counted by IP address).

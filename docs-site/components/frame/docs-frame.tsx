@@ -11,7 +11,7 @@ import { SITE } from "@/lib/site"
 import type { NavSection } from "@/lib/nav"
 
 /*
- * The docs frame: a top bar (mark, search, theme, source, Play), the sections and their pages on the left with the
+ * The docs frame: a top bar (mark, search, theme, source, Bet), the sections and their pages on the left with the
  * vermilion line marking where you are, the page in a reading column, and the page's outline on the right.
  */
 export function DocsFrame({ nav, children, outline }: { nav: NavSection[]; children: ReactNode; outline?: ReactNode }) {
@@ -76,7 +76,7 @@ function TopBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: boolean })
           href={SITE.play}
           className="inline-flex h-10 items-center rounded-full bg-[#e04d26] px-4 text-[14px] font-semibold text-white"
         >
-          Play
+          Bet
         </a>
       </div>
     </header>

@@ -13,7 +13,7 @@ export const SITE = {
   /** 上下: up and down. */
   kanji: "上下",
   meaning: "up and down",
-  tagline: "Up or down, in minutes.",
+  tagline: "Bet up or down, in minutes.",
   description:
     "Jōge is a no-house price game on Bitcoin Cash mainnet: call BTC, ETH, BCH or gold up or down for a few cents. Contracts check General Protocols' signed prices and pay the winners straight to their wallets; anyone can finish a round, and AI agents play from vaults they can never empty.",
   url: DOCS_URL,

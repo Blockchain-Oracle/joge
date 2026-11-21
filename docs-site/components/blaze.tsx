@@ -99,7 +99,7 @@ export function BlazeBanner() {
           >
             <QrCode className="size-3.5" />
             <span className="opacity-80">CashTokens</span>
-            <span className="hidden font-mono underline decoration-white/30 underline-offset-4 group-hover:decoration-white sm:inline xl:hidden">
+            <span className="hidden font-mono underline decoration-white/30 underline-offset-4 group-hover:decoration-white lg:inline xl:hidden">
               {cashtokens.slice(0, SHORT + 2)}…{cashtokens.slice(-SHORT)}
             </span>
             <span className="hidden font-mono underline decoration-white/30 underline-offset-4 group-hover:decoration-white xl:inline">

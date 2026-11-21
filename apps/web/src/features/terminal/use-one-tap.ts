@@ -127,7 +127,12 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
   } else if (!round || round.lockTime - now < CLOSE_LEAD_SECONDS) {
     blocker = { label: "Next round opening", onClick: () => undefined };
   } else if (wallet.state !== "connected") blocker = { label: "Pair a wallet", onClick: wallet.openConnect };
-  else if (coins.data && coins.balance < stake + ENTRY_OVERHEAD) {
+  // A tap never does nothing: before the wallet's coins are read, the button says so (his report: Up did nothing).
+  else if (!coins.data)
+    blocker = coins.isError
+      ? { label: "Couldn't read your wallet · Try again", onClick: () => void coins.refetch() }
+      : { label: "Reading your wallet…", onClick: () => undefined };
+  else if (coins.balance < stake + ENTRY_OVERHEAD) {
     // The guide's funding step: test coins from the faucet on chipnet, what the wallet holds and needs on mainnet.
     blocker = {
       label:

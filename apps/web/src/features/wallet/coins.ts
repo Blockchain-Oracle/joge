@@ -1,13 +1,13 @@
 "use client";
 
-import { deploymentFor, scripthashOf, utxosAt } from "@joge/contracts/browser";
+import { deploymentFor, scripthashOf, type utxosAt } from "@joge/contracts/browser";
 import type { Network } from "@joge/db";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useWorld } from "../shell/world.tsx";
 import { fulcrum } from "./chain.ts";
 import type { WalletKey } from "./keys.ts";
-import { scanWallet } from "./scan.ts";
+import { readWallet } from "./scan.ts";
 import { useWallet } from "./wallet-context.tsx";
 
 /** A plain coin the wallet holds, with the key that signs it. */
@@ -51,21 +51,18 @@ export function useWalletCoins() {
     enabled: keys.length > 0,
     queryFn: async (): Promise<Scan> => {
       const pool = await fulcrum(network);
-      const scan = await scanWallet(pool, keyAt);
-      const lists = await Promise.all(
-        scan.used.map(async (key) =>
-          // Plain coins, and the dollar token (dollar events stake it); no other token is ever spent from here.
-          (await utxosAt(pool, key.lockingBytecode))
-            .filter(
-              (coin) => !coin.token || (dollarCategory && coin.token.category === dollarCategory && !coin.token.nft),
-            )
-            .map((coin) => ({ ...coin, key })),
-        ),
+      const read = await readWallet(pool, keyAt);
+      // Plain coins, and the dollar token (dollar events stake it); no other token is ever spent from here.
+      const coins = read.holdings.flatMap(({ key, utxos }) =>
+        utxos
+          .filter(
+            (coin) => !coin.token || (dollarCategory && coin.token.category === dollarCategory && !coin.token.nft),
+          )
+          .map((coin) => ({ ...coin, key })),
       );
-      const coins = lists.flat();
       const first = keys.filter((key) => key.index < WATCHED_PER_PATH);
       const holding = coins.map((coin) => coin.key);
-      const watch = [...new Set([...first, ...scan.ahead, ...holding].map((key) => key.lockingBytecode))].slice(
+      const watch = [...new Set([...first, ...read.ahead, ...holding].map((key) => key.lockingBytecode))].slice(
         0,
         MAX_WATCHED,
       );

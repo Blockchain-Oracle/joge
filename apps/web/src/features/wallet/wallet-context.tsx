@@ -189,19 +189,31 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     freshPairing.current = true;
     setConnectOpen(true);
   }, []);
+  // One pairing per request: the paths that start one (Pair again, an open empty sheet, the guide) can land in the
+  // same render, and a second connect() would replace the first relay.
+  const pairingAsked = useRef(false);
+  useEffect(() => {
+    // A pairing under way, or one that failed (its Try again must start a new one), clears the request.
+    if ((state !== "idle" && state !== "disconnected") || wizard.error) pairingAsked.current = false;
+  }, [state, wizard.error]);
+  const startPairing = useCallback(() => {
+    if (pairingAsked.current) return;
+    pairingAsked.current = true;
+    wizard.connect();
+  }, [wizard]);
   useEffect(() => {
     if (freshPairing.current && (state === "idle" || state === "disconnected")) {
       freshPairing.current = false;
-      wizard.connect();
+      startPairing();
     }
-  }, [state, wizard]);
+  }, [state, startPairing]);
 
   /** Starts (or shows) a pairing: a fresh one from nothing, the code already showing, or Pair again over a dead session. */
   const pair = useCallback(() => {
-    if (state === "idle" || state === "disconnected") wizard.connect();
+    if (state === "idle" || state === "disconnected") startPairing();
     else if (state === "connecting" && wizard.uri) return;
     else if (!answering) repair();
-  }, [state, wizard, answering, repair]);
+  }, [state, wizard, answering, repair, startPairing]);
 
   // The sheet: a paired wallet's card (it says when the wallet stopped answering, with Pair again), otherwise a pairing.
   const openConnect = useCallback(() => {
@@ -224,6 +236,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // Closing the sheet abandons a pairing in progress, never a stored session that is reconnecting.
     if (state === "connecting" && wizard.uri) void wizard.disconnect();
   }, [state, wizard]);
+
+  // An open pairing sheet with no wallet and no pairing under way starts one at once. Without this, a disconnect made
+  // while the sheet was open (the wallet card lives in it, or the wallet ended the session) left the sheet on "Opening
+  // a secure relay" until a refresh (his report): only pressing Pair started a pairing.
+  useEffect(() => {
+    if (!connectOpen || paired || wizard.error) return;
+    if (state === "idle" || state === "disconnected") startPairing();
+  }, [connectOpen, paired, state, wizard.error, startPairing]);
+
+  /** Ends the session from Jōge's side and closes the sheet (a new pairing starts only when asked for). */
+  const disconnect = useCallback(async () => {
+    setConnectOpen(false);
+    await wizard.disconnect();
+  }, [wizard]);
 
   const sign = useCallback(
     async (transaction: unknown, inputPaths: InputPath[], signal?: AbortSignal) => {
@@ -288,7 +314,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     openConnect,
     pair,
     closeConnect,
-    disconnect: wizard.disconnect,
+    disconnect,
     sign,
     signing,
     cancelSigning,

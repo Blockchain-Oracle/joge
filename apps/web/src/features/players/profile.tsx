@@ -11,7 +11,7 @@ import { faceOf } from "../agents/names.ts";
 import { Portrait } from "../agents/portrait.tsx";
 import { TicketLine } from "../portfolio/ticket-row.tsx";
 import { StoryFilm } from "../replay/story-film.tsx";
-import { ADDRESS_EXPLORER } from "../round/api.ts";
+import { addressLink } from "../round/api.ts";
 import { useNow } from "../rounds/use-now.ts";
 import { setWorld, useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
@@ -118,7 +118,7 @@ export function Profile({ address, world }: { address: string; world?: "chipnet"
                 {copied ? "Copied" : "Address"}
               </button>
               <a
-                href={`${ADDRESS_EXPLORER[network]}${full}`}
+                href={addressLink(network, full)}
                 target="_blank"
                 rel="noreferrer"
                 className="nx-glass inline-flex h-8 items-center gap-1.5 rounded-full px-3 font-semibold text-[12px]"

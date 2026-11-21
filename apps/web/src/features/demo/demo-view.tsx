@@ -3,7 +3,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { cx } from "@/kit/cx";
 import { AssetCube } from "@/marks/asset";
-import { EXPLORER } from "../round/api.ts";
+import { txLink } from "../round/api.ts";
 import { DOCS_URL } from "../shell/places.ts";
 import { CHAPTERS, clock, FILM, type FilmRound, ROUNDS, type Step } from "./constants.ts";
 
@@ -59,7 +59,7 @@ function RoundCard({ round }: { round: FilmRound }) {
         {round.txs.map((tx) => (
           <li key={tx.txid}>
             <a
-              href={`${EXPLORER.mainnet}${tx.txid}`}
+              href={txLink("mainnet", tx.txid)}
               target="_blank"
               rel="noreferrer"
               title={tx.txid}

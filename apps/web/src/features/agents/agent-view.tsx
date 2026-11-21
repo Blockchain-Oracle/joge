@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { EmptyState, Ring, Skeleton } from "@/kit";
 import { profileHref } from "../players/api.ts";
-import { EXPLORER } from "../round/api.ts";
+import { addressLink } from "../round/api.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { LaneCubes, useNextCall } from "./agent-card.tsx";
@@ -43,7 +43,6 @@ export function AgentView({ id }: { id: number }) {
   const owner = wallet.keys.some((key) => key.pkh === agent.ownerPkh);
   const held = vault.data?.sats ?? BigInt(agent.vaultSats);
   const proposals = memory.filter((entry) => entry.proposal === "open");
-  const addressPage = EXPLORER[network].replace("/tx/", "/address/");
 
   return (
     <div className="flex flex-col gap-5">
@@ -79,7 +78,7 @@ export function AgentView({ id }: { id: number }) {
             </span>
           </span>
           <a
-            href={`${addressPage}${vaultAddress}`}
+            href={addressLink(network, vaultAddress)}
             target="_blank"
             rel="noreferrer"
             className="nx-glass inline-flex h-10 items-center gap-2 rounded-full px-4 text-[13px] font-semibold"

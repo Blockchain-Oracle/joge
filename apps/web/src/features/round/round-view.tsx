@@ -30,7 +30,7 @@ import { useOneTap } from "../terminal/use-one-tap.ts";
 import { useJournal } from "../ticket/journal.ts";
 import { inFlight, withEntries } from "../ticket/pending.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
-import { EXPLORER, roundQuery } from "./api.ts";
+import { roundQuery, txLink } from "./api.ts";
 import { ROLLING_SPAN_MS, SECOND_MS } from "./constants.ts";
 import { dueStep, finishRound } from "./finish.ts";
 import { SealStamp, type Verdict } from "./verdict.tsx";
@@ -153,9 +153,9 @@ export function RoundView({
   else if (decided && myTickets.some((ticket) => ticket.outcome === round.winner)) verdict = "hit";
   else if (decided && myTickets.length > 0) verdict = "miss";
   const firstTicket = myTickets[0] ?? null;
-  const txLink = (txid: string, label: string) => (
+  const chainLink = (txid: string, label: string) => (
     <a
-      href={`${EXPLORER[network]}${txid}`}
+      href={txLink(network, txid)}
       target="_blank"
       rel="noreferrer"
       className="inline-flex items-center gap-1 hover:text-[var(--ink)]"
@@ -264,8 +264,8 @@ export function RoundView({
                       </button>
                     ) : null}
                     <span className="nx-num flex gap-4 text-[12px] text-[var(--muted)]">
-                      {txLink(firstTicket.enterTxid, "Your entry")}
-                      {firstTicket.payoutTxid ? txLink(firstTicket.payoutTxid, "Payout") : null}
+                      {chainLink(firstTicket.enterTxid, "Your entry")}
+                      {firstTicket.payoutTxid ? chainLink(firstTicket.payoutTxid, "Payout") : null}
                     </span>
                   </div>
                 ) : null}

@@ -2,7 +2,7 @@
 
 import { ArrowRight, ExternalLink, LoaderCircle } from "lucide-react";
 import { cx } from "@/kit";
-import { EXPLORER } from "../round/api.ts";
+import { txLink } from "../round/api.ts";
 import { useMoney } from "../rounds/money.ts";
 import { centreOf, switchWorld } from "../shell/world.tsx";
 import { useWalletCoins } from "../wallet/coins.ts";
@@ -33,7 +33,7 @@ export function TestCoinsButton({ className }: { className?: string }) {
   if (view?.state === "sent" && view.txid)
     return (
       <a
-        href={`${EXPLORER.chipnet}${view.txid}`}
+        href={txLink("chipnet", view.txid)}
         target="_blank"
         rel="noreferrer"
         className={cx(base, "bg-[var(--surface-2)] text-[var(--ink)]")}

@@ -3,7 +3,7 @@
 import { deploymentFor } from "@joge/contracts/browser";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { EXPLORER } from "../round/api.ts";
+import { txLink } from "../round/api.ts";
 import { setWorld } from "../shell/world.tsx";
 
 const SINCE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -68,7 +68,7 @@ export function MainnetBand() {
           Play on mainnet
         </Link>
         <a
-          href={`${EXPLORER.mainnet}${genesis}`}
+          href={txLink("mainnet", genesis)}
           target="_blank"
           rel="noreferrer"
           className="nx-num inline-flex h-14 items-center gap-2 rounded-full bg-white/15 px-6 text-[14px] hover:bg-white/25"

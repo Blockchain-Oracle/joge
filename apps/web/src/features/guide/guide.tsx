@@ -6,7 +6,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { Mark } from "@/brand/mark";
 import { confetti, cue, cx, DottedQr, Sheet, usePhone } from "@/kit";
 import { copyText } from "@/lib/browser";
-import { EXPLORER } from "../round/api.ts";
+import { txLink } from "../round/api.ts";
 import { useMoney } from "../rounds/money.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useWalletCoins } from "../wallet/coins.ts";
@@ -377,7 +377,7 @@ function Action({
     if (view?.state === "sent" && view.txid)
       return (
         <a
-          href={`${EXPLORER.chipnet}${view.txid}`}
+          href={txLink("chipnet", view.txid)}
           target="_blank"
           rel="noreferrer"
           className="flex h-14 items-center justify-center gap-2 rounded-full bg-[var(--surface-2)] font-semibold text-[15px]"

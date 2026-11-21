@@ -6,7 +6,7 @@ import { Braces, Check, ExternalLink, LoaderCircle, ShieldCheck, X } from "lucid
 import { type ReactNode, useState } from "react";
 import { cx, Marble } from "@/kit";
 import { ShortAddress } from "../players/leaderboard.tsx";
-import { ADDRESS_EXPLORER, EXPLORER } from "../round/api.ts";
+import { addressLink, txLink } from "../round/api.ts";
 
 /** A check's state, and how a badge wears it: grey idle, spinning, lime proven, coral not. */
 export type CheckState = "idle" | "checking" | "valid" | "invalid";
@@ -217,7 +217,7 @@ export function ChainList({
         {transactions.map((tx) => (
           <li key={tx.txid}>
             <a
-              href={`${EXPLORER[network]}${tx.txid}`}
+              href={txLink(network, tx.txid)}
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-3 rounded-[14px] px-2 py-2 hover:bg-[var(--surface-2)]"
@@ -258,7 +258,7 @@ export function ChainList({
             return address ? (
               <a
                 key={contract.name}
-                href={`${ADDRESS_EXPLORER[network]}${address}`}
+                href={addressLink(network, address)}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--surface-2)] px-3 font-semibold text-[12px] hover:bg-[var(--surface-3)]"

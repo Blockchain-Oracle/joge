@@ -15,14 +15,16 @@ export const roundQuery = (network: Network, roundId: number) =>
     },
   });
 
-/** Where a transaction can be seen on a public explorer. */
-export const EXPLORER: Record<Network, string> = {
-  chipnet: "https://chipnet.imaginary.cash/tx/",
-  mainnet: "https://explorer.bch.ninja/tx/",
-};
+/**
+ * The public explorer: Selene's, on both worlds. It reads the same servers Jōge sends to, so a transaction shows the
+ * moment it is sent, unconfirmed included; the chipnet explorer used before ran on a node that never heard of Jōge's
+ * unconfirmed transactions ("Failed to load transaction" until a block, his report).
+ */
+const EXPLORER_BASE = "https://explorer.selene.cash";
 
-/** Where an address can be seen on a public explorer. */
-export const ADDRESS_EXPLORER: Record<Network, string> = {
-  chipnet: "https://chipnet.imaginary.cash/address/",
-  mainnet: "https://explorer.bch.ninja/address/",
-};
+/** A transaction on the public explorer. */
+export const txLink = (network: Network, txid: string) => `${EXPLORER_BASE}/tx/${txid}?network=${network}`;
+
+/** An address on the public explorer. */
+export const addressLink = (network: Network, address: string) =>
+  `${EXPLORER_BASE}/address/${address}?network=${network}`;

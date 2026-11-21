@@ -264,7 +264,7 @@ export function Studio({ copyFrom }: { copyFrom: number | null }) {
               presets={PER_BET_CHIPS_USD}
               min={money.bchUsd ? (Number(MIN_STAKE) / SATS_PER_BCH) * money.bchUsd : 0}
               max={money.bchUsd ? (Number(ceiling) / SATS_PER_BCH) * money.bchUsd : null}
-              maxLabel="Lane max"
+              maxLabel="Market max"
               confirm={(dollars) => `${chipUsd(dollars)} a bet`}
               onConfirm={(dollars) => {
                 setPerBetUsd(dollars);

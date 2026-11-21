@@ -8,10 +8,10 @@ export type ThemeChoice = "dark" | "light" | "system";
 export const MAINNET_LIVE = process.env.NEXT_PUBLIC_JOGE_MAINNET_LIVE === "true";
 
 /**
- * Where a first visit lands: mainnet once it is live (players and judges hold real BCH), chipnet
- * until then. Chipnet stays one tap away, with the guide's free test coins.
+ * Where a first visit lands: chipnet, the test world with free coins, so anyone can try a round before spending a
+ * cent. Mainnet is one flip of the header switch away; a choice made on this device wins on every later visit.
  */
-export const DEFAULT_NETWORK: Network = MAINNET_LIVE ? "mainnet" : "chipnet";
+export const DEFAULT_NETWORK: Network = "chipnet";
 
 /**
  * Runs before first paint (inline in <head>): sets the theme and the network world from what this browser chose last,

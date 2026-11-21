@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Jōge 上下",
     short_name: "Jōge",
-    description: "Up or down, in minutes. Price rounds on Bitcoin Cash with no house.",
+    description: "Bet up or down, in minutes. Guess the price, split the pot, on Bitcoin Cash.",
     start_url: "/rounds",
     scope: "/",
     display: "standalone",

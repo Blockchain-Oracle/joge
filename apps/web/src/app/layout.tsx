@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "Jōge 上下", template: "%s · Jōge" },
   description:
-    "Up or down, in minutes. Call BTC, ETH, BCH or gold for a few cents; a contract on Bitcoin Cash pays the winners. No house.",
+    "Bet up or down, in minutes. Guess if Bitcoin, Ether, BCH or gold ends higher or lower; guess right and you split the pot, paid straight to your wallet on Bitcoin Cash.",
   applicationName: "Jōge",
 };
 

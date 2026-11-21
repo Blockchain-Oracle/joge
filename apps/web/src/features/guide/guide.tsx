@@ -34,10 +34,10 @@ const OUTSIDE_FAUCETS = [
 /** Each step's words (≤ 25 with the world note). */
 const COPY: Record<GuideStep, { title: string; line: { chipnet: string; mainnet: string } }> = {
   intro: {
-    title: "Up or down, in minutes.",
+    title: "Bet up or down, in minutes.",
     line: {
-      chipnet: "Call where the price closes. The right side splits the pot.",
-      mainnet: "Call where the price closes. The right side splits the pot.",
+      chipnet: "Guess if the price ends higher or lower. Guess right and you split the pot.",
+      mainnet: "Guess if the price ends higher or lower. Guess right and you split the pot.",
     },
   },
   wallet: {

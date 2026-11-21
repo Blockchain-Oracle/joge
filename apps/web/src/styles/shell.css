@@ -135,6 +135,204 @@
 }
 
 /*
+ * The switch says what it is (his report: "nobody will know this is testnet"): a bubble under it on hover, and on
+ * chipnet, until the switch has been used once, a nudge now and then: the switch wiggles, the thumb leans towards
+ * mainnet, and the bubble says these are free test coins.
+ */
+.jg-world-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.jg-world-hint {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: var(--z-float);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 13px;
+  border-radius: 14px;
+  background: var(--gold);
+  color: #1a1406;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  box-shadow: 0 14px 30px -12px rgb(0 0 0 / 0.6);
+  opacity: 0;
+  translate: 0 -4px;
+  pointer-events: none;
+  transition:
+    opacity 200ms ease-out,
+    translate 200ms ease-out;
+}
+.jg-world-hint::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: 28px;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: inherit;
+  rotate: 45deg;
+}
+:root[data-network="mainnet"] .jg-world-hint {
+  background: var(--vermilion);
+  color: #fff;
+}
+.jg-world-hint[data-shown],
+.jg-world-wrap:hover .jg-world-hint,
+.jg-world-toggle:focus-visible + .jg-world-hint {
+  opacity: 1;
+  translate: 0 0;
+}
+.jg-world-toggle[data-nudge] {
+  animation: jg-world-wiggle 900ms ease-in-out;
+}
+.jg-world-toggle[data-nudge] .jg-glow-thumb {
+  animation: jg-thumb-lean 1300ms ease-in-out;
+}
+@keyframes jg-world-wiggle {
+  0%,
+  75%,
+  100% {
+    rotate: 0deg;
+  }
+  15% {
+    rotate: -5deg;
+  }
+  30% {
+    rotate: 4deg;
+  }
+  45% {
+    rotate: -3deg;
+  }
+  60% {
+    rotate: 2deg;
+  }
+}
+@keyframes jg-thumb-lean {
+  0%,
+  85%,
+  100% {
+    translate: 0 0;
+  }
+  25%,
+  55% {
+    translate: 9px 0;
+  }
+  40% {
+    translate: 4px 0;
+  }
+}
+
+/*
+ * The walkthrough (features/tour): the screen dims around a vermilion ring that pulses on one thing at a time, and the
+ * card beside it points at it. The ring and the card glide between steps; taps outside the card land on the veil.
+ */
+.jg-tour {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-popover);
+}
+.jg-tour-veil {
+  position: absolute;
+  inset: 0;
+}
+.jg-tour-dim {
+  position: absolute;
+  inset: 0;
+  background: rgb(6 5 4 / 0.66);
+}
+.jg-tour-hole {
+  position: absolute;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 200vmax rgb(6 5 4 / 0.66),
+    0 0 0 2px var(--vermilion),
+    0 0 30px 2px color-mix(in srgb, var(--vermilion) 50%, transparent);
+  transition:
+    left 420ms var(--ease-out),
+    top 420ms var(--ease-out),
+    width 420ms var(--ease-out),
+    height 420ms var(--ease-out),
+    border-radius 420ms var(--ease-out);
+}
+.jg-tour-hole::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  animation: jg-tour-pulse 1600ms ease-out infinite;
+}
+@keyframes jg-tour-pulse {
+  from {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--vermilion) 85%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 16px transparent;
+  }
+}
+.jg-tour-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(340px, calc(100vw - 24px));
+  padding: 18px;
+  border-radius: 26px;
+  background: var(--surface-1);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 1px var(--hairline),
+    0 30px 80px -20px rgb(0 0 0 / 0.75);
+  transition:
+    left 420ms var(--ease-out),
+    top 420ms var(--ease-out);
+}
+.jg-tour-card::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--arrow-x) - 8px);
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: inherit;
+  rotate: 45deg;
+}
+.jg-tour-card[data-side="below"]::before {
+  top: -7px;
+}
+.jg-tour-card[data-side="above"]::before {
+  bottom: -7px;
+}
+.jg-tour-card[data-side="center"]::before {
+  display: none;
+}
+.jg-tour-words {
+  animation: jg-tour-in 260ms var(--ease-out);
+}
+@keyframes jg-tour-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jg-world-toggle[data-nudge],
+  .jg-world-toggle[data-nudge] .jg-glow-thumb,
+  .jg-tour-hole::after,
+  .jg-tour-words {
+    animation: none;
+  }
+  .jg-tour-hole,
+  .jg-tour-card {
+    transition: none;
+  }
+}
+
+/*
  * The flood between worlds: the new world is revealed by a circle spreading
  * from the switch, 520 ms. `--flood-x/y` and `data-flooding` are set by switchWorld().
  */

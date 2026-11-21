@@ -31,7 +31,7 @@ export function SidePlates({ tap, compact = false }: { tap: ReturnType<typeof us
           {tap.blocker.label}
         </button>
       ) : null}
-      <div className="grid w-full grid-cols-2 gap-3">
+      <div data-tour="sides" className="grid w-full grid-cols-2 gap-3">
         {sides.map(({ side, glyph, word }) => {
           const multiple = tap.pays(side);
           return (

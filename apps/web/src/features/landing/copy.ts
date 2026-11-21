@@ -5,29 +5,39 @@
 export const HERO = {
   /** The hero chip: the promo says mainnet as soon as mainnet is live, whichever world the visitor is in. */
   live: { chipnet: "Live on Bitcoin Cash chipnet", mainnet: "Live on Bitcoin Cash mainnet" },
-  title: "Up or down,",
+  title: "Bet up or down,",
   accent: "in minutes.",
-  line: "Cents on BTC, ETH, BCH or gold. No house: a contract checks the signed price and pays the winners.",
-  play: "Play now",
-  how: "How it pays",
+  line: "Pick Bitcoin, Ether, BCH or gold. Guess if the price ends higher or lower. Guess right and you split the pot, paid straight to your wallet.",
+  play: "Bet now",
+  how: "How it works",
+  /** Under the buttons: where a first visit starts. */
+  free: "Starts on free test coins. Real BCH is one switch away.",
 } as const;
 
 export const STEPS = {
-  lanes: { n: "01", title: "Pick a lane", line: "Crypto every 5 minutes. Gold every hour." },
-  call: { n: "02", title: "Tap Up or Down", line: "One tap. Your wallet signs." },
-  pays: { n: "03", title: "The pot pays", line: "Winners paid straight to their wallets. Watch one." },
+  lanes: { n: "01", title: "Pick a market", line: "Bitcoin, Ether and BCH every 5 minutes. Gold every hour." },
+  call: { n: "02", title: "Tap Up or Down", line: "Pick your bet, then one tap. Your wallet signs." },
+  pays: {
+    n: "03",
+    title: "Winners split the pot",
+    line: "Everyone on the right side shares it, paid straight to their wallets. Watch one.",
+  },
   signed: {
     n: "04",
-    title: "Every price is signed",
-    line: "General Protocols signs. The contract checks. So can you.",
+    title: "Nobody can fake the price",
+    line: "General Protocols signs every price. Bitcoin Cash checks the signature before anyone is paid.",
   },
-  help: { n: "05", title: "Sensei and agents", line: "A straight read, or an agent inside your caps." },
+  help: {
+    n: "05",
+    title: "Help if you want it",
+    line: "Ask Sensei for a quick read, or let an agent bet for you within your limits.",
+  },
 } as const;
 
 /** The stake chip in section 02's art. */
 export const CALL_STAKE = "$0.10 · set once";
 
-export const FINAL = { title: "The next round closes in", play: "Play now" } as const;
+export const FINAL = { title: "The next round closes in", play: "Bet now" } as const;
 
 /** "Built on" (each with its real logo, from the projects' own repositories). */
 export const BUILT_ON = [

@@ -50,9 +50,9 @@ export const DOCS_URL = (process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.getjo
 
 /** Everything else reachable from More and ⌘K. */
 export const PAGES: Page[] = [
-  // The first-run guide, reopened from here and ⌘K (the host opens it for `?guide=1`).
   { label: "Previous rounds", href: "/rounds/previous", icon: History, group: "app" },
-  { label: "Guide", href: "/rounds?guide=1" as Route, icon: Compass, group: "joge" },
+  // The round screen's walkthrough, replayed from here and ⌘K (the round screen starts it for `?tour=1`).
+  { label: "How to play", href: "/rounds?tour=1" as Route, icon: Compass, group: "joge" },
   { label: "Status", href: "/status", icon: Activity, group: "joge" },
   { label: "Demo video", href: "/demo", icon: PlayCircle, group: "joge" },
   { label: "Docs", href: DOCS_URL, icon: BookOpen, group: "joge" },

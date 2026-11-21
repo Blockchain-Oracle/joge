@@ -57,7 +57,7 @@ export function MainnetBand() {
         Live on Bitcoin Cash mainnet.
       </h2>
       <p className="mt-5 max-w-[34rem] text-[clamp(16px,1.6vw,19px)] opacity-90">
-        Real rounds, real payouts, settled by contracts on chain since {SINCE.format(new Date(deployment.createdAt))}.
+        Real bets and real payouts, every one on chain, since {SINCE.format(new Date(deployment.createdAt))}.
       </p>
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <Link
@@ -65,7 +65,7 @@ export function MainnetBand() {
           onClick={() => setWorld("mainnet")}
           className="inline-flex h-14 items-center rounded-full bg-white px-7 font-semibold text-[16px] text-[var(--vermilion)]"
         >
-          Play on mainnet
+          Bet with real BCH
         </Link>
         <a
           href={txLink("mainnet", genesis)}

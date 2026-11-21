@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChartWindow, RoundLevels } from "@joge/chart";
-import { ChevronDown, History, Share2 } from "lucide-react";
+import { ChevronDown, CircleHelp, History, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { cue, Ring, Sheet, Skeleton } from "@/kit";
@@ -13,6 +13,8 @@ import { useLanePositions } from "../position/use-lane-positions.ts";
 import { clockTime, laneLabel } from "../rounds/format.ts";
 import { useNow } from "../rounds/use-now.ts";
 import { ShareSheet } from "../share/share-sheet.tsx";
+import { startTour } from "../tour/store.ts";
+import { TourHost } from "../tour/tour.tsx";
 import { ChartControls, useChartView } from "./chart-controls.tsx";
 import { LaneRail } from "./lane-rail.tsx";
 import { SidePlates } from "./side-plates.tsx";
@@ -99,7 +101,7 @@ export function Terminal() {
             <span className="text-[14px] text-[var(--muted)]">{laneLabel(lane.seconds)}</span>
             <ChevronDown aria-hidden className="size-4 text-[var(--muted)] lg:hidden" />
           </button>
-          <h1 className="nx-display max-w-[11ch] text-[clamp(34px,5vw,64px)]">
+          <h1 data-tour="question" className="nx-display max-w-[11ch] text-[clamp(34px,5vw,64px)]">
             {next ? (
               <Link href={`/r/${next.roundId}`} className="hover:underline hover:decoration-[var(--vermilion)]">
                 Up or down by <span className="tabular-nums">{decidedAt}</span>?
@@ -113,7 +115,12 @@ export function Terminal() {
         </div>
         <div className="absolute top-4 right-4 flex flex-col items-end gap-3 md:top-6 md:right-6">
           {left !== null && next ? (
-            <Link href={`/r/${next.roundId}`} aria-label={`Round #${next.roundId}`}>
+            <Link
+              href={`/r/${next.roundId}`}
+              aria-label={`Round #${next.roundId}`}
+              data-tour="clock"
+              className="rounded-full"
+            >
               <Ring leftMs={left * SECOND_MS} spanMs={span} size={HERO_RING} label="Entries close" />
             </Link>
           ) : null}
@@ -123,6 +130,17 @@ export function Terminal() {
           >
             <History aria-hidden className="size-4" /> Previous
           </Link>
+          <button
+            type="button"
+            data-tour="help"
+            onClick={() => {
+              cue("open");
+              startTour();
+            }}
+            className="nx-glass flex h-9 items-center gap-1.5 rounded-full px-3.5 font-semibold text-[13px]"
+          >
+            <CircleHelp aria-hidden className="size-4" /> How to play
+          </button>
           <ChartControls />
         </div>
         <div className="absolute top-1/2 left-3 -translate-y-1/2 md:left-6">
@@ -159,8 +177,9 @@ export function Terminal() {
       <aside className="hidden lg:block">
         <LaneRail lanes={lanes} lane={lane} />
       </aside>
+      <TourHost asset={NAMES[lane.asset]} decidedAt={next ? decidedAt : null} />
       {sharing === null ? null : <ShareSheet roundId={sharing} open onClose={() => setSharing(null)} />}
-      <Sheet open={lanesOpen} onClose={() => setLanesOpen(false)} title="Lanes">
+      <Sheet open={lanesOpen} onClose={() => setLanesOpen(false)} title="Markets">
         <div className="pb-2">
           <LaneRail lanes={lanes} lane={lane} onPick={() => setLanesOpen(false)} />
         </div>

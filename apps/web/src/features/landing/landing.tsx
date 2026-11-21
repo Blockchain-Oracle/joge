@@ -70,7 +70,7 @@ function Nav() {
         href="/rounds"
         className="rounded-full bg-[var(--ink)] px-5 py-2.5 font-semibold text-[14px] text-[var(--ink-inverse)]"
       >
-        Play
+        Bet
       </Link>
     </nav>
   );
@@ -106,6 +106,12 @@ function Hero() {
             {HERO.how}
           </a>
         </div>
+        <p className="flex items-center gap-2 text-[14px] text-[var(--muted)]">
+          <span className="nx-jp grid size-6 place-items-center rounded-full bg-[var(--gold)] font-bold text-[#1a1406] text-[12px]">
+            試
+          </span>
+          {HERO.free}
+        </p>
       </div>
       <div className="lp-rise relative [animation-delay:120ms]">
         <HeroRound />

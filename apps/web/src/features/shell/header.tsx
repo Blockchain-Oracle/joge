@@ -65,7 +65,7 @@ export function Header({
           </a>
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <WorldSwitch words />
+          <WorldSwitch words hint />
           <button
             type="button"
             onClick={onSearch}

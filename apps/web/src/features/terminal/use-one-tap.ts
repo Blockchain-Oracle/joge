@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useSyncExternalStore } from "react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cue, toast } from "@/kit";
+import { errorText } from "@/lib/error-text";
 import { useFaucet } from "../guide/faucet.ts";
 import { openGuide } from "../guide/store.ts";
 import { limitProblem, useLimits } from "../limits/limits.ts";
@@ -15,7 +16,7 @@ import { useWorld } from "../shell/world.tsx";
 import { buildEntry, ENTRY_OVERHEAD, lostRace, sendEntry, txidOf } from "../ticket/entry.ts";
 import { recordEntry, updateEntry, useJournal } from "../ticket/journal.ts";
 import { estimatePayout } from "../ticket/payout.ts";
-import { useWalletCoins } from "../wallet/coins.ts";
+import { markSpent, useWalletCoins } from "../wallet/coins.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { CLOSE_LEAD_SECONDS, STAKE_LADDER_USD, STAKE_SHARE } from "./constants.ts";
 
@@ -126,23 +127,27 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
     };
   } else if (!round || round.lockTime - now < CLOSE_LEAD_SECONDS) {
     blocker = { label: "Next round opening", onClick: () => undefined };
-  } else if (wallet.state !== "connected") blocker = { label: "Pair a wallet", onClick: wallet.openConnect };
+  } else if (wallet.state !== "connected")
+    blocker = {
+      label: wallet.state === "reconnecting" ? "Reconnecting · open your wallet" : "Pair a wallet",
+      onClick: wallet.openConnect,
+    };
   // A tap never does nothing: before the wallet's coins are read, the button says so (his report: Up did nothing).
   else if (!coins.data)
     blocker = coins.isError
       ? { label: "Couldn't read your wallet · Try again", onClick: () => void coins.refetch() }
       : { label: "Reading your wallet…", onClick: () => undefined };
   else if (coins.balance < stake + ENTRY_OVERHEAD) {
-    // The guide's funding step: test coins from the faucet on chipnet, what the wallet holds and needs on mainnet.
-    blocker = {
-      label:
-        network === "mainnet"
-          ? "Top up your wallet"
-          : faucet.asking || faucet.view?.state === "pending"
-            ? "Funding your wallet…"
-            : "Fund your wallet",
-      onClick: () => openGuide("fund"),
-    };
+    // Mainnet: what the wallet holds and needs (the guide's funding step). Chipnet: the free test coins in this one
+    // tap, then where they are (his report: at zero on chipnet it should just offer the faucet).
+    const faucetState = faucet.view?.state;
+    if (network === "mainnet") blocker = { label: "Top up your wallet", onClick: () => openGuide("fund") };
+    else if (faucet.asking || faucetState === "pending")
+      blocker = { label: "Free test BCH on its way…", onClick: () => undefined };
+    else if (faucetState === "sent") blocker = { label: "Test BCH landing in your wallet…", onClick: () => undefined };
+    else if (faucetState === "dry" || faucet.view?.nextAt)
+      blocker = { label: "Get test BCH", onClick: () => openGuide("fund") };
+    else blocker = { label: "試 Get free test BCH", onClick: faucet.claim };
   }
 
   const enter = async (side: Side): Promise<boolean> => {
@@ -173,6 +178,7 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
       const signed = await wallet.sign(request.transaction, request.inputPaths);
       updateEntry(entry.id, { state: "signed", txid: txidOf(signed) });
       await sendEntry(network, signed);
+      markSpent(signed);
       updateEntry(entry.id, { state: "sent" });
       cue("send");
       toast({
@@ -186,8 +192,10 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
       void client.invalidateQueries({ queryKey: ["round", network, round.roundId] });
       return true;
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = errorText(error);
       const raced = lostRace(message);
+      // Whatever failed, the next tap builds from a fresh read of the wallet.
+      void client.invalidateQueries({ queryKey: ["coins", network] });
       updateEntry(entry.id, { state: raced ? "lost" : "failed", error: message });
       cue("error");
       toast(

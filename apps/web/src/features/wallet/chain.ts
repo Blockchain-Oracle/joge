@@ -21,12 +21,24 @@ import type { Network } from "@joge/db";
 const pools = new Map<Network, Promise<Fulcrum>>();
 const contracts = new Map<Network, { deployment: Deployment; round: RoundContracts; dollar: DollarContracts }>();
 
+/** A page never waits longer than this for the chain servers: past it the read fails and can be tried again. */
+const CONNECT_TIMEOUT_MS = 10_000;
+
 export function fulcrum(network: Network): Promise<Fulcrum> {
   let pool = pools.get(network);
   if (!pool) {
     const created = connectFulcrum(FULCRUM[network]);
-    pool = created.connect().then(() => created);
-    pool.catch(() => pools.delete(network));
+    pool = Promise.race([
+      created.connect().then(() => created),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("The chain servers didn't answer")), CONNECT_TIMEOUT_MS),
+      ),
+    ]);
+    // A pool that failed to connect is dropped, so the next read starts a fresh one instead of waiting on it.
+    pool.catch(() => {
+      pools.delete(network);
+      void created.close().catch(() => undefined);
+    });
     pools.set(network, pool);
   }
   return pool;

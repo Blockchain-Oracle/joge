@@ -7,6 +7,7 @@ import { useState } from "react";
 import { EmptyState, Skeleton } from "@/kit";
 import { fundedFloor } from "../guide/faucet.ts";
 import { openGuide } from "../guide/store.ts";
+import { TestCoinsCard } from "../guide/test-coins.tsx";
 import { profileHref } from "../players/api.ts";
 import { StoryFilm } from "../replay/story-film.tsx";
 import { clockTime } from "../rounds/format.ts";
@@ -153,11 +154,15 @@ export function Portfolio() {
       {rows.length === 0 ? (
         // Paired but nothing played: the next step, coins first if the wallet has too few for a call.
         coins.data && coins.balance < fundedFloor(network) ? (
-          <EmptyState
-            icon={Ticket}
-            title={network === "chipnet" ? "Get test BCH to play" : "Add BCH to play"}
-            action={{ label: network === "chipnet" ? "Get test BCH" : "Add BCH", onClick: () => openGuide("fund") }}
-          />
+          network === "chipnet" ? (
+            <TestCoinsCard />
+          ) : (
+            <EmptyState
+              icon={Ticket}
+              title="Add BCH to play"
+              action={{ label: "Add BCH", onClick: () => openGuide("fund") }}
+            />
+          )
         ) : (
           <EmptyState icon={Ticket} title="No tickets yet" action={{ label: "Play a round", href: "/rounds" }} />
         )

@@ -4,18 +4,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ArrowDownToLine, LoaderCircle, Pause, Play, Plus } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { AmountSheet, cue, Segmented, toast } from "@/kit";
+import { errorText } from "@/lib/error-text";
 import { useSession } from "../auth/session.ts";
 import { NotEnough } from "../guide/top-up.tsx";
 import { useWorld } from "../shell/world.tsx";
 import { lostRace, sendEntry } from "../ticket/entry.ts";
-import { useWalletCoins } from "../wallet/coins.ts";
+import { markSpent, useWalletCoins } from "../wallet/coins.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
 import { type Agent, patchAgent } from "./api.ts";
 import { FUND_CHIPS_USD, FUND_FEE_ROOM, FUND_MIN_USD } from "./constants.ts";
 import { chipUsd, MODE_COPY, useSatsUsd } from "./format.ts";
 import { buildFunding, buildWithdrawal } from "./vault.ts";
-
-const errorText = (error: unknown) => (error instanceof Error ? error.message : String(error));
 
 function Action({
   icon,
@@ -89,7 +88,9 @@ export function OwnerPanel({ agent, vaultSats }: { agent: Agent; vaultSats: bigi
         change: ownerKey,
         prompt: `Jōge: ${money.format(fundSats)} to ${agent.name}`,
       });
-      await sendEntry(network, await wallet.sign(request.transaction, request.inputPaths));
+      const signed = await wallet.sign(request.transaction, request.inputPaths);
+      await sendEntry(network, signed);
+      markSpent(signed);
       cue("send");
       toast({ tone: "up", title: `+${money.format(fundSats)}`, body: agent.name, href: `/agents/${agent.id}` });
       setFundOpen(false);
@@ -111,7 +112,9 @@ export function OwnerPanel({ agent, vaultSats }: { agent: Agent; vaultSats: bigi
         coins: coins.data,
         ownerPkh: agent.ownerPkh,
       });
-      await sendEntry(network, await wallet.sign(request.transaction, request.inputPaths));
+      const signed = await wallet.sign(request.transaction, request.inputPaths);
+      await sendEntry(network, signed);
+      markSpent(signed);
       cue("arrive");
       toast({
         tone: "up",

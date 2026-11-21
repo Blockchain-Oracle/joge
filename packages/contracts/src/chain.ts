@@ -35,7 +35,12 @@ export function connectFulcrum(urls: string[]): Fulcrum {
   );
   const [first, ...rest] = sockets;
   if (!first) throw new Error("no Fulcrum servers configured");
-  const pool = rest.length === 0 ? first : fallback([first, ...rest] as [typeof first, typeof first], { rank: true });
+  // eagerConnect: connected as soon as the fastest server is, the rest join in the background. Without it, connect()
+  // waited for every server, so one slow or down server (each retries for half an hour) held every read on the page.
+  const pool =
+    rest.length === 0
+      ? first
+      : fallback([first, ...rest] as [typeof first, typeof first], { rank: true, eagerConnect: true });
   return pool as unknown as Fulcrum;
 }
 

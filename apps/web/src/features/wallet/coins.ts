@@ -1,5 +1,6 @@
 "use client";
 
+import { binToHex, decodeTransaction, hexToBin } from "@bitauth/libauth";
 import { deploymentFor, scripthashOf, type utxosAt } from "@joge/contracts/browser";
 import type { Network } from "@joge/db";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,6 +27,24 @@ function dollarCategoryOf(network: Network): string | undefined {
 const WATCHED_PER_PATH = 3;
 /** At most this many address subscriptions per wallet. */
 const MAX_WATCHED = 40;
+/** A read that has not finished by now fails (and offers Try again) rather than spinning. */
+const READ_TIMEOUT_MS = 15_000;
+
+/**
+ * Coins this page just spent (txid:vout), left out of every list until a read no longer finds them. The read after a
+ * spend lands a moment later; a tap in between would otherwise build on a spent coin and be refused (his report:
+ * "Not entered" on every tap after the first).
+ */
+const spent = new Set<string>();
+const outpoint = (txid: string, vout: number) => `${txid}:${vout}`;
+
+/** Records the coins a signed transaction spends, so the next one never reuses them. */
+export function markSpent(signedHex: string) {
+  const transaction = decodeTransaction(hexToBin(signedHex));
+  if (typeof transaction === "string") return;
+  for (const input of transaction.inputs)
+    spent.add(outpoint(binToHex(input.outpointTransactionHash), input.outpointIndex));
+}
 
 interface Scan {
   coins: WalletCoin[];
@@ -49,9 +68,15 @@ export function useWalletCoins() {
   const query = useQuery({
     queryKey,
     enabled: keys.length > 0,
+    // One quick retry, then "Couldn't read your wallet · Try again" instead of a long silent wait.
+    retry: 1,
     queryFn: async (): Promise<Scan> => {
-      const pool = await fulcrum(network);
-      const read = await readWallet(pool, keyAt);
+      const read = await Promise.race([
+        fulcrum(network).then((pool) => readWallet(pool, keyAt)),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Reading your wallet took too long")), READ_TIMEOUT_MS),
+        ),
+      ]);
       // Plain coins, and the dollar token (dollar events stake it); no other token is ever spent from here.
       const coins = read.holdings.flatMap(({ key, utxos }) =>
         utxos
@@ -60,6 +85,9 @@ export function useWalletCoins() {
           )
           .map((coin) => ({ ...coin, key })),
       );
+      // A spend this page made has landed once the read no longer finds its coin.
+      const found = new Set(coins.map((coin) => outpoint(coin.txid, coin.vout)));
+      for (const each of spent) if (!found.has(each)) spent.delete(each);
       const first = keys.filter((key) => key.index < WATCHED_PER_PATH);
       const holding = coins.map((coin) => coin.key);
       const watch = [...new Set([...first, ...read.ahead, ...holding].map((key) => key.lockingBytecode))].slice(
@@ -95,7 +123,7 @@ export function useWalletCoins() {
     };
   }, [watchKey, network, client]);
 
-  const all = query.data?.coins ?? [];
+  const all = (query.data?.coins ?? []).filter((coin) => !spent.has(outpoint(coin.txid, coin.vout)));
   const plain = all.filter((coin) => !coin.token);
   const dollars = all.filter((coin) => coin.token);
   const balance = plain.reduce((sum, coin) => sum + coin.satoshis, 0n);

@@ -7,6 +7,7 @@ import { ArrowLeft, Bot, Sparkles, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AmountSheet, cue, cx, Segmented, toast } from "@/kit";
+import { errorText } from "@/lib/error-text";
 import { useSession } from "../auth/session.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useWallet } from "../wallet/wallet-context.tsx";
@@ -110,7 +111,7 @@ export function Studio({ copyFrom }: { copyFrom: number | null }) {
       setRead({ result: await dryRead(network, draft), pending: false, error: null });
       cue("arrive");
     } catch (error) {
-      setRead({ result: null, pending: false, error: error instanceof Error ? error.message : String(error) });
+      setRead({ result: null, pending: false, error: errorText(error) });
     }
   };
 

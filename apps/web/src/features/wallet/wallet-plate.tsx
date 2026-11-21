@@ -4,6 +4,8 @@ import { Copy, LogOut } from "lucide-react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cx, RollingNumber, Skeleton, toast } from "@/kit";
 import { copyText } from "@/lib/browser";
+import { fundedFloor } from "../guide/faucet.ts";
+import { TestCoinsButton } from "../guide/test-coins.tsx";
 import { useWorld } from "../shell/world.tsx";
 import { useWalletCoins } from "./coins.ts";
 import { useWallet } from "./wallet-context.tsx";
@@ -48,7 +50,15 @@ export function WalletPlate({ className }: { className?: string }) {
     <div className={cx("flex flex-col gap-3 rounded-[24px] bg-[var(--surface-1)] p-4", className)}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          {coins.isPending ? (
+          {coins.isError && !coins.data ? (
+            <button
+              type="button"
+              onClick={() => void coins.refetch()}
+              className="text-left font-semibold text-[15px] text-[var(--down-text)] underline-offset-4 hover:underline"
+            >
+              Couldn't read your wallet · Try again
+            </button>
+          ) : coins.isPending ? (
             <Skeleton className="h-10 w-36" label="Reading your balance" />
           ) : bchUsd ? (
             <RollingNumber
@@ -78,6 +88,9 @@ export function WalletPlate({ className }: { className?: string }) {
           </button>
         </div>
       </div>
+      {world === "chipnet" && coins.data && coins.balance < fundedFloor(world) ? (
+        <TestCoinsButton className="w-full" />
+      ) : null}
       <button
         type="button"
         onClick={() => {

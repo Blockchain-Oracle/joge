@@ -2,12 +2,15 @@
 
 import { LoaderCircle } from "lucide-react";
 import { cx } from "@/kit";
+import { usd } from "../rounds/format.ts";
+import { StakeRow } from "./stake-row.tsx";
 import type { Side, useOneTap } from "./use-one-tap.ts";
 
 const MULTIPLE_DIGITS = 2;
 
 /**
- * Up and Down (plates, "pays N×" under each side): one tap is the call. Whatever stands in the way
+ * Up and Down (plates, the bet and what it pays under each side), with the bet chosen right above them: one tap is
+ * the call. Whatever stands in the way
  * (no wallet, entries closing, your own limit) is said once, as a sticker above the plates, and the tap runs its fix.
  */
 export function SidePlates({ tap, compact = false }: { tap: ReturnType<typeof useOneTap>; compact?: boolean }) {
@@ -17,6 +20,7 @@ export function SidePlates({ tap, compact = false }: { tap: ReturnType<typeof us
   ];
   return (
     <div className="relative flex flex-col items-center gap-3">
+      {compact ? null : <StakeRow tap={tap} />}
       {tap.blocker ? (
         <button
           type="button"
@@ -50,6 +54,7 @@ export function SidePlates({ tap, compact = false }: { tap: ReturnType<typeof us
               <span className="flex flex-col items-start leading-none">
                 <span className="text-[19px] tracking-[0.06em]">{word}</span>
                 <span className="nx-num mt-1 text-[13px] font-semibold opacity-75">
+                  {usd(tap.stakeUsd)} ·{" "}
                   {multiple === "alone"
                     ? `no ${side === 0 ? "Down" : "Up"} yet`
                     : multiple

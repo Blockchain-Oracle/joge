@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useSpot } from "@/features/chart/use-spot";
 import { cx, EmptyState, Marble, Ring, Skeleton, toast } from "@/kit";
+import { errorText } from "@/lib/error-text";
 import { ASSET_TONE, AssetCube } from "@/marks/asset";
 import { HistoryChart } from "../chart/history-chart.tsx";
 import { LiveChart } from "../chart/live-chart.tsx";
@@ -191,7 +192,7 @@ export function RoundView({
         });
       void client.invalidateQueries({ queryKey: ["round", network, roundId] });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = errorText(error);
       toast({ tone: /already|conflict|missing/i.test(message) ? "info" : "down", title: "Not sent", body: message });
     } finally {
       setFinishing(false);

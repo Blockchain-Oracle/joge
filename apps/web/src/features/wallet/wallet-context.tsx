@@ -4,6 +4,7 @@ import { useWizardConnect, type WizardConnectState } from "@wizardconnect/react"
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { MARK_BOX, markSvg } from "@/brand/geometry";
 import { toast } from "@/kit";
+import { errorText } from "@/lib/error-text";
 import { useWorld } from "../shell/world.tsx";
 import { PATHS, type PathName, type WalletKey, walletKey, walletKeys } from "./keys.ts";
 import { signRequestToWire } from "./wire.ts";
@@ -82,14 +83,27 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   // (Only a pairing in progress shows a code; a restore never does.)
   const resuming = manager !== null && (state === "reconnecting" || (state === "connecting" && !wizard.uri));
 
+  // Every wallet_ready replaces the wallet's keys inside the manager (a reconnect too) without changing React state
+  // when the wallet was already "connected": count them, so the addresses are derived again from the new keys.
+  const [keysSent, setKeysSent] = useState(0);
+  useEffect(() => {
+    if (!manager) return;
+    const sent = () => setKeysSent((count) => count + 1);
+    manager.on("walletready", sent);
+    return () => {
+      manager.off("walletready", sent);
+    };
+  }, [manager]);
   const keys = useMemo(
     () =>
-      manager && (state === "connected" || resuming)
+      manager && keysSent >= 0 && (state === "connected" || resuming)
         ? walletKeys((child, index) => manager.getPubkey(child, index), network)
         : [],
-    [manager, state, resuming, network],
+    [manager, state, resuming, network, keysSent],
   );
-  const paired = state === "connected" || (resuming && keys.length > 0);
+  // Paired means Jōge holds the wallet's addresses. A wallet "connected" without them (mid-reconnect, before its keys
+  // arrive) counts as reconnecting: never a paired wallet with no balance that reads forever (his report).
+  const paired = keys.length > 0 && (state === "connected" || resuming);
   const keyAt = useCallback(
     (name: PathName, index: number) => {
       const path = PATHS.find((each) => each.name === name);
@@ -150,7 +164,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               throw new Error("Reconnecting to your wallet. Open it, then try again.");
             throw cause;
           });
-        if (response.error) throw new Error(response.error);
+        if (response.error) throw new Error(errorText(response.error));
         signed = true;
         return response.signedTransaction;
       } finally {
@@ -168,7 +182,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const value: WalletApi = {
     // A restored session counts as paired: its addresses and balance show at once.
-    state: paired ? "connected" : state,
+    state: paired ? "connected" : state === "connected" ? "reconnecting" : state,
     online: state === "connected",
     walletName: wizard.walletName,
     walletIcon: wizard.walletIcon,

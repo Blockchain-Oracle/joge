@@ -1,12 +1,12 @@
 "use client";
 
-import { stringify } from "@bitauth/libauth";
 import { useWizardConnect, type WizardConnectState } from "@wizardconnect/react";
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { MARK_BOX, markSvg } from "@/brand/geometry";
 import { toast } from "@/kit";
 import { useWorld } from "../shell/world.tsx";
 import { PATHS, type PathName, type WalletKey, walletKey, walletKeys } from "./keys.ts";
+import { signRequestToWire } from "./wire.ts";
 
 const SESSION_KEY = "joge-wizardconnect";
 
@@ -127,8 +127,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const sign = useCallback(
     async (transaction: unknown, inputPaths: InputPath[], signal?: AbortSignal) => {
       if (!manager || !paired) throw new Error("Pair a wallet first");
-      // Wallets parse libauth's extended JSON (tagged bigints and bytes); CashScript's object holds raw ones.
-      const relaySafe = JSON.parse(stringify(transaction)) as never;
+      // WizardConnect's wire format (the transaction as hex, bytes as hex): every wallet reads it, Paytaca only this.
+      const relaySafe = signRequestToWire(transaction as Parameters<typeof signRequestToWire>[0]) as never;
       // The request card names what is being signed with the same words the wallet shows (the transaction's prompt).
       const prompt = (transaction as { userPrompt?: unknown }).userPrompt;
       const controller = new AbortController();

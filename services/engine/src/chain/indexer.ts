@@ -24,7 +24,7 @@ import {
 import { errorText, logger } from "../log.ts";
 import { beat, every, sleep } from "../runtime.ts";
 import { type DecodedTx, decodeTx } from "./decode.ts";
-import { type Fulcrum, scripthashOf, utxosAt } from "./electrum.ts";
+import { type Fulcrum, fromEveryServer, type ListedUtxo, scripthashOf, serversOf, utxosAt } from "./electrum.ts";
 import { applyTransaction } from "./project.ts";
 
 const log = logger("indexer");
@@ -152,14 +152,22 @@ export class Indexer {
         row.height,
       ]),
     );
+    // Every server's history, merged: chipnet servers hold different mempools, and a transaction any of them lists is
+    // live (a confirmed height wins over "unconfirmed").
     const seen = new Map<string, number | null>();
     for (const { scripthash } of this.#watched) {
       const from = Math.max(0, (cursors.get(scripthash) ?? 0) - REORG_DEPTH);
-      const history = (await this.fulcrum.request("blockchain.scripthash.get_history", [
-        scripthash,
-        from,
-      ])) as HistoryEntry[];
-      for (const entry of history) seen.set(entry.tx_hash, heightOf(entry.height));
+      const { answers, errors } = await fromEveryServer(
+        this.fulcrum,
+        (server) => server.request("blockchain.scripthash.get_history", [scripthash, from]) as Promise<HistoryEntry[]>,
+      );
+      if (answers.length === 0) throw errors[0] ?? new Error("no chain server answered");
+      for (const history of answers) {
+        for (const entry of history) {
+          const height = heightOf(entry.height);
+          if (height !== null || !seen.has(entry.tx_hash)) seen.set(entry.tx_hash, height);
+        }
+      }
     }
 
     const known = new Map<string, { height: number | null; dropped: boolean }>();
@@ -200,9 +208,7 @@ export class Indexer {
     const fetched: Array<{ tx: DecodedTx; height: number | null }> = [];
     for (let start = 0; start < fresh.length; start += FETCH_PARALLEL) {
       const chunk = fresh.slice(start, start + FETCH_PARALLEL);
-      const raws = await Promise.all(
-        chunk.map((txid) => this.fulcrum.request("blockchain.transaction.get", [txid, false]) as Promise<string>),
-      );
+      const raws = await Promise.all(chunk.map((txid) => this.rawOf(txid)));
       raws.forEach((hex, index) => {
         const txid = chunk[index] as string;
         fetched.push({
@@ -247,7 +253,22 @@ export class Indexer {
     }
   }
 
-  /** Unconfirmed transactions no history lists any more: confirm with the server, then drop and replay their rounds. */
+  /** A transaction's bytes from the pool, or from any server that has it (only one may hold a fresh one). */
+  private async rawOf(txid: string): Promise<string> {
+    const get = (server: Fulcrum) => server.request("blockchain.transaction.get", [txid, false]) as Promise<string>;
+    try {
+      return await get(this.fulcrum);
+    } catch (error) {
+      return Promise.any(serversOf(this.fulcrum).map(get)).catch(() => {
+        throw error;
+      });
+    }
+  }
+
+  /**
+   * Unconfirmed transactions no history lists any more: dropped only once every server says it has never seen them (a
+   * server that lags, fails or does not answer leaves them for the next sync), then their rounds are replayed.
+   */
   private async findDropped(listed: Set<string>) {
     const { db } = this.database;
     const network = this.network;
@@ -264,13 +285,16 @@ export class Indexer {
       );
     const affected = new Set<number>();
     for (const { txid, roundId } of stale.filter((row) => !listed.has(row.txid))) {
-      // Only a server's clear "no such transaction" counts; any other failure (a dropped socket, a server whose
-      // mempool lags) leaves it for the next sync. Height 0 means it is still in the mempool.
-      const status = await this.fulcrum.request("blockchain.transaction.get_height", [txid]).then(
-        (height) => (height === null ? "gone" : "alive"),
-        (error) => (TX_NOT_FOUND.test(errorText(error)) ? "gone" : "unknown"),
+      // Only every server's clear "no such transaction" counts. Height 0 means it is still in a mempool.
+      const { answers, errors, silent } = await fromEveryServer(
+        this.fulcrum,
+        (server) => server.request("blockchain.transaction.get_height", [txid]) as Promise<number | null>,
       );
-      if (status !== "gone") continue;
+      const gone =
+        silent === 0 &&
+        answers.every((height) => height === null) &&
+        errors.every((error) => TX_NOT_FOUND.test(errorText(error)));
+      if (!gone) continue;
       log.warn("transaction dropped", { txid, roundId });
       await db
         .update(transactions)
@@ -306,13 +330,24 @@ export class Indexer {
     log.info("round replayed", { roundId, transactions: kept.length });
   }
 
-  /** The lane threads' current state, straight from their coins. */
+  /**
+   * The lane threads' current state, straight from their coins. Each server is asked; a server that has not seen the
+   * latest lane-open still lists the coin it spent, so for each thread the coin furthest along (highest counter) wins.
+   */
   private async refreshLanes() {
     const network = this.network;
-    const coins = await utxosAt(this.fulcrum, this.deployment.lockingBytecode.laneThread);
-    for (const coin of coins) {
+    const { answers, errors } = await fromEveryServer(this.fulcrum, (server) =>
+      utxosAt(server, this.deployment.lockingBytecode.laneThread),
+    );
+    if (answers.length === 0) throw errors[0] ?? new Error("no chain server answered");
+    const newest = new Map<number, { coin: ListedUtxo; lane: ReturnType<typeof decodeLane> }>();
+    for (const coin of answers.flat()) {
       if (coin.token?.category !== this.deployment.category || !coin.token.nft) continue;
       const lane = decodeLane(coin.token.nft.commitment);
+      const held = newest.get(lane.thread);
+      if (!held || lane.counter > held.lane.counter) newest.set(lane.thread, { coin, lane });
+    }
+    for (const { coin, lane } of newest.values()) {
       const values = {
         asset: lane.asset,
         seconds: lane.seconds,

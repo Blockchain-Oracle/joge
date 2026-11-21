@@ -1,4 +1,4 @@
-import { binToHex, hexToBin, sha256 } from "@bitauth/libauth";
+import { binToHex, decodeTransaction, hexToBin, sha256 } from "@bitauth/libauth";
 import { fallback } from "@rpckit/fallback/electrum-cash";
 import { webSocket } from "@rpckit/websocket/electrum-cash";
 import type { Network as CashScriptNetwork, NetworkProvider, SpendableUtxo } from "cashscript";
@@ -14,6 +14,12 @@ const REQUEST_TIMEOUT_MS = 20_000;
 const KEEP_ALIVE_MS = 30_000;
 const RECONNECT = { delay: 2_000, attempts: 1_000 };
 const CLIENT_NAME = "joge-engine";
+/** How long a read on every server waits for the rest once one has answered. */
+const EVERY_SERVER_GRACE_MS = 4_000;
+/** How many generations of missing parents a lagging server is caught up on after one broadcast. */
+const CATCH_UP_DEPTH = 50;
+/** A server's refusal for a parent it has not seen (BCHN: "bad-txns-inputs-missingorspent", "Missing inputs"). */
+const MISSING_INPUTS = /missing ?inputs|inputs-missingorspent/i;
 
 /** The Electrum calls the engine makes (results are shaped by each caller). */
 export interface Fulcrum {
@@ -76,22 +82,107 @@ export async function utxosAt(fulcrum: Fulcrum, lockingBytecode: string): Promis
   })) as ListedUtxo[];
 }
 
+/** Every server behind a pool (the pool itself when it has only one). */
+export function serversOf(fulcrum: Fulcrum): Fulcrum[] {
+  const servers = (fulcrum as unknown as { transports?: Fulcrum[] }).transports;
+  return servers && servers.length > 1 ? servers : [fulcrum];
+}
+
+/**
+ * One read on every server at once: the answers that came back (all of them, or those in by `graceMs` after the
+ * first, so a slow or down server never holds the read up), the refusals, and how many servers had not answered.
+ */
+export function fromEveryServer<T>(
+  fulcrum: Fulcrum,
+  read: (server: Fulcrum) => Promise<T>,
+  graceMs = EVERY_SERVER_GRACE_MS,
+): Promise<{ answers: T[]; errors: unknown[]; silent: number }> {
+  const servers = serversOf(fulcrum);
+  return new Promise((resolve) => {
+    const answers: T[] = [];
+    const errors: unknown[] = [];
+    let silent = servers.length;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const finish = () => {
+      clearTimeout(timer);
+      resolve({ answers: [...answers], errors: [...errors], silent });
+    };
+    for (const server of servers) {
+      read(server).then(
+        (value) => {
+          answers.push(value);
+          silent -= 1;
+          if (silent === 0) finish();
+          else if (answers.length === 1) timer = setTimeout(finish, graceMs);
+        },
+        (error: unknown) => {
+          errors.push(error);
+          silent -= 1;
+          if (silent === 0) finish();
+        },
+      );
+    }
+  });
+}
+
+const messageOf = (error: unknown): string =>
+  error instanceof Error ? error.message : typeof error === "string" ? error : JSON.stringify(error);
+
 /**
  * Sends a transaction to every server in the pool at once and returns at the first that takes it. Chipnet nodes pass
  * unconfirmed transactions on poorly: one sent to a single server stayed unknown to the others, so explorers built on
  * them said "Failed to load transaction" until it was mined, and the next transaction spending it was refused there
- * ("Missing inputs").
+ * ("Missing inputs"). A server that refuses for missing inputs while another takes it is then caught up in the
+ * background: it is handed the parents it lacks, oldest first, and the transaction again. (21 Nov: one keeper coin
+ * that never reached chipnet.imaginary.cash left ten hours of chipnet unmined, held by one server only.)
  */
 export async function broadcast(fulcrum: Fulcrum, hex: string): Promise<string> {
-  const servers = (fulcrum as unknown as { transports?: Fulcrum[] }).transports;
+  const servers = serversOf(fulcrum);
   const send = (server: Fulcrum) => server.request("blockchain.transaction.broadcast", [hex]) as Promise<string>;
-  if (!servers || servers.length < 2) return send(fulcrum);
+  if (servers.length < 2) return send(fulcrum);
+  const attempts = servers.map(send);
+  let txid: string;
   try {
-    return await Promise.any(servers.map(send));
+    txid = await Promise.any(attempts);
   } catch (error) {
     // Every server refused: the first server's own reason (a conflict, missing inputs) is the one to show.
     throw error instanceof AggregateError ? error.errors[0] : error;
   }
+  void Promise.allSettled(attempts).then((results) => {
+    const holder = servers[results.findIndex((result) => result.status === "fulfilled")];
+    if (!holder) return;
+    results.forEach((result, index) => {
+      const lagging = servers[index];
+      if (lagging && result.status === "rejected" && MISSING_INPUTS.test(messageOf(result.reason)))
+        void catchUp(holder, lagging, hex).catch(() => undefined);
+    });
+  });
+  return txid;
+}
+
+/** Hands `lagging` the unconfirmed ancestors of a transaction it lacks, from `holder`, parents first, then the transaction. */
+async function catchUp(holder: Fulcrum, lagging: Fulcrum, hex: string) {
+  const ordered: string[] = [];
+  const looked = new Set<string>();
+  const visit = async (txHex: string, depth: number): Promise<void> => {
+    if (depth > CATCH_UP_DEPTH) throw new Error("ancestry too deep to catch up");
+    const tx = decodeTransaction(hexToBin(txHex));
+    if (typeof tx === "string") return;
+    for (const input of tx.inputs) {
+      const parent = binToHex(input.outpointTransactionHash);
+      if (looked.has(parent)) continue;
+      looked.add(parent);
+      const known = await lagging.request("blockchain.transaction.get_height", [parent]).then(
+        () => true,
+        () => false,
+      );
+      if (!known)
+        await visit((await holder.request("blockchain.transaction.get", [parent, false])) as string, depth + 1);
+    }
+    ordered.push(txHex);
+  };
+  await visit(hex, 0);
+  for (const each of ordered) await lagging.request("blockchain.transaction.broadcast", [each]).catch(() => undefined);
 }
 
 /**

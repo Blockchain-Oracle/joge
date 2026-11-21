@@ -11,7 +11,7 @@ import { useMoney } from "../rounds/money.ts";
 import { useWorld } from "../shell/world.tsx";
 import { useWalletCoins } from "../wallet/coins.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
-import { FUNDED_SATS, useFaucet } from "./faucet.ts";
+import { fundedFloor, ONE_CALL_SATS, useFaucet } from "./faucet.ts";
 import { closeGuide, GUIDE_STEPS, type GuideStep, setGuideStep, useGuide } from "./store.ts";
 
 /** Enough to make a first call (a $0.10 stake and its fees) on either world. */
@@ -47,7 +47,7 @@ const COPY: Record<GuideStep, { title: string; line: { chipnet: string; mainnet:
   pair: { title: "Pair it.", line: { chipnet: "Scan with your wallet.", mainnet: "Scan with your wallet." } },
   fund: {
     title: "Get test BCH.",
-    line: { chipnet: "Free, for chipnet. Enough for twenty calls.", mainnet: "Send a dollar or two to your wallet." },
+    line: { chipnet: "Free, for chipnet. Enough for twenty calls.", mainnet: "Your BCH stays in your wallet." },
   },
   play: {
     title: "Call it.",
@@ -57,6 +57,35 @@ const COPY: Record<GuideStep, { title: string; line: { chipnet: string; mainnet:
     },
   },
 };
+
+/**
+ * Mainnet's funding words, from what the paired wallet holds. WizardConnect leaves the money in the wallet, so the
+ * step reads it first and only a wallet short of one call is asked to top up, in the wallet itself (Jeremy's report:
+ * "my wallet already holds the money, I don't need to send it to your site").
+ */
+function walletHolds(at: {
+  name: string;
+  paired: boolean;
+  funded: boolean;
+  failed: boolean;
+  balance: string | null;
+  need: string;
+}): { title: string; line: string } {
+  if (!at.paired)
+    return { title: "Your wallet holds the money.", line: "Pair it first. Jōge reads it, never holds it." };
+  if (at.funded)
+    return {
+      title: "Your wallet is ready.",
+      line: `${at.balance} in ${at.name}. It stays there until you sign a call.`,
+    };
+  if (at.failed) return { title: "Couldn't read your wallet.", line: "The chain servers didn't answer. Try again." };
+  if (at.balance === null)
+    return { title: "Reading your wallet…", line: `Your BCH stays in ${at.name}. Jōge reads it, never holds it.` };
+  return {
+    title: `Top up ${at.name}.`,
+    line: `It holds ${at.balance}; one call needs ${at.need}. Add BCH to it as you always do. It stays in your wallet.`,
+  };
+}
 
 /**
  * The first-run guide: five short steps with a picture each and the world named on every one, and
@@ -71,10 +100,24 @@ export function Guide() {
   const router = useRouter();
   const path = usePathname();
   const index = GUIDE_STEPS.indexOf(step);
+  const money = useMoney();
   const paired = wallet.state === "connected";
-  const funded = paired && coins.data !== undefined && coins.balance >= FUNDED_SATS;
+  const funded = paired && coins.data !== undefined && coins.balance >= fundedFloor(world);
   const copy = COPY[step];
-  const title = step === "fund" && world === "mainnet" ? "Add a little BCH." : copy.title;
+  // Mainnet's funding step reads the paired wallet and says what it holds; it never asks a funded wallet for coins.
+  const holds =
+    step === "fund" && world === "mainnet"
+      ? walletHolds({
+          name: wallet.walletName ?? "your wallet",
+          paired,
+          funded,
+          failed: coins.isError,
+          balance: coins.data === undefined ? null : money.format(coins.balance),
+          need: money.format(ONE_CALL_SATS),
+        })
+      : null;
+  const title = holds?.title ?? copy.title;
+  const line = holds?.line ?? copy.line[world];
 
   // Pairing and the coins landing move the guide on by themselves.
   useEffect(() => {
@@ -138,7 +181,7 @@ export function Guide() {
         <div className="flex flex-col gap-2">
           <WorldNote />
           <h2 className="nx-display text-[28px] leading-tight">{title}</h2>
-          <p className="text-[15px] text-[var(--ink-2)]">{copy.line[world]}</p>
+          <p className="text-[15px] text-[var(--ink-2)]">{line}</p>
         </div>
 
         <Action step={step} paired={paired} funded={funded} onNext={() => go(1)} onFinish={finish} />
@@ -198,8 +241,24 @@ function Picture({ step, paired, funded }: { step: GuideStep; paired: boolean; f
   }
   if (step === "fund") {
     if (funded) return <Done label={money.format(coins.balance)} />;
-    if (world === "mainnet" && wallet.payout)
-      return <DottedQr value={wallet.payout.address} size={QR_SIZE} label="Your wallet's address" />;
+    // Mainnet shows the paired wallet and what it holds: never an address to send to.
+    if (world === "mainnet" && paired)
+      return (
+        <span className="flex flex-col items-center gap-3">
+          {wallet.walletIcon ? (
+            <img src={wallet.walletIcon} alt="" className="size-14 rounded-[16px] object-contain" />
+          ) : null}
+          {coins.data === undefined && !coins.isError ? (
+            <LoaderCircle
+              aria-label="Reading your wallet"
+              className="size-8 text-[var(--muted)] motion-safe:animate-spin"
+            />
+          ) : coins.data !== undefined ? (
+            <span className="nx-num font-semibold text-[32px] leading-none">{money.format(coins.balance)}</span>
+          ) : null}
+          <span className="text-[13px] text-[var(--muted)]">in {wallet.walletName ?? "your wallet"}</span>
+        </span>
+      );
     return <Mark size={120} className="jg-guide-mark opacity-60" />;
   }
   return (
@@ -252,6 +311,7 @@ function Action({
   onFinish: () => void;
 }) {
   const wallet = useWallet();
+  const coins = useWalletCoins();
   const world = useWorld();
   const phone = usePhone();
   const faucet = useFaucet();
@@ -287,7 +347,15 @@ function Action({
     );
   if (step === "fund" && !funded) {
     if (!paired) return <Primary onClick={() => setGuideStep("pair")}>Pair first</Primary>;
-    if (world === "mainnet")
+    if (world === "mainnet") {
+      if (coins.isError) return <Primary onClick={() => void coins.refetch()}>Try again</Primary>;
+      if (coins.data === undefined)
+        return (
+          <Primary disabled>
+            <LoaderCircle size={18} aria-hidden className="motion-safe:animate-spin" /> Reading your wallet…
+          </Primary>
+        );
+      // Short of one call: the wallet's own address, for topping it up from another wallet or an exchange.
       return (
         <button
           type="button"
@@ -295,9 +363,10 @@ function Action({
           className="flex h-14 items-center justify-center gap-2 rounded-full bg-[var(--surface-2)] font-semibold text-[15px]"
         >
           {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}{" "}
-          {copied ? "Copied" : "Copy your address"}
+          {copied ? "Copied" : `Copy ${wallet.walletName ?? "your wallet"}'s address`}
         </button>
       );
+    }
     const view = faucet.view;
     if (faucet.asking || view?.state === "pending")
       return (

@@ -75,12 +75,17 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
   const cap = MAX_STAKE[stakeClass];
   const ladder = STAKE_LADDER_USD.filter((dollars) => !bchUsd || (dollars / bchUsd) * SATS_PER_BCH <= Number(cap));
   const balanceUsd = bchUsd && coins.data ? (Number(coins.balance) / SATS_PER_BCH) * bchUsd : null;
+  const minUsd = bchUsd ? Math.ceil((Number(MIN_STAKE) / SATS_PER_BCH) * bchUsd * CENTS) / CENTS : 0;
+  const overheadUsd = bchUsd ? (Number(ENTRY_OVERHEAD) / SATS_PER_BCH) * bchUsd : 0;
+  // 5 % of the balance on the ladder; a small wallet gets the smallest step it can pay, then the contract's minimum,
+  // so a wallet the guide calls ready can always make a call.
   const preset =
     balanceUsd === null
       ? (ladder[1] ?? ladder[0] ?? 0)
-      : (ladder.filter((dollars) => dollars <= balanceUsd * STAKE_SHARE).at(-1) ?? ladder[0] ?? 0);
+      : (ladder.filter((dollars) => dollars <= balanceUsd * STAKE_SHARE).at(-1) ??
+        ladder.find((dollars) => dollars + overheadUsd <= balanceUsd) ??
+        minUsd);
   // Any amount the player typed stands, held inside this lane's bounds (a $5 choice reads $1 on a 5-minute lane).
-  const minUsd = bchUsd ? Math.ceil((Number(MIN_STAKE) / SATS_PER_BCH) * bchUsd * CENTS) / CENTS : 0;
   const capUsd = bchUsd ? Math.floor((Number(cap) / SATS_PER_BCH) * bchUsd * CENTS) / CENTS : null;
   const stakeUsd = chosen !== null && chosen > 0 ? Math.min(capUsd ?? chosen, Math.max(minUsd, chosen)) : preset;
   // An agent's proposal carries its own stake (sats); everything else uses the standing choice.
@@ -123,9 +128,14 @@ export function useOneTap(round: RoundCard | null, stakeClass: StakeClass, stake
     blocker = { label: "Next round opening", onClick: () => undefined };
   } else if (wallet.state !== "connected") blocker = { label: "Pair a wallet", onClick: wallet.openConnect };
   else if (coins.data && coins.balance < stake + ENTRY_OVERHEAD) {
-    // The guide's funding step: test coins from the faucet on chipnet, the address and its code on mainnet.
+    // The guide's funding step: test coins from the faucet on chipnet, what the wallet holds and needs on mainnet.
     blocker = {
-      label: faucet.asking || faucet.view?.state === "pending" ? "Funding your wallet…" : "Fund your wallet",
+      label:
+        network === "mainnet"
+          ? "Top up your wallet"
+          : faucet.asking || faucet.view?.state === "pending"
+            ? "Funding your wallet…"
+            : "Fund your wallet",
       onClick: () => openGuide("fund"),
     };
   }

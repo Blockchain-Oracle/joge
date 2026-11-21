@@ -1,8 +1,10 @@
 "use client";
 
-import type { FaucetState } from "@joge/db";
+import type { FaucetState, Network } from "@joge/db";
+import { MIN_STAKE } from "@joge/sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWorld } from "../shell/world.tsx";
+import { ENTRY_OVERHEAD } from "../ticket/entry.ts";
 import { useWallet } from "../wallet/wallet-context.tsx";
 
 /** What the faucet says about this wallet's latest claim (null state: never asked). */
@@ -16,10 +18,19 @@ export interface FaucetView {
 }
 
 /**
- * A wallet counts as funded past the faucet's top-up threshold (FAUCET_THRESHOLD_SATS in @joge/db, about $1), so a
- * near-empty wallet is still offered the free coins (his test: $0.13 counted as funded and he never got them).
+ * On chipnet a wallet counts as funded past the faucet's top-up threshold (FAUCET_THRESHOLD_SATS in @joge/db, about
+ * $1), so a near-empty wallet is still offered the free coins (his test: $0.13 counted as funded and he never got them).
  */
-export const FUNDED_SATS = 500_000n;
+const FAUCET_FUNDED_SATS = 500_000n;
+
+/** One call on mainnet: the smallest stake, the ticket's deposit and the network fee (about two cents). */
+export const ONE_CALL_SATS = MIN_STAKE + ENTRY_OVERHEAD;
+
+/**
+ * When a paired wallet is ready to play. On mainnet that is one call's worth, never more: a wallet that already holds
+ * BCH is never asked for any (Jeremy's report: a dollar was asked of a funded Cashonize, and his $0.10 never cleared it).
+ */
+export const fundedFloor = (world: Network): bigint => (world === "chipnet" ? FAUCET_FUNDED_SATS : ONE_CALL_SATS);
 
 const POLL_MS = 2_000;
 const url = (address?: string) =>

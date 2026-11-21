@@ -8,8 +8,37 @@ export const PATHS = [
 ] as const;
 export type PathName = (typeof PATHS)[number]["name"];
 
-/** How many addresses per path the page scans for coins. */
+/** How many addresses per path the page derives up front (payout, change, the address lists sent to our server). */
 export const ADDRESSES_PER_PATH = 10;
+
+/**
+ * Unused addresses in a row that end the coin scan of a path: the standard BIP-44 gap limit, the one Cashonize and
+ * Electron Cash use. HD wallets take a fresh address for every deposit and every change output, so a busy wallet
+ * holds its coins far past the first few (Jeremy's report: a paired Cashonize read as empty).
+ */
+export const GAP_LIMIT = 20;
+
+/** Never scan further than this into one path, however busy the wallet. */
+export const MAX_SCAN_PER_PATH = 2_000;
+
+type GetPubkey = (child: number, index: bigint) => Uint8Array | undefined;
+type Path = (typeof PATHS)[number];
+
+/** One address of the wallet, derived from the key it shared (null if the wallet did not share that path). */
+export function walletKey(getPubkey: GetPubkey, path: Path, index: number, network: Network): WalletKey | null {
+  const pubkey = getPubkey(path.child, BigInt(index));
+  if (!pubkey) return null;
+  const pkhBytes = hash160(pubkey);
+  const pkh = binToHex(pkhBytes);
+  return {
+    path: path.name,
+    index,
+    pubkey,
+    pkh,
+    address: encodeCashAddress({ prefix: cashPrefix(network), type: "p2pkh", payload: pkhBytes }).address,
+    lockingBytecode: `76a914${pkh}88ac`,
+  };
+}
 
 export interface WalletKey {
   path: PathName;
@@ -33,26 +62,10 @@ export function tokenAddress(address: string): string {
 }
 
 /** The wallet's addresses from the keys it shared (the dapp derives them; the wallet never sends addresses). */
-export function walletKeys(
-  getPubkey: (child: number, index: bigint) => Uint8Array | undefined,
-  network: Network,
-): WalletKey[] {
+export function walletKeys(getPubkey: GetPubkey, network: Network): WalletKey[] {
   return PATHS.flatMap((path) =>
-    Array.from({ length: ADDRESSES_PER_PATH }, (_, index) => index).flatMap((index): WalletKey[] => {
-      const pubkey = getPubkey(path.child, BigInt(index));
-      if (!pubkey) return [];
-      const pkhBytes = hash160(pubkey);
-      const pkh = binToHex(pkhBytes);
-      return [
-        {
-          path: path.name,
-          index,
-          pubkey,
-          pkh,
-          address: encodeCashAddress({ prefix: cashPrefix(network), type: "p2pkh", payload: pkhBytes }).address,
-          lockingBytecode: `76a914${pkh}88ac`,
-        },
-      ];
-    }),
+    Array.from({ length: ADDRESSES_PER_PATH }, (_, index) => walletKey(getPubkey, path, index, network)).filter(
+      (key): key is WalletKey => key !== null,
+    ),
   );
 }

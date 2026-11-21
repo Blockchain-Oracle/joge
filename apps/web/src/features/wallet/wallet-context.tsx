@@ -6,7 +6,7 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 import { MARK_BOX, markSvg } from "@/brand/geometry";
 import { toast } from "@/kit";
 import { useWorld } from "../shell/world.tsx";
-import { type PathName, type WalletKey, walletKeys } from "./keys.ts";
+import { PATHS, type PathName, type WalletKey, walletKey, walletKeys } from "./keys.ts";
 
 const SESSION_KEY = "joge-wizardconnect";
 
@@ -33,8 +33,10 @@ interface WalletApi {
   uri: string | null;
   qrUri: string | null;
   error: string | null;
-  /** The wallet's addresses (receive and change), derived from the keys it shared. */
+  /** The wallet's first addresses (receive and change), derived from the keys it shared. */
   keys: WalletKey[];
+  /** Any address of the paired wallet (the coin scan reads past the first ones); null while unpaired. */
+  keyAt: (path: PathName, index: number) => WalletKey | null;
   /** Where a ticket's payout goes: the wallet's first receive address. */
   payout: WalletKey | null;
   connectOpen: boolean;
@@ -88,6 +90,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [manager, state, resuming, network],
   );
   const paired = state === "connected" || (resuming && keys.length > 0);
+  const keyAt = useCallback(
+    (name: PathName, index: number) => {
+      const path = PATHS.find((each) => each.name === name);
+      if (!manager || keys.length === 0 || !path) return null;
+      return walletKey((child, at) => manager.getPubkey(child, at), path, index, network);
+    },
+    [manager, keys.length, network],
+  );
 
   useEffect(() => {
     // Announce a new pairing only; a refresh that reconnects quietly is not news.
@@ -166,6 +176,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     qrUri: wizard.qrUri,
     error: wizard.error,
     keys,
+    keyAt,
     payout: keys.find((key) => key.path === "receive" && key.index === 0) ?? null,
     connectOpen,
     openConnect,

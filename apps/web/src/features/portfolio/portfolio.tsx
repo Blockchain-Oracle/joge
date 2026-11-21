@@ -5,7 +5,7 @@ import { LoaderCircle, Share2, Ticket, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { EmptyState, Skeleton } from "@/kit";
-import { FUNDED_SATS } from "../guide/faucet.ts";
+import { fundedFloor } from "../guide/faucet.ts";
 import { openGuide } from "../guide/store.ts";
 import { profileHref } from "../players/api.ts";
 import { StoryFilm } from "../replay/story-film.tsx";
@@ -152,7 +152,7 @@ export function Portfolio() {
       ) : null}
       {rows.length === 0 ? (
         // Paired but nothing played: the next step, coins first if the wallet has too few for a call.
-        coins.data && coins.balance < FUNDED_SATS ? (
+        coins.data && coins.balance < fundedFloor(network) ? (
           <EmptyState
             icon={Ticket}
             title={network === "chipnet" ? "Get test BCH to play" : "Add BCH to play"}
